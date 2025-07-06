@@ -54,6 +54,10 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
     setShowModal(true);
   };
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   return (
     <>
       <Button
@@ -69,7 +73,7 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
       {showModal && (
         <ReservationModal
           isOpen={showModal}
-          onClose={() => setShowModal(false)}
+          onClose={handleCloseModal}
           friteryId={friteryId}
           friteryName={friteryName}
         />

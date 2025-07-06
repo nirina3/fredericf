@@ -16,6 +16,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   friteryName
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Empêcher le défilement du body quand le modal est ouvert
@@ -32,7 +33,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   useEffect(() => {
     // Gestionnaire pour fermer le modal en cliquant à l'extérieur
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      if (overlayRef.current === event.target) {
         onClose();
       }
     };
@@ -58,10 +59,16 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div 
+      ref={overlayRef}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      aria-modal="true"
+      role="dialog"
+    >
       <div 
         ref={modalRef}
         className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()} // Empêche la propagation du clic
       >
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
@@ -73,7 +80,8 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full hover:bg-gray-100"
+              aria-label="Fermer"
             >
               <X className="h-6 w-6" />
             </button>
