@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, Calendar, User, Tag, Clock, ArrowRight, BookOpen, TrendingUp, Eye, MessageCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import CommentSystem from '../components/comments/CommentSystem';
 
 interface BlogPost {
   id: string;
@@ -34,6 +35,7 @@ const Blog: React.FC = () => {
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Mock data - Articles de blog représentatifs
@@ -367,6 +369,10 @@ const Blog: React.FC = () => {
                       
                       <Link
                         to={`/blog/${post.slug}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setSelectedPost(post);
+                        }}
                         className="text-orange-600 hover:text-orange-700 font-medium text-sm flex items-center group"
                       >
                         Lire la suite
@@ -455,6 +461,10 @@ const Blog: React.FC = () => {
                         </span>
                         <Link
                           to={`/blog/${post.slug}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setSelectedPost(post);
+                          }}
                           className="text-orange-600 hover:text-orange-700 font-medium flex items-center group"
                         >
                           Lire
@@ -496,6 +506,55 @@ const Blog: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Blog Post Detail Modal with Comments */}
+      {selectedPost && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-2xl font-bold text-gray-900 line-clamp-2">{selectedPost.title}</h2>
+                  <button
+                    onClick={() => setSelectedPost(null)}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
+                
+                <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                  <span className="flex items-center">
+                    <User className="h-4 w-4 mr-1" />
+                    {selectedPost.author}
+                  </span>
+                  <span className="flex items-center">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    {format(selectedPost.publishedAt, 'dd MMMM yyyy', { locale: fr })}
+                  </span>
+                  <span className="flex items-center">
+                    <Clock className="h-4 w-4 mr-1" />
+                    {selectedPost.readTime} min
+                  </span>
+                </div>
+                
+                <p className="text-gray-600">{selectedPost.excerpt}</p>
+              </div>
+              
+              {/* Comments */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <CommentSystem
+                  entityId={selectedPost.id}
+                  entityType="blog"
+                  allowReplies={true}
+                  allowImages={false}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

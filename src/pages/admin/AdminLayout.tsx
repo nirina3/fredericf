@@ -30,6 +30,7 @@ const AdminLayout: React.FC = () => {
     { name: 'Galerie', href: '/admin/gallery', icon: Image },
     { name: 'Annuaire', href: '/admin/directory', icon: BookOpen },
     { name: 'Statistiques', href: '/admin/analytics', icon: BarChart3 },
+    { name: 'Modération', href: '/admin/moderation', icon: Shield },
     { name: 'Paramètres', href: '/admin/settings', icon: Settings },
   ];
 

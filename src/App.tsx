@@ -27,6 +27,7 @@ import GalleryManagement from './pages/admin/GalleryManagement';
 import BlogManagement from './pages/admin/BlogManagement';
 import DirectoryManagement from './pages/admin/DirectoryManagement';
 import AnalyticsManagement from './pages/admin/AnalyticsManagement';
+import CommentModerationPanel from './components/comments/CommentModerationPanel';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 function App() {
@@ -64,6 +65,7 @@ function App() {
               <Route path="gallery" element={<GalleryManagement />} />
               <Route path="directory" element={<DirectoryManagement />} />
               <Route path="analytics" element={<AnalyticsManagement />} />
+              <Route path="moderation" element={<CommentModerationPanel />} />
               <Route path="settings" element={<div className="text-center py-12"><h1 className="text-2xl">Paramètres - Coming Soon</h1></div>} />
             </Route>
 

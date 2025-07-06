@@ -8,6 +8,7 @@ import storageService from '../../services/storage';
 interface ImageCardProps {
   image: ImageMetadata;
   viewMode: 'grid' | 'list';
+  onClick?: () => void;
   onEdit?: (image: ImageMetadata) => void;
   onDelete?: (imageId: string) => void;
   onLike?: (imageId: string) => void;
@@ -17,6 +18,7 @@ interface ImageCardProps {
 const ImageCard: React.FC<ImageCardProps> = ({
   image,
   viewMode,
+  onClick,
   onEdit,
   onDelete,
   onLike,
@@ -100,7 +102,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
             src={canAccessImage() ? image.url : image.thumbnail}
             alt={image.title}
             className={`w-full h-full object-cover cursor-pointer ${!canAccessImage() ? 'filter blur-sm' : ''}`}
-            onClick={handleView}
+            onClick={onClick || handleView}
           />
           
           {/* Overlay */}
@@ -244,7 +246,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
             src={canAccessImage() ? image.url : image.thumbnail}
             alt={image.title}
             className={`w-full h-48 object-cover cursor-pointer ${!canAccessImage() ? 'filter blur-sm' : ''}`}
-            onClick={handleView}
+            onClick={onClick || handleView}
           />
           
           {/* Overlay */}

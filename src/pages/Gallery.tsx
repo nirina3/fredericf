@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ImageUploadModal from '../components/gallery/ImageUploadModal';
 import ImageCard from '../components/gallery/ImageCard';
 import Button from '../components/ui/Button';
+import CommentSystem from '../components/comments/CommentSystem';
 import storageService, { ImageMetadata } from '../services/storage';
 
 const Gallery: React.FC = () => {
@@ -14,6 +15,7 @@ const Gallery: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [loading, setLoading] = useState(true);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<ImageMetadata | null>(null);
   const { currentUser, isSubscribed } = useAuth();
 
   // Mock data - quelques images représentatives
@@ -333,15 +335,17 @@ const Gallery: React.FC = () => {
               : 'space-y-6'
             }>
               {filteredItems.map((item) => (
-                <ImageCard
-                  key={item.id}
-                  image={item}
-                  viewMode={viewMode}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  onLike={handleLike}
-                  onDownload={handleDownload}
-                />
+                <div key={item.id}>
+                  <ImageCard
+                    image={item}
+                    viewMode={viewMode}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onLike={handleLike}
+                    onDownload={handleDownload}
+                    onClick={() => setSelectedImage(item)}
+                  />
+                </div>
               ))}
             </div>
           )}
@@ -374,6 +378,62 @@ const Gallery: React.FC = () => {
         onClose={() => setShowUploadModal(false)}
         onSuccess={handleUploadSuccess}
       />
+
+      {/* Image Detail Modal with Comments */}
+      {selectedImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex">
+            {/* Image */}
+            <div className="flex-1 flex items-center justify-center bg-gray-100">
+              <img
+                src={selectedImage.url}
+                alt={selectedImage.title}
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+            
+            {/* Sidebar with details and comments */}
+            <div className="w-96 flex flex-col">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-gray-900">{selectedImage.title}</h3>
+                  <button
+                    onClick={() => setSelectedImage(null)}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
+                <p className="text-gray-600 mb-4">{selectedImage.description}</p>
+                
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {selectedImage.tags.map((tag, index) => (
+                    <span key={index} className="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-xs">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                
+                <div className="text-sm text-gray-500">
+                  <div>Par {selectedImage.uploadedBy}</div>
+                  <div>{new Date(selectedImage.uploadedAt).toLocaleDateString('fr-FR')}</div>
+                  <div>{selectedImage.dimensions.width} × {selectedImage.dimensions.height}</div>
+                </div>
+              </div>
+              
+              {/* Comments */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <CommentSystem
+                  entityId={selectedImage.id!}
+                  entityType="image"
+                  allowReplies={true}
+                  allowImages={false}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
