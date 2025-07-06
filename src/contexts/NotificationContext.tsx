@@ -50,11 +50,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     setToasts([]);
   };
 
-  // Fonction pour fermer tous les toasts
-  const closeAllToasts = () => {
-    setToasts([]);
-  };
-
   // Mock notifications pour la démonstration
   useEffect(() => {
     const mockNotifications: Notification[] = [
