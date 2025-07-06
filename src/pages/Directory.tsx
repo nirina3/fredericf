@@ -598,10 +598,6 @@ const Directory: React.FC = () => {
                             size="sm"
                             className="text-blue-600 hover:text-blue-700"
                           />
-                            variant="ghost"
-                            size="sm"
-                            className="text-blue-600 hover:text-blue-700"
-                          />
                         )}
                       </div>
                       
