@@ -238,22 +238,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
                 >
                   <X className="h-4 w-4" />
                 </button>
-                </div>
-                <div className="ml-3 flex-1">
+              </div>
             </div>
           </div>
         ))}
-        {toasts.length > 1 && (
-          <button 
-            onClick={closeAllToasts}
-            className="ml-auto block bg-white text-gray-700 px-3 py-1 rounded-md text-sm font-medium shadow-md hover:bg-gray-50 transition-colors"
-          >
-            <div className="flex items-center">
-              <XCircle className="h-4 w-4 mr-1" />
-              Fermer toutes ({toasts.length})
-            </div>
-          </button>
-        )}
         {toasts.length > 1 && (
           <button 
             onClick={closeAllToasts}
