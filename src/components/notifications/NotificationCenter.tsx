@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, Check, X, Trash2, Settings, Filter, Clock, User, CreditCard, Shield, FileText } from 'lucide-react';
+import { Bell, Check, X, Trash2, Settings, Filter, Clock, User, CreditCard, Shield, FileText, XCircle } from 'lucide-react';
 import Button from '../ui/Button';
 import { useNotifications, Notification } from '../../contexts/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
@@ -145,11 +145,20 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
               <Button
                 onClick={clearAll}
                 size="sm"
-                variant="outline"
+                variant="ghost"
                 className="text-red-600 border-red-300 hover:bg-red-50"
                 icon={<Trash2 className="h-4 w-4" />}
               >
                 Tout supprimer
+              </Button>
+              <Button
+                onClick={() => onClose()}
+                size="sm"
+                variant="ghost"
+                className="text-gray-600 hover:bg-gray-100"
+                icon={<XCircle className="h-4 w-4" />}
+              >
+                Fermer
               </Button>
             </div>
           )}

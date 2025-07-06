@@ -4,13 +4,24 @@ import { useNotifications } from '../../contexts/NotificationContext';
 import NotificationCenter from './NotificationCenter';
 
 const NotificationBell: React.FC = () => {
-  const { unreadCount } = useNotifications();
+  const { unreadCount, closeAllToasts } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleBellClick = () => {
+    // Si le centre de notifications est déjà ouvert, on le ferme
+    if (isOpen) {
+      setIsOpen(false);
+    } else {
+      // Sinon, on ferme d'abord tous les toasts puis on ouvre le centre
+      closeAllToasts();
+      setIsOpen(true);
+    }
+  };
 
   return (
     <>
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={handleBellClick}
         className="relative p-2 text-gray-600 hover:text-orange-600 transition-colors rounded-lg hover:bg-orange-50"
       >
         <Bell className="h-6 w-6" />
