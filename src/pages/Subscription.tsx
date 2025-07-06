@@ -10,40 +10,40 @@ const Subscription: React.FC = () => {
 
   const plans = [
     {
-      id: 'basic',
-      name: 'Basic',
-      description: 'Parfait pour débuter',
-      monthlyPrice: 19.99,
-      yearlyPrice: 199.99,
+      id: 'gratuit',
+      name: 'Gratuit',
+      description: 'Pour les débutants',
+      monthlyPrice: 0,
+      yearlyPrice: 0,
       features: [
-        { name: '5 projets maximum', included: true },
-        { name: 'Support par email', included: true },
-        { name: 'Accès galerie de base', included: true },
-        { name: 'Documentation complète', included: true },
+        { name: 'Accès limité à la galerie', included: true },
+        { name: 'Accès au blog', included: true },
+        { name: 'Accès à l\'annuaire', included: true },
+        { name: 'Commentaires limités', included: true },
+        { name: 'Téléchargements limités', included: false },
+        { name: 'Contenu exclusif', included: false },
         { name: 'Support prioritaire', included: false },
-        { name: 'Galerie premium', included: false },
-        { name: 'Fonctionnalités avancées', included: false },
-        { name: 'Support téléphonique', included: false }
+        { name: 'Accès aux événements', included: false }
       ],
       popular: false,
       color: 'border-gray-200',
       buttonColor: 'bg-gray-600 hover:bg-gray-700'
     },
     {
-      id: 'premium',
-      name: 'Premium',
-      description: 'Le plus populaire',
-      monthlyPrice: 49.99,
-      yearlyPrice: 499.99,
+      id: 'standard',
+      name: 'Standard',
+      description: 'Pour les amateurs',
+      monthlyPrice: 9.99,
+      yearlyPrice: 99.99,
       features: [
-        { name: '20 projets maximum', included: true },
-        { name: 'Support par email', included: true },
-        { name: 'Accès galerie de base', included: true },
-        { name: 'Documentation complète', included: true },
-        { name: 'Support prioritaire', included: true },
-        { name: 'Galerie premium', included: true },
-        { name: 'Fonctionnalités avancées', included: true },
-        { name: 'Support téléphonique', included: false }
+        { name: 'Accès limité à la galerie', included: true },
+        { name: 'Accès au blog', included: true },
+        { name: 'Accès à l\'annuaire', included: true },
+        { name: 'Commentaires illimités', included: true },
+        { name: 'Téléchargements limités', included: true },
+        { name: 'Contenu exclusif', included: true },
+        { name: 'Support prioritaire', included: false },
+        { name: 'Accès aux événements', included: false }
       ],
       popular: true,
       color: 'border-orange-500',
@@ -52,18 +52,18 @@ const Subscription: React.FC = () => {
     {
       id: 'pro',
       name: 'Pro',
-      description: 'Pour les professionnels',
-      monthlyPrice: 99.99,
-      yearlyPrice: 999.99,
+      description: 'Pour les passionnés',
+      monthlyPrice: 19.99,
+      yearlyPrice: 199.99,
       features: [
-        { name: 'Projets illimités', included: true },
-        { name: 'Support par email', included: true },
-        { name: 'Accès galerie de base', included: true },
-        { name: 'Documentation complète', included: true },
+        { name: 'Accès complet à la galerie', included: true },
+        { name: 'Accès au blog', included: true },
+        { name: 'Accès à l\'annuaire', included: true },
+        { name: 'Commentaires illimités', included: true },
+        { name: 'Téléchargements illimités', included: true },
+        { name: 'Contenu exclusif', included: true },
         { name: 'Support prioritaire', included: true },
-        { name: 'Galerie premium', included: true },
-        { name: 'Fonctionnalités avancées', included: true },
-        { name: 'Support téléphonique', included: true }
+        { name: 'Accès aux événements', included: true }
       ],
       popular: false,
       color: 'border-purple-500',
@@ -98,6 +98,7 @@ const Subscription: React.FC = () => {
   };
 
   const getSavings = (plan: typeof plans[0]) => {
+    if (plan.monthlyPrice === 0) return { amount: 0, percentage: 0 };
     const monthlyTotal = plan.monthlyPrice * 12;
     const yearlyPrice = plan.yearlyPrice;
     const savings = monthlyTotal - yearlyPrice;
@@ -275,19 +276,28 @@ const Subscription: React.FC = () => {
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                     <p className="text-gray-600 mb-6">{plan.description}</p>
                     
-                    <div className="mb-4">
-                      <div className="text-5xl font-bold text-gray-900 mb-2">
-                        €{getPrice(plan)}
-                      </div>
-                      <div className="text-gray-600">
-                        /{billingCycle === 'monthly' ? 'mois' : 'an'}
-                      </div>
-                      {billingCycle === 'yearly' && (
-                        <div className="text-sm text-green-600 font-medium mt-2">
-                          Économisez €{savings.amount} ({savings.percentage}%)
+                    {plan.monthlyPrice === 0 ? (
+                      <div className="mb-4">
+                        <div className="text-5xl font-bold text-gray-900 mb-2">
+                          Gratuit
                         </div>
-                      )}
-                    </div>
+                        <div className="text-gray-600">pour toujours</div>
+                      </div>
+                    ) : (
+                      <div className="mb-4">
+                        <div className="text-5xl font-bold text-gray-900 mb-2">
+                          €{getPrice(plan)}
+                        </div>
+                        <div className="text-gray-600">
+                          /{billingCycle === 'monthly' ? 'mois' : 'an'}
+                        </div>
+                        {billingCycle === 'yearly' && plan.monthlyPrice > 0 && (
+                          <div className="text-sm text-green-600 font-medium mt-2">
+                            Économisez €{savings.amount} ({savings.percentage}%)
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <ul className="space-y-4 mb-8">
@@ -309,13 +319,18 @@ const Subscription: React.FC = () => {
                     className={`w-full ${plan.buttonColor}`}
                     disabled={isCurrentPlan}
                   >
-                    {isCurrentPlan ? 'Plan actuel' : `Choisir ${plan.name}`}
+                    {isCurrentPlan ? 'Plan actuel' : plan.id === 'gratuit' ? 'Commencer gratuitement' : `Choisir ${plan.name}`}
                     {!isCurrentPlan && <ArrowRight className="h-4 w-4 ml-2" />}
                   </Button>
 
-                  {!isCurrentPlan && (
+                  {!isCurrentPlan && plan.id !== 'gratuit' && (
                     <p className="text-xs text-gray-500 text-center mt-3">
                       Changement immédiat • Annulation à tout moment
+                    </p>
+                  )}
+                  {!isCurrentPlan && plan.id === 'gratuit' && (
+                    <p className="text-xs text-gray-500 text-center mt-3">
+                      Sans carte de crédit
                     </p>
                   )}
                 </div>

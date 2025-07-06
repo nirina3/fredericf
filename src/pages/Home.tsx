@@ -167,7 +167,7 @@ const Home: React.FC = () => {
           <div className="text-center mb-16">
             <div className="inline-flex items-center bg-orange-100 rounded-full px-6 py-3 mb-6">
               <Crown className="h-5 w-5 text-orange-600 mr-2" />
-              <span className="text-orange-800 font-medium">Nos formules</span>
+              <span className="text-orange-800 font-medium">Nos plans</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Choisissez votre <span className="text-orange-600">formule</span>
@@ -181,26 +181,26 @@ const Home: React.FC = () => {
             {/* Basic Plan */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-gray-200 hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-1">
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Basic</h3>
-                <div className="text-4xl font-bold text-orange-600 mb-2">€19.99</div>
-                <div className="text-gray-600">/mois</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Gratuit</h3>
+                <div className="text-4xl font-bold text-orange-600 mb-2">€0</div>
+                <div className="text-gray-600">pour toujours</div>
               </div>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>5 projets maximum</span>
+                  <span>Accès limité à la galerie</span>
                 </li>
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>Support par email</span>
+                  <span>Accès au blog</span>
                 </li>
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>Accès galerie de base</span>
+                  <span>Accès à l'annuaire</span>
                 </li>
               </ul>
               <Button className="w-full bg-gray-600 hover:bg-gray-700">
-                <Link to="/pricing">Choisir Basic</Link>
+                <Link to="/pricing">Commencer gratuitement</Link>
               </Button>
             </div>
 
@@ -213,26 +213,26 @@ const Home: React.FC = () => {
                 </span>
               </div>
               <div className="text-center mb-8 text-white">
-                <h3 className="text-2xl font-bold mb-2">Premium</h3>
-                <div className="text-4xl font-bold mb-2">€49.99</div>
+                <h3 className="text-2xl font-bold mb-2">Standard</h3>
+                <div className="text-4xl font-bold mb-2">€9.99</div>
                 <div className="text-orange-100">/mois</div>
               </div>
               <ul className="space-y-4 mb-8 text-white">
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-yellow-300 mr-3 flex-shrink-0" />
-                  <span>20 projets maximum</span>
+                  <span>Téléchargements limités</span>
                 </li>
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-yellow-300 mr-3 flex-shrink-0" />
-                  <span>Support prioritaire</span>
+                  <span>Commentaires illimités</span>
                 </li>
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-yellow-300 mr-3 flex-shrink-0" />
-                  <span>Galerie premium</span>
+                  <span>Contenu exclusif</span>
                 </li>
               </ul>
               <Button className="w-full bg-white text-orange-600 hover:bg-orange-50 font-bold">
-                <Link to="/pricing">Choisir Premium</Link>
+                <Link to="/pricing">Choisir Standard</Link>
               </Button>
             </div>
 
@@ -240,21 +240,21 @@ const Home: React.FC = () => {
             <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-gray-200 hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-1">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
-                <div className="text-4xl font-bold text-orange-600 mb-2">€99.99</div>
+                <div className="text-4xl font-bold text-orange-600 mb-2">€19.99</div>
                 <div className="text-gray-600">/mois</div>
               </div>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>Projets illimités</span>
+                  <span>Accès complet à la galerie</span>
                 </li>
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>Support téléphonique</span>
+                  <span>Support prioritaire</span>
                 </li>
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>Accès complet</span>
+                  <span>Accès aux événements</span>
                 </li>
               </ul>
               <Button className="w-full bg-gray-900 hover:bg-black">

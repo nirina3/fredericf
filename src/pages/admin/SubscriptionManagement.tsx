@@ -41,12 +41,12 @@ const SubscriptionManagement: React.FC = () => {
       userId: 'user1',
       userName: 'Marie Dubois',
       userEmail: 'marie.dubois@example.com',
-      planId: 'premium',
-      planName: 'Premium',
+      planId: 'standard',
+      planName: 'Standard',
       status: 'active',
       startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
       endDate: new Date(Date.now() + 335 * 24 * 60 * 60 * 1000),
-      amount: 49.99,
+      amount: 9.99,
       currency: 'EUR',
       paymentMethod: 'Visa •••• 4242',
       autoRenew: true,
@@ -58,12 +58,12 @@ const SubscriptionManagement: React.FC = () => {
       userId: 'user2',
       userName: 'Jean Martin',
       userEmail: 'jean.martin@example.com',
-      planId: 'basic',
-      planName: 'Basic',
+      planId: 'gratuit',
+      planName: 'Gratuit',
       status: 'active',
       startDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
       endDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
-      amount: 19.99,
+      amount: 0,
       currency: 'EUR',
       paymentMethod: 'Mastercard •••• 5555',
       autoRenew: true,
@@ -80,7 +80,7 @@ const SubscriptionManagement: React.FC = () => {
       status: 'cancelled',
       startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
       endDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-      amount: 99.99,
+      amount: 19.99,
       currency: 'EUR',
       paymentMethod: 'Visa •••• 1234',
       autoRenew: false,
@@ -91,12 +91,12 @@ const SubscriptionManagement: React.FC = () => {
       userId: 'user4',
       userName: 'Pierre Delacroix',
       userEmail: 'pierre.delacroix@example.com',
-      planId: 'premium',
-      planName: 'Premium',
+      planId: 'standard',
+      planName: 'Standard',
       status: 'past_due',
       startDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
       endDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
-      amount: 49.99,
+      amount: 9.99,
       currency: 'EUR',
       paymentMethod: 'Mastercard •••• 8888',
       autoRenew: true,
@@ -108,8 +108,8 @@ const SubscriptionManagement: React.FC = () => {
       userId: 'user5',
       userName: 'Luc Dupont',
       userEmail: 'luc.dupont@example.com',
-      planId: 'basic',
-      planName: 'Basic',
+      planId: 'gratuit',
+      planName: 'Gratuit',
       status: 'trial',
       startDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
       endDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
@@ -180,15 +180,15 @@ const SubscriptionManagement: React.FC = () => {
   const handleChangePlan = (subscriptionId: string, newPlan: string) => {
     // Simuler le changement de plan
     const planNames: {[key: string]: string} = {
-      'basic': 'Basic',
-      'premium': 'Premium',
+      'gratuit': 'Gratuit',
+      'standard': 'Standard',
       'pro': 'Pro'
     };
     
     const planPrices: {[key: string]: number} = {
-      'basic': 19.99,
-      'premium': 49.99,
-      'pro': 99.99
+      'gratuit': 0,
+      'standard': 9.99,
+      'pro': 19.99
     };
 
     setSubscriptions(prev => prev.map(sub =>
@@ -241,9 +241,9 @@ const SubscriptionManagement: React.FC = () => {
 
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'basic':
+      case 'gratuit':
         return 'bg-green-100 text-green-800';
-      case 'premium':
+      case 'standard':
         return 'bg-blue-100 text-blue-800';
       case 'pro':
         return 'bg-purple-100 text-purple-800';
@@ -396,8 +396,8 @@ const SubscriptionManagement: React.FC = () => {
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="all">Tous les plans</option>
-              <option value="basic">Basic</option>
-              <option value="premium">Premium</option>
+              <option value="gratuit">Gratuit</option>
+              <option value="standard">Standard</option>
               <option value="pro">Pro</option>
             </select>
           </div>

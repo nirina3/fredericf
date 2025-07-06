@@ -9,41 +9,41 @@ const Pricing: React.FC = () => {
 
   const plans = [
     {
-      id: 'basic',
-      name: 'Basic',
-      price: 19.99,
+      id: 'gratuit',
+      name: 'Gratuit',
+      price: 0,
       currency: '€',
       interval: 'mois',
-      description: 'Parfait pour débuter',
+      description: 'Pour les débutants',
       features: [
-        { name: '5 projets maximum', included: true },
-        { name: 'Support par email', included: true },
-        { name: 'Accès galerie de base', included: true },
-        { name: 'Documentation complète', included: true },
+        { name: 'Accès limité à la galerie', included: true },
+        { name: 'Accès au blog', included: true },
+        { name: 'Accès à l\'annuaire', included: true },
+        { name: 'Commentaires limités', included: true },
+        { name: 'Téléchargements limités', included: false },
+        { name: 'Contenu exclusif', included: false },
         { name: 'Support prioritaire', included: false },
-        { name: 'Galerie premium', included: false },
-        { name: 'Fonctionnalités avancées', included: false },
-        { name: 'Support téléphonique', included: false }
+        { name: 'Accès aux événements', included: false }
       ],
       popular: false,
       color: 'border-gray-200'
     },
     {
-      id: 'premium',
-      name: 'Premium',
-      price: 49.99,
+      id: 'standard',
+      name: 'Standard',
+      price: 9.99,
       currency: '€',
       interval: 'mois',
-      description: 'Le plus populaire',
+      description: 'Pour les amateurs',
       features: [
-        { name: '20 projets maximum', included: true },
-        { name: 'Support par email', included: true },
-        { name: 'Accès galerie de base', included: true },
-        { name: 'Documentation complète', included: true },
-        { name: 'Support prioritaire', included: true },
-        { name: 'Galerie premium', included: true },
-        { name: 'Fonctionnalités avancées', included: true },
-        { name: 'Support téléphonique', included: false }
+        { name: 'Accès limité à la galerie', included: true },
+        { name: 'Accès au blog', included: true },
+        { name: 'Accès à l\'annuaire', included: true },
+        { name: 'Commentaires illimités', included: true },
+        { name: 'Téléchargements limités', included: true },
+        { name: 'Contenu exclusif', included: true },
+        { name: 'Support prioritaire', included: false },
+        { name: 'Accès aux événements', included: false }
       ],
       popular: true,
       color: 'border-blue-500'
@@ -51,19 +51,19 @@ const Pricing: React.FC = () => {
     {
       id: 'pro',
       name: 'Pro',
-      price: 99.99,
+      price: 19.99,
       currency: '€',
       interval: 'mois',
-      description: 'Pour les professionnels',
+      description: 'Pour les passionnés',
       features: [
-        { name: 'Projets illimités', included: true },
-        { name: 'Support par email', included: true },
-        { name: 'Accès galerie de base', included: true },
-        { name: 'Documentation complète', included: true },
+        { name: 'Accès complet à la galerie', included: true },
+        { name: 'Accès au blog', included: true },
+        { name: 'Accès à l\'annuaire', included: true },
+        { name: 'Commentaires illimités', included: true },
+        { name: 'Téléchargements illimités', included: true },
+        { name: 'Contenu exclusif', included: true },
         { name: 'Support prioritaire', included: true },
-        { name: 'Galerie premium', included: true },
-        { name: 'Fonctionnalités avancées', included: true },
-        { name: 'Support téléphonique', included: true }
+        { name: 'Accès aux événements', included: true }
       ],
       popular: false,
       color: 'border-purple-500'
@@ -73,11 +73,11 @@ const Pricing: React.FC = () => {
   const faq = [
     {
       question: "Puis-je changer de plan à tout moment ?",
-      answer: "Oui, vous pouvez upgrader ou downgrader votre abonnement à tout moment. Les changements prendront effet immédiatement."
+      answer: "Oui, vous pouvez passer à un plan supérieur ou inférieur à tout moment. Les changements prendront effet immédiatement."
     },
     {
       question: "Y a-t-il une période d'essai gratuite ?",
-      answer: "Oui, nous offrons une période d'essai gratuite de 7 jours sur tous nos plans premium."
+      answer: "Oui, nous offrons une période d'essai gratuite de 7 jours sur nos plans Standard et Pro."
     },
     {
       question: "Comment puis-je annuler mon abonnement ?",
@@ -95,11 +95,11 @@ const Pricing: React.FC = () => {
       <section className="bg-gradient-to-br from-blue-600 to-blue-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Choisissez votre formule
+            Des plans adaptés à vos besoins
           </h1>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Sélectionnez le plan qui correspond le mieux à vos besoins. 
-            Tous nos plans incluent une période d'essai gratuite de 7 jours.
+            Sélectionnez le plan qui correspond le mieux à vos besoins et à votre budget.
+            Nos plans payants incluent une période d'essai gratuite de 7 jours.
           </p>
           <div className="flex items-center justify-center space-x-2">
             <Crown className="h-6 w-6 text-yellow-400" />
@@ -132,9 +132,15 @@ const Pricing: React.FC = () => {
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                     <p className="text-gray-600 mb-4">{plan.description}</p>
-                    <div className="text-5xl font-bold text-blue-600 mb-2">
-                      {plan.currency}{plan.price}
-                    </div>
+                    {plan.price === 0 ? (
+                      <div className="text-5xl font-bold text-blue-600 mb-2">
+                        Gratuit
+                      </div>
+                    ) : (
+                      <div className="text-5xl font-bold text-blue-600 mb-2">
+                        {plan.currency}{plan.price}
+                      </div>
+                    )}
                     <div className="text-gray-600">/{plan.interval}</div>
                   </div>
 
@@ -157,7 +163,7 @@ const Pricing: React.FC = () => {
                     {currentUser ? (
                       <Button
                         className="w-full"
-                        variant={plan.popular ? 'primary' : 'outline'}
+                        variant={plan.popular ? 'primary' : plan.id === 'gratuit' ? 'outline' : 'primary'}
                         disabled={currentUser.subscription?.plan?.id === plan.id}
                       >
                         {currentUser.subscription?.plan?.id === plan.id ? 'Plan actuel' : `Choisir ${plan.name}`}
@@ -165,13 +171,13 @@ const Pricing: React.FC = () => {
                     ) : (
                       <Button
                         className="w-full"
-                        variant={plan.popular ? 'primary' : 'outline'}
+                        variant={plan.popular ? 'primary' : plan.id === 'gratuit' ? 'outline' : 'primary'}
                       >
-                        <Link to="/signup">Commencer l'essai gratuit</Link>
+                        <Link to="/signup">{plan.id === 'gratuit' ? 'Commencer gratuitement' : 'Commencer l\'essai gratuit'}</Link>
                       </Button>
                     )}
                     <p className="text-xs text-gray-500 text-center">
-                      Aucun engagement • Annulation à tout moment
+                      {plan.id === 'gratuit' ? 'Sans carte de crédit' : 'Aucun engagement • Annulation à tout moment'}
                     </p>
                   </div>
                 </div>
@@ -201,15 +207,11 @@ const Pricing: React.FC = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Fonctionnalités
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Basic
-                    </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Premium
-                    </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Pro
-                    </th>
+                    {plans.map(plan => (
+                      <th key={plan.id} className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {plan.name}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -270,10 +272,10 @@ const Pricing: React.FC = () => {
             Prêt à commencer ?
           </h2>
           <p className="text-xl mb-8 text-blue-100">
-            Commencez votre essai gratuit de 7 jours dès maintenant
+            Commencez gratuitement ou essayez nos plans payants pendant 7 jours
           </p>
           <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
-            <Link to="/signup">Commencer l'essai gratuit</Link>
+            <Link to="/signup">Créer un compte</Link>
           </Button>
         </div>
       </section>
