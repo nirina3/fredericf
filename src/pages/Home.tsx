@@ -80,14 +80,14 @@ const Home: React.FC = () => {
       name: "Client Accro",
       price: "10.00",
       description: "Profitez pleinement vos privilèges",
-      features: ["Consultation de l'annuaire des Friterie", "Passer commande ou réserver une table", "Alerté sur tous les évènement et nouveauté", "Bénéficier des code promo"],
+      features: ["Consultation de l'annuaire des Friterie", "Passer commande ou réserver une table", "Alerté sur tous les évènement et nouveauté", "Bénéficier des code promo", "Désabonnement possible à tous moment"],
       popular: true
     },
     {
       name: "Friteries Premium",
       price: "30.00",
       description: "Développez vos activités",
-      features: ["Consultation de l'annuaire des Friterie", "Ajout d'1 Friterie pour 1 mois", "Accès à nos galléries photo premium", "Alerté sur tous les évènement et nouveauté"],
+      features: ["Consultation de l'annuaire des Friterie", "Ajout d'1 Friterie pour 1 mois", "Accès à nos galléries photo premium", "Alerté sur tous les évènement et nouveauté", "Désabonnement possible à tous moment"],
       popular: false
     }
   ];
@@ -152,6 +152,43 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* About Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <div className="inline-flex items-center bg-orange-100 rounded-full px-6 py-3 mb-8">
+                <Award className="h-5 w-5 text-orange-600 mr-2" />
+                <span className="text-orange-800 font-medium">À propos de nous</span>
+              </div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                La référence pour les <span className="text-orange-600">friteries belges</span>
+              </h2>
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                MonFritkot.be est né de la passion pour la friterie belge authentique. 
+                Notre mission est de créer un pont entre la tradition séculaire de nos 
+                friteries et les outils modernes du digital.
+              </p>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                Que vous soyez propriétaire d'une friterie ou simplement amateur de bonnes frites, 
+                notre plateforme vous offre des services adaptés à vos besoins.
+              </p>
+            </div>
+            <div className="relative">
+              <img 
+                src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop"
+                alt="Friterie traditionnelle belge"
+                className="rounded-2xl shadow-2xl"
+              />
+              <div className="absolute -bottom-6 -right-6 bg-orange-600 text-white p-6 rounded-2xl shadow-xl">
+                <div className="text-3xl font-bold">4+</div>
+                <div className="text-orange-200">Années d'expérience</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -185,6 +222,74 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* Services Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center bg-orange-100 rounded-full px-6 py-3 mb-6">
+              <Zap className="h-5 w-5 text-orange-600 mr-2" />
+              <span className="text-orange-800 font-medium">Nos Services</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Des solutions <span className="text-orange-600">adaptées</span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Découvrez nos services conçus pour répondre aux besoins des professionnels et des amateurs
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+              <div className="h-48 bg-gradient-to-r from-orange-500 to-red-600 flex items-center justify-center">
+                <Users className="h-16 w-16 text-white" />
+              </div>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Annuaire</h3>
+                <p className="text-gray-600 mb-6">
+                  Consultez notre annuaire complet des meilleures friteries de Belgique, avec avis, photos et informations pratiques.
+                </p>
+                <Link to="/directory" className="text-orange-600 font-medium flex items-center hover:text-orange-700">
+                  Découvrir l'annuaire
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+              <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                <Award className="h-16 w-16 text-white" />
+              </div>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Galerie Premium</h3>
+                <p className="text-gray-600 mb-6">
+                  Accédez à notre collection d'images professionnelles pour vous inspirer et améliorer votre présentation.
+                </p>
+                <Link to="/gallery" className="text-orange-600 font-medium flex items-center hover:text-orange-700">
+                  Explorer la galerie
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+              <div className="h-48 bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center">
+                <TrendingUp className="h-16 w-16 text-white" />
+              </div>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Blog Expert</h3>
+                <p className="text-gray-600 mb-6">
+                  Consultez nos articles rédigés par des experts pour rester à la pointe des tendances et techniques.
+                </p>
+                <Link to="/blog" className="text-orange-600 font-medium flex items-center hover:text-orange-700">
+                  Lire nos articles
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing Preview */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -205,23 +310,17 @@ const Home: React.FC = () => {
             {/* Basic Plan */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-gray-200 hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-1">
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Gratuit</h3>
-                <div className="text-4xl font-bold text-orange-600 mb-2">€0</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">{plans[0].name}</h3>
+                <div className="text-4xl font-bold text-orange-600 mb-2">${plans[0].price}</div>
                 <div className="text-gray-600">pour toujours</div>
               </div>
               <ul className="space-y-4 mb-8">
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>Accès limité à la galerie</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>Accès au blog</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>Accès à l'annuaire</span>
-                </li>
+                {plans[0].features.map((feature, index) => (
+                  <li key={index} className="flex items-center">
+                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
               </ul>
               <Button className="w-full bg-gray-600 hover:bg-gray-700">
                 <Link to="/pricing">Commencer gratuitement</Link>
@@ -237,52 +336,40 @@ const Home: React.FC = () => {
                 </span>
               </div>
               <div className="text-center mb-8 text-white">
-                <h3 className="text-2xl font-bold mb-2">Standard</h3>
-                <div className="text-4xl font-bold mb-2">$10.00</div>
+                <h3 className="text-2xl font-bold mb-2">{plans[1].name}</h3>
+                <div className="text-4xl font-bold mb-2">${plans[1].price}</div>
                 <div className="text-orange-100">/mois</div>
               </div>
               <ul className="space-y-4 mb-8 text-white">
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-yellow-300 mr-3 flex-shrink-0" />
-                  <span>Téléchargements limités</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-yellow-300 mr-3 flex-shrink-0" />
-                  <span>Commentaires illimités</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-yellow-300 mr-3 flex-shrink-0" />
-                  <span>Contenu exclusif</span>
-                </li>
+                {plans[1].features.map((feature, index) => (
+                  <li key={index} className="flex items-center">
+                    <Check className="h-5 w-5 text-yellow-300 mr-3 flex-shrink-0" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
               </ul>
               <Button className="w-full bg-white text-orange-600 hover:bg-orange-50 font-bold">
-                <Link to="/pricing">Choisir Standard</Link>
+                <Link to="/pricing">Choisir {plans[1].name}</Link>
               </Button>
             </div>
 
             {/* Pro Plan */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-gray-200 hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-1">
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
-                <div className="text-4xl font-bold text-orange-600 mb-2">$30.00</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">{plans[2].name}</h3>
+                <div className="text-4xl font-bold text-orange-600 mb-2">${plans[2].price}</div>
                 <div className="text-gray-600">/mois</div>
               </div>
               <ul className="space-y-4 mb-8">
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>Accès complet à la galerie</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>Support prioritaire</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span>Accès aux événements</span>
-                </li>
+                {plans[2].features.map((feature, index) => (
+                  <li key={index} className="flex items-center">
+                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
               </ul>
               <Button className="w-full bg-gray-900 hover:bg-black">
-                <Link to="/pricing">Choisir Pro</Link>
+                <Link to="/pricing">Choisir {plans[2].name}</Link>
               </Button>
             </div>
           </div>
