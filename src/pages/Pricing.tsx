@@ -291,8 +291,10 @@ const Pricing: React.FC = () => {
           <p className="text-xl mb-10 text-orange-100 max-w-2xl mx-auto">
             Commencez gratuitement ou essayez nos plans payants pendant 7 jours
           </p>
-          <Button size="lg" className="bg-white text-orange-600 hover:bg-orange-50 px-8 py-4 rounded-lg font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
-            <Link to="/signup">Créer un compte</Link>
+          <Button size="lg" className="bg-white text-orange-600 hover:bg-orange-50 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
+            <Link to="/signup" className="flex items-center">
+              <span className="text-orange-600">Créer un compte</span>
+            </Link>
           </Button>
         </div>
       </section>
