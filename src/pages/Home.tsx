@@ -135,7 +135,7 @@ const Home: React.FC = () => {
                 </Link>
               </Button>
               <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-orange-600 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
-                <Link to="/initialize-admin"><span className="text-white hover:text-orange-600">Initialiser Admin</span></Link>
+                <Link to="/initialize-admin"><span className="text-orange-300 hover:text-orange-600">Initialiser Admin</span></Link>
               </Button>
             </div>
 
@@ -452,7 +452,7 @@ const Home: React.FC = () => {
                 </Link>
               </Button>
               <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-orange-600 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
-                <Link to="/contact"><span className="text-white hover:text-orange-600">Nous contacter</span></Link>
+                <Link to="/contact"><span className="text-orange-300 hover:text-orange-600">Nous contacter</span></Link>
               </Button>
             </div>
           </div>
