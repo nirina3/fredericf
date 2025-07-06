@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, MapPin, Phone, Mail, Globe, Star, Filter, Grid, List, Clock, Award, Verified } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ReservationButton from '../components/reservation/ReservationButton';
+import ReservationButton from '../components/reservation/ReservationButton';
 
 interface DirectoryEntry {
   id: string;
@@ -594,6 +595,10 @@ const Directory: React.FC = () => {
                           <ReservationButton 
                             friteryId={entry.id}
                             friteryName={entry.name}
+                            variant="ghost"
+                            size="sm"
+                            className="text-blue-600 hover:text-blue-700"
+                          />
                             variant="ghost"
                             size="sm"
                             className="text-blue-600 hover:text-blue-700"
