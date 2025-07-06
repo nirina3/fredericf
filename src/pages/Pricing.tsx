@@ -12,7 +12,7 @@ const Pricing: React.FC = () => {
       id: 'gratuit',
       name: 'Gratuit', 
       price: 0, 
-      currency: '€',
+      currency: '$',
       interval: 'mois',
       description: 'Devenez parmi nos abonnés',
       features: [
@@ -28,7 +28,7 @@ const Pricing: React.FC = () => {
       id: 'standard',
       name: 'Client Accro',
       price: 10.00,
-      currency: '€',
+      currency: '$',
       interval: 'mois',
       description: 'Profitez pleinement vos privilèges en tant que client accro',
       features: [
@@ -45,7 +45,7 @@ const Pricing: React.FC = () => {
       id: 'pro',
       name: 'Friteries Premium',
       price: 30.00,
-      currency: '€',
+      currency: '$',
       interval: 'mois',
       description: 'Développez vos activités avec monfritkot.be',
       features: [
