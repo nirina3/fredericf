@@ -153,17 +153,23 @@ const Pricing: React.FC = () => {
                     {currentUser ? (
                       <Button
                         className="w-full"
-                        variant={plan.popular ? 'primary' : plan.id === 'gratuit' ? 'outline' : 'primary'}
+                        variant={plan.popular ? 'primary' : plan.id === 'gratuit' ? 'outline' : 'primary'} 
                         disabled={currentUser.subscription?.plan?.id === plan.id}
                       >
-                        {currentUser.subscription?.plan?.id === plan.id ? 'Plan actuel' : `Choisir ${plan.name}`}
+                        <span className={plan.popular ? 'text-white' : plan.id === 'gratuit' ? 'text-gray-700' : 'text-white'}>
+                          {currentUser.subscription?.plan?.id === plan.id ? 'Plan actuel' : `Choisir ${plan.name}`}
+                        </span>
                       </Button>
                     ) : (
                       <Button
                         className="w-full"
                         variant={plan.popular ? 'primary' : plan.id === 'gratuit' ? 'outline' : 'primary'}
                       >
-                        <Link to="/signup">{plan.id === 'gratuit' ? 'Commencer gratuitement' : 'Commencer l\'essai gratuit'}</Link>
+                        <Link to="/signup">
+                          <span className={plan.popular ? 'text-white' : plan.id === 'gratuit' ? 'text-gray-700' : 'text-white'}>
+                            {plan.id === 'gratuit' ? 'Commencer gratuitement' : 'Commencer l\'essai gratuit'}
+                          </span>
+                        </Link>
                       </Button>
                     )}
                     <p className="text-xs text-gray-500 text-center">

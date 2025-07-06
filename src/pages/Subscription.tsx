@@ -309,8 +309,10 @@ const Subscription: React.FC = () => {
                     className={`w-full ${plan.buttonColor}`}
                     disabled={isCurrentPlan}
                   >
-                    {isCurrentPlan ? 'Plan actuel' : plan.id === 'gratuit' ? 'Commencer gratuitement' : `Choisir ${plan.name}`}
-                    {!isCurrentPlan && <ArrowRight className="h-4 w-4 ml-2" />}
+                    <span className={plan.id === 'gratuit' ? 'text-white' : plan.id === 'standard' ? 'text-orange-600' : 'text-white'}>
+                      {isCurrentPlan ? 'Plan actuel' : plan.id === 'gratuit' ? 'Commencer gratuitement' : `Choisir ${plan.name}`}
+                      {!isCurrentPlan && <ArrowRight className="h-4 w-4 ml-2 inline-block" />}
+                    </span>
                   </Button>
 
                   {!isCurrentPlan && plan.id !== 'gratuit' && (
