@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, Heart, Reply, MoreVertical, Flag, Edit, Trash2, Send, Image, Smile } from 'lucide-react';
 import Button from '../ui/Button';
+import CommentItem from './CommentItem';
+import CommentForm from './CommentForm';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
@@ -308,145 +310,6 @@ const CommentSystem: React.FC<CommentSystemProps> = ({
     }
   };
 
-  const renderComment = (comment: Comment, depth: number = 0) => (
-    <div key={comment.id} className={`${depth > 0 ? 'ml-8 mt-4' : 'mb-6'}`}>
-      <div className={`bg-white rounded-lg border ${comment.pinned ? 'border-orange-200 bg-orange-50' : 'border-gray-200'} p-4`}>
-        {comment.pinned && (
-          <div className="flex items-center mb-3 text-orange-600 text-sm font-medium">
-            <MessageCircle className="h-4 w-4 mr-1" />
-            Commentaire épinglé
-          </div>
-        )}
-
-        <div className="flex items-start space-x-3">
-          <div className="flex-shrink-0">
-            {comment.author.avatar ? (
-              <img
-                src={comment.author.avatar}
-                alt={comment.author.name}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                <span className="text-gray-600 font-medium text-sm">
-                  {comment.author.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-            )}
-          </div>
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center space-x-2 mb-2">
-              <span className="font-medium text-gray-900">{comment.author.name}</span>
-              {comment.author.role !== 'user' && (
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(comment.author.role)}`}>
-                  {getRoleName(comment.author.role)}
-                </span>
-              )}
-              <span className="text-sm text-gray-500">
-                {formatDistanceToNow(comment.createdAt, { addSuffix: true, locale: fr })}
-              </span>
-              {comment.edited && (
-                <span className="text-xs text-gray-400">(modifié)</span>
-              )}
-            </div>
-
-            {editingComment === comment.id ? (
-              <CommentForm
-                initialValue={comment.content}
-                onSubmit={(content) => handleEditComment(comment.id, content)}
-                onCancel={() => setEditingComment(null)}
-                placeholder="Modifier votre commentaire..."
-                submitText="Sauvegarder"
-              />
-            ) : (
-              <>
-                <p className="text-gray-700 mb-3 whitespace-pre-wrap">{comment.content}</p>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <button
-                      onClick={() => handleLikeComment(comment.id)}
-                      className={`flex items-center space-x-1 text-sm transition-colors ${
-                        currentUser && comment.likedBy.includes(currentUser.id)
-                          ? 'text-red-600'
-                          : 'text-gray-500 hover:text-red-600'
-                      }`}
-                    >
-                      <Heart className={`h-4 w-4 ${
-                        currentUser && comment.likedBy.includes(currentUser.id) ? 'fill-current' : ''
-                      }`} />
-                      <span>{comment.likes}</span>
-                    </button>
-
-                    {allowReplies && depth < maxDepth && (
-                      <button
-                        onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                        className="flex items-center space-x-1 text-sm text-gray-500 hover:text-blue-600 transition-colors"
-                      >
-                        <Reply className="h-4 w-4" />
-                        <span>Répondre</span>
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    {canEditComment(comment) && (
-                      <button
-                        onClick={() => setEditingComment(comment.id)}
-                        className="text-gray-400 hover:text-blue-600 transition-colors"
-                        title="Modifier"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </button>
-                    )}
-
-                    {canDeleteComment(comment) && (
-                      <button
-                        onClick={() => handleDeleteComment(comment.id)}
-                        className="text-gray-400 hover:text-red-600 transition-colors"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-
-                    {currentUser && currentUser.id !== comment.author.id && (
-                      <button
-                        onClick={() => handleReportComment(comment.id)}
-                        className="text-gray-400 hover:text-yellow-600 transition-colors"
-                        title="Signaler"
-                      >
-                        <Flag className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        {replyingTo === comment.id && (
-          <div className="mt-4 ml-13">
-            <CommentForm
-              onSubmit={(content) => handleSubmitComment(content, comment.id)}
-              onCancel={() => setReplyingTo(null)}
-              placeholder={`Répondre à ${comment.author.name}...`}
-              submitText="Répondre"
-            />
-          </div>
-        )}
-      </div>
-
-      {comment.replies.length > 0 && (
-        <div className="mt-4">
-          {comment.replies.map(reply => renderComment(reply, depth + 1))}
-        </div>
-      )}
-    </div>
-  );
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -505,107 +368,25 @@ const CommentSystem: React.FC<CommentSystemProps> = ({
         </div>
       ) : (
         <div className="space-y-6">
-          {sortedComments.map(comment => renderComment(comment))}
+          {sortedComments.map(comment => (
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              depth={0}
+              maxDepth={maxDepth}
+              currentUserId={currentUser?.id}
+              currentUserRole={currentUser?.role}
+              allowReplies={allowReplies}
+              onReply={(commentId, content) => handleSubmitComment(content, commentId)}
+              onEdit={handleEditComment}
+              onDelete={handleDeleteComment}
+              onLike={handleLikeComment}
+              onReport={handleReportComment}
+            />
+          ))}
         </div>
       )}
     </div>
-  );
-};
-
-interface CommentFormProps {
-  onSubmit: (content: string) => void;
-  onCancel?: () => void;
-  placeholder: string;
-  submitText: string;
-  initialValue?: string;
-  allowImages?: boolean;
-}
-
-const CommentForm: React.FC<CommentFormProps> = ({
-  onSubmit,
-  onCancel,
-  placeholder,
-  submitText,
-  initialValue = '',
-  allowImages = false
-}) => {
-  const [content, setContent] = useState(initialValue);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!content.trim()) return;
-
-    setIsSubmitting(true);
-    try {
-      await onSubmit(content);
-      setContent('');
-    } catch (error) {
-      console.error('Error submitting comment:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <div className="relative">
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder={placeholder}
-          rows={3}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
-        />
-        
-        {allowImages && (
-          <div className="absolute bottom-3 left-3 flex items-center space-x-2">
-            <button
-              type="button"
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-              title="Ajouter une image"
-            >
-              <Image className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-              title="Ajouter un emoji"
-            >
-              <Smile className="h-5 w-5" />
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-500">
-          {content.length}/1000 caractères
-        </div>
-        
-        <div className="flex items-center space-x-3">
-          {onCancel && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              disabled={isSubmitting}
-            >
-              Annuler
-            </Button>
-          )}
-          <Button
-            type="submit"
-            disabled={!content.trim() || content.length > 1000 || isSubmitting}
-            isLoading={isSubmitting}
-            icon={<Send className="h-4 w-4" />}
-            className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
-          >
-            {submitText}
-          </Button>
-        </div>
-      </div>
-    </form>
   );
 };
 

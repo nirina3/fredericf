@@ -407,7 +407,7 @@ const Gallery: React.FC = () => {
                 <p className="text-gray-600 mb-4">{selectedImage.description}</p>
                 
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {selectedImage.tags.map((tag, index) => (
+                  {selectedImage.tags?.map((tag, index) => (
                     <span key={index} className="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-xs">
                       {tag}
                     </span>
