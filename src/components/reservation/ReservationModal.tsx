@@ -44,51 +44,51 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
     };
   }, [isOpen, onClose]);
 
-  // Gestionnaire pour fermer le modal en cliquant à l'extérieur
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Vérifier que le clic est sur l'overlay et non sur le contenu du modal
-    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      onClose();
-    }
-  };
-
   if (!isOpen) return null;
   
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      onClick={handleOverlayClick}
+      className="fixed inset-0 z-50"
       aria-modal="true"
       role="dialog"
     >
+      {/* Overlay */}
       <div 
-        ref={modalRef}
-        className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()} // Empêche la propagation du clic au parent
-      >
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
-              <div className="bg-orange-100 p-2 rounded-lg mr-3">
-                <Calendar className="h-5 w-5 text-orange-600" />
+        className="fixed inset-0 bg-black bg-opacity-50"
+        onClick={onClose}
+      ></div>
+      
+      {/* Modal */}
+      <div className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
+        <div 
+          ref={modalRef}
+          className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto pointer-events-auto"
+          onClick={(e) => e.stopPropagation()} // Empêche la propagation du clic au parent
+        >
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                <div className="bg-orange-100 p-2 rounded-lg mr-3">
+                  <Calendar className="h-5 w-5 text-orange-600" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">Réservation</h2>
               </div>
-              <h2 className="text-xl font-bold text-gray-900">Réservation</h2>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full hover:bg-gray-100"
+                aria-label="Fermer"
+              >
+                <X className="h-6 w-6" />
+              </button>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full hover:bg-gray-100"
-              aria-label="Fermer"
-            >
-              <X className="h-6 w-6" />
-            </button>
-          </div>
 
-          <ReservationForm
-            friteryId={friteryId}
-            friteryName={friteryName}
-            onSuccess={onClose}
-            onCancel={onClose}
-          />
+            <ReservationForm
+              friteryId={friteryId}
+              friteryName={friteryName}
+              onSuccess={onClose}
+              onCancel={onClose}
+            />
+          </div>
         </div>
       </div>
     </div>
