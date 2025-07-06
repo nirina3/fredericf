@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { X, Calendar } from 'lucide-react';
 import ReservationForm from './ReservationForm';
+import { createPortal } from 'react-dom';
 
 interface ReservationModalProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   friteryName
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   // Empêcher le défilement du body quand le modal est ouvert
   useEffect(() => {
@@ -44,26 +46,34 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
     };
   }, [isOpen, onClose]);
 
+  // Gestionnaire pour fermer le modal en cliquant sur l'overlay
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === overlayRef.current) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
   
-  return (
+  // Utiliser createPortal pour rendre le modal directement dans le body
+  return createPortal(
     <div 
-      className="fixed inset-0 z-50"
+      className="fixed inset-0 z-50 overflow-y-auto"
       aria-modal="true"
       role="dialog"
     >
       {/* Overlay */}
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50"
-        onClick={onClose}
+        ref={overlayRef}
+        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        onClick={handleOverlayClick}
       ></div>
       
       {/* Modal */}
-      <div className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
+      <div className="flex items-center justify-center min-h-screen p-4">
         <div 
           ref={modalRef}
-          className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto pointer-events-auto"
-          onClick={(e) => e.stopPropagation()} // Empêche la propagation du clic au parent
+          className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto relative transform transition-all"
         >
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
@@ -91,7 +101,8 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

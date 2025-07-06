@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Calendar } from 'lucide-react';
 import Button from '../ui/Button';
-import ReservationModal from './ReservationModal';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
+import ReservationModal from './ReservationModal';
 
 interface ReservationButtonProps {
   friteryId: string;
@@ -20,11 +20,11 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
   variant = 'primary',
   size = 'md'
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { currentUser, isSubscribed } = useAuth();
   const { addNotification } = useNotifications();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
-  const handleOpenModal = () => {
+  const handleReservation = () => {
     if (!currentUser) {
       addNotification({
         type: 'info',
@@ -51,17 +51,14 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
       return;
     }
 
+    // Ouvrir la boîte de dialogue de réservation
     setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
   };
 
   return (
     <>
       <Button
-        onClick={handleOpenModal}
+        onClick={handleReservation}
         variant={variant}
         size={size}
         className={className}
@@ -72,7 +69,7 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
 
       <ReservationModal
         isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        onClose={() => setIsModalOpen(false)}
         friteryId={friteryId}
         friteryName={friteryName}
       />
