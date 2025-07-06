@@ -1,66 +1,265 @@
 import React, { useState } from 'react';
-import { Settings, Save, AlertCircle, Check, Shield, Globe, Mail, Bell, Lock, Database, CreditCard, Users, X, Plus, Edit } from 'lucide-react';
+import { Settings, Save, Globe, Server, Shield, Bell, Mail, X, Plus, Edit, Trash2, Check, AlertCircle, Database, Key } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
 
-interface SettingsSection {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  description: string;
-}
-
 const SettingsManagement: React.FC = () => {
   const { currentUser } = useAuth();
   const { addNotification } = useNotifications();
-  const [activeSection, setActiveSection] = useState('general');
+  const [activeTab, setActiveTab] = useState('general');
   const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [showResetModal, setShowResetModal] = useState(false);
 
-  const sections: SettingsSection[] = [
-    { id: 'general', name: 'Général', icon: <Settings className="h-5 w-5" />, description: 'Paramètres généraux de la plateforme' },
-    { id: 'security', name: 'Sécurité', icon: <Shield className="h-5 w-5" />, description: 'Paramètres de sécurité et d\'authentification' },
-    { id: 'email', name: 'Email', icon: <Mail className="h-5 w-5" />, description: 'Configuration des notifications par email' },
-    { id: 'notifications', name: 'Notifications', icon: <Bell className="h-5 w-5" />, description: 'Paramètres des notifications système' },
-    { id: 'domain', name: 'Domaine', icon: <Globe className="h-5 w-5" />, description: 'Configuration du domaine et des URL' },
-    { id: 'database', name: 'Base de données', icon: <Database className="h-5 w-5" />, description: 'Paramètres de la base de données' },
-    { id: 'payment', name: 'Paiement', icon: <CreditCard className="h-5 w-5" />, description: 'Configuration des méthodes de paiement' },
-    { id: 'users', name: 'Utilisateurs', icon: <Users className="h-5 w-5" />, description: 'Paramètres par défaut des utilisateurs' }
-  ];
+  // États pour les paramètres généraux
+  const [generalSettings, setGeneralSettings] = useState({
+    siteName: 'MonFritkot.be',
+    siteDescription: 'Votre plateforme friterie premium',
+    contactEmail: 'contact@monfritkot.be',
+    supportEmail: 'support@monfritkot.be',
+    logoUrl: '/logo.png',
+    faviconUrl: '/favicon.ico',
+    maintenanceMode: false,
+    registrationEnabled: true,
+    defaultUserRole: 'user',
+    defaultLanguage: 'fr',
+    defaultCurrency: 'EUR'
+  });
 
-  const handleSaveSettings = () => {
+  // États pour les paramètres de sécurité
+  const [securitySettings, setSecuritySettings] = useState({
+    twoFactorAuthEnabled: false,
+    passwordMinLength: 8,
+    passwordRequireUppercase: true,
+    passwordRequireNumber: true,
+    passwordRequireSpecial: false,
+    sessionTimeout: 30,
+    maxLoginAttempts: 5,
+    lockoutDuration: 15
+  });
+
+  // États pour les paramètres de notification
+  const [notificationSettings, setNotificationSettings] = useState({
+    emailNotificationsEnabled: true,
+    welcomeEmailEnabled: true,
+    passwordResetEmailEnabled: true,
+    subscriptionEmailsEnabled: true,
+    marketingEmailsEnabled: true,
+    adminNotificationsEnabled: true,
+    newUserNotification: true,
+    newSubscriptionNotification: true,
+    failedPaymentNotification: true
+  });
+
+  // États pour les domaines autorisés
+  const [allowedDomains, setAllowedDomains] = useState([
+    { id: '1', domain: 'monfritkot.be', isActive: true },
+    { id: '2', domain: 'fritkot.com', isActive: true },
+    { id: '3', domain: 'friterie.be', isActive: false }
+  ]);
+  const [newDomain, setNewDomain] = useState('');
+
+  // États pour les clés API
+  const [apiKeys, setApiKeys] = useState([
+    { id: '1', name: 'Production API Key', key: 'pk_live_••••••••••••••••••••••••', createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), lastUsed: new Date(), isActive: true },
+    { id: '2', name: 'Development API Key', key: 'pk_test_••••••••••••••••••••••••', createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), lastUsed: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), isActive: true }
+  ]);
+  const [newApiKeyName, setNewApiKeyName] = useState('');
+
+  const handleSaveGeneralSettings = () => {
     setIsLoading(true);
     
     // Simuler une sauvegarde
     setTimeout(() => {
       setIsLoading(false);
-      setSuccessMessage('Paramètres sauvegardés avec succès');
-      
       addNotification({
         type: 'success',
         title: 'Paramètres sauvegardés',
-        message: 'Les paramètres ont été mis à jour avec succès.',
+        message: 'Les paramètres généraux ont été mis à jour avec succès.',
+        category: 'system',
+        priority: 'low'
+      });
+    }, 1000);
+  };
+
+  const handleSaveSecuritySettings = () => {
+    setIsLoading(true);
+    
+    // Simuler une sauvegarde
+    setTimeout(() => {
+      setIsLoading(false);
+      addNotification({
+        type: 'success',
+        title: 'Paramètres de sécurité sauvegardés',
+        message: 'Les paramètres de sécurité ont été mis à jour avec succès.',
+        category: 'security',
+        priority: 'medium'
+      });
+    }, 1000);
+  };
+
+  const handleSaveNotificationSettings = () => {
+    setIsLoading(true);
+    
+    // Simuler une sauvegarde
+    setTimeout(() => {
+      setIsLoading(false);
+      addNotification({
+        type: 'success',
+        title: 'Paramètres de notification sauvegardés',
+        message: 'Les paramètres de notification ont été mis à jour avec succès.',
+        category: 'system',
+        priority: 'low'
+      });
+    }, 1000);
+  };
+
+  const handleAddDomain = () => {
+    if (!newDomain.trim()) return;
+    
+    // Validation simple du domaine
+    const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
+    if (!domainRegex.test(newDomain)) {
+      addNotification({
+        type: 'error',
+        title: 'Format invalide',
+        message: 'Veuillez entrer un nom de domaine valide.',
         category: 'system',
         priority: 'medium'
       });
+      return;
+    }
+
+    // Vérifier si le domaine existe déjà
+    if (allowedDomains.some(d => d.domain === newDomain)) {
+      addNotification({
+        type: 'warning',
+        title: 'Domaine existant',
+        message: 'Ce domaine est déjà dans la liste.',
+        category: 'system',
+        priority: 'low'
+      });
+      return;
+    }
+
+    setAllowedDomains(prev => [
+      ...prev,
+      { id: Date.now().toString(), domain: newDomain, isActive: true }
+    ]);
+    setNewDomain('');
+    
+    addNotification({
+      type: 'success',
+      title: 'Domaine ajouté',
+      message: `Le domaine ${newDomain} a été ajouté avec succès.`,
+      category: 'system',
+      priority: 'low'
+    });
+  };
+
+  const handleToggleDomain = (id: string) => {
+    setAllowedDomains(prev => prev.map(domain =>
+      domain.id === id ? { ...domain, isActive: !domain.isActive } : domain
+    ));
+  };
+
+  const handleRemoveDomain = (id: string) => {
+    setAllowedDomains(prev => prev.filter(domain => domain.id !== id));
+    
+    addNotification({
+      type: 'info',
+      title: 'Domaine supprimé',
+      message: 'Le domaine a été supprimé de la liste.',
+      category: 'system',
+      priority: 'low'
+    });
+  };
+
+  const handleGenerateApiKey = () => {
+    if (!newApiKeyName.trim()) {
+      addNotification({
+        type: 'warning',
+        title: 'Nom requis',
+        message: 'Veuillez entrer un nom pour la clé API.',
+        category: 'system',
+        priority: 'low'
+      });
+      return;
+    }
+
+    // Générer une clé API fictive
+    const newKey = {
+      id: Date.now().toString(),
+      name: newApiKeyName,
+      key: `pk_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`,
+      createdAt: new Date(),
+      lastUsed: null,
+      isActive: true
+    };
+
+    setApiKeys(prev => [...prev, newKey]);
+    setNewApiKeyName('');
+    
+    addNotification({
+      type: 'success',
+      title: 'Clé API générée',
+      message: 'Une nouvelle clé API a été générée avec succès.',
+      category: 'security',
+      priority: 'medium'
+    });
+  };
+
+  const handleToggleApiKey = (id: string) => {
+    setApiKeys(prev => prev.map(key =>
+      key.id === id ? { ...key, isActive: !key.isActive } : key
+    ));
+  };
+
+  const handleRemoveApiKey = (id: string) => {
+    setApiKeys(prev => prev.filter(key => key.id !== id));
+    
+    addNotification({
+      type: 'info',
+      title: 'Clé API supprimée',
+      message: 'La clé API a été supprimée avec succès.',
+      category: 'security',
+      priority: 'medium'
+    });
+  };
+
+  const handleResetSystem = () => {
+    setIsLoading(true);
+    
+    // Simuler une réinitialisation
+    setTimeout(() => {
+      setIsLoading(false);
+      setShowResetModal(false);
       
-      setTimeout(() => {
-        setSuccessMessage('');
-      }, 3000);
-    }, 1500);
+      addNotification({
+        type: 'success',
+        title: 'Système réinitialisé',
+        message: 'Le système a été réinitialisé avec succès.',
+        category: 'system',
+        priority: 'high'
+      });
+    }, 2000);
   };
 
-  const canManageSettings = () => {
-    return currentUser && currentUser.role === 'admin';
-  };
+  const tabs = [
+    { id: 'general', name: 'Général', icon: <Settings className="h-5 w-5" /> },
+    { id: 'security', name: 'Sécurité', icon: <Shield className="h-5 w-5" /> },
+    { id: 'notifications', name: 'Notifications', icon: <Bell className="h-5 w-5" /> },
+    { id: 'domains', name: 'Domaines', icon: <Globe className="h-5 w-5" /> },
+    { id: 'api', name: 'API', icon: <Key className="h-5 w-5" /> },
+    { id: 'system', name: 'Système', icon: <Server className="h-5 w-5" /> }
+  ];
 
-  if (!canManageSettings()) {
+  if (currentUser?.role !== 'admin') {
     return (
       <div className="text-center py-12">
-        <Shield className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+        <Shield className="h-16 w-16 text-red-500 mx-auto mb-4" />
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Accès refusé</h1>
-        <p className="text-gray-600">Seuls les administrateurs peuvent accéder aux paramètres.</p>
+        <p className="text-gray-600">Seuls les administrateurs peuvent accéder aux paramètres du système.</p>
       </div>
     );
   }
@@ -73,32 +272,13 @@ const SettingsManagement: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center">
               <Settings className="h-6 w-6 mr-2" />
-              Paramètres
+              Paramètres du système
             </h1>
             <p className="text-gray-600 mt-2">
-              Configuration générale de la plateforme MonFritkot
+              Configurez les paramètres globaux de la plateforme
             </p>
           </div>
-          
-          <Button
-            onClick={handleSaveSettings}
-            isLoading={isLoading}
-            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-            icon={<Save className="h-4 w-4" />}
-          >
-            Sauvegarder les modifications
-          </Button>
         </div>
-
-        {/* Success Message */}
-        {successMessage && (
-          <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
-            <div className="flex items-center">
-              <Check className="h-5 w-5 text-green-600 mr-2" />
-              <span className="text-green-800">{successMessage}</span>
-            </div>
-          </div>
-        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -106,23 +286,18 @@ const SettingsManagement: React.FC = () => {
         <div className="lg:col-span-1">
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <nav className="space-y-2">
-              {sections.map((section) => (
+              {tabs.map((tab) => (
                 <button
-                  key={section.id}
-                  onClick={() => setActiveSection(section.id)}
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
-                    activeSection === section.id
+                    activeTab === tab.id
                       ? 'bg-blue-100 text-blue-700 font-medium'
                       : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
-                  {section.icon}
-                  <div>
-                    <div>{section.name}</div>
-                    {activeSection === section.id && (
-                      <div className="text-xs text-blue-600">{section.description}</div>
-                    )}
-                  </div>
+                  {tab.icon}
+                  <span>{tab.name}</span>
                 </button>
               ))}
             </nav>
@@ -133,978 +308,889 @@ const SettingsManagement: React.FC = () => {
         <div className="lg:col-span-3">
           <div className="bg-white rounded-2xl shadow-lg p-8">
             {/* General Settings */}
-            {activeSection === 'general' && (
+            {activeTab === 'general' && (
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Paramètres généraux</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Paramètres généraux</h2>
                 
                 <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nom de la plateforme
-                    </label>
-                    <input
-                      type="text"
-                      defaultValue="MonFritkot"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nom du site
+                      </label>
+                      <input
+                        type="text"
+                        value={generalSettings.siteName}
+                        onChange={(e) => setGeneralSettings({...generalSettings, siteName: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Email de contact
+                      </label>
+                      <input
+                        type="email"
+                        value={generalSettings.contactEmail}
+                        onChange={(e) => setGeneralSettings({...generalSettings, contactEmail: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description
+                      Description du site
                     </label>
                     <textarea
-                      defaultValue="Votre plateforme de référence pour la friterie belge. Abonnements premium, contenu exclusif et communauté active."
+                      value={generalSettings.siteDescription}
+                      onChange={(e) => setGeneralSettings({...generalSettings, siteDescription: e.target.value})}
                       rows={3}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Langue par défaut
-                    </label>
-                    <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                      <option value="fr">Français</option>
-                      <option value="nl">Néerlandais</option>
-                      <option value="en">Anglais</option>
-                      <option value="de">Allemand</option>
-                    </select>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Email de support
+                      </label>
+                      <input
+                        type="email"
+                        value={generalSettings.supportEmail}
+                        onChange={(e) => setGeneralSettings({...generalSettings, supportEmail: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Langue par défaut
+                      </label>
+                      <select
+                        value={generalSettings.defaultLanguage}
+                        onChange={(e) => setGeneralSettings({...generalSettings, defaultLanguage: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="fr">Français</option>
+                        <option value="en">English</option>
+                        <option value="nl">Nederlands</option>
+                        <option value="de">Deutsch</option>
+                      </select>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Fuseau horaire
-                    </label>
-                    <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                      <option value="Europe/Brussels">Europe/Bruxelles (UTC+01:00)</option>
-                      <option value="Europe/Paris">Europe/Paris (UTC+01:00)</option>
-                      <option value="Europe/Amsterdam">Europe/Amsterdam (UTC+01:00)</option>
-                      <option value="UTC">UTC</option>
-                    </select>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Devise par défaut
+                      </label>
+                      <select
+                        value={generalSettings.defaultCurrency}
+                        onChange={(e) => setGeneralSettings({...generalSettings, defaultCurrency: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="EUR">Euro (€)</option>
+                        <option value="USD">Dollar US ($)</option>
+                        <option value="GBP">Livre Sterling (£)</option>
+                        <option value="CHF">Franc Suisse (CHF)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Rôle utilisateur par défaut
+                      </label>
+                      <select
+                        value={generalSettings.defaultUserRole}
+                        onChange={(e) => setGeneralSettings({...generalSettings, defaultUserRole: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="user">Utilisateur</option>
+                        <option value="editor">Éditeur</option>
+                      </select>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Format de date
-                    </label>
-                    <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                      <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                    </select>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Mode maintenance</h4>
+                        <p className="text-sm text-gray-600">Activer le mode maintenance pour le site</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={generalSettings.maintenanceMode}
+                          onChange={() => setGeneralSettings({...generalSettings, maintenanceMode: !generalSettings.maintenanceMode})}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Inscriptions</h4>
+                        <p className="text-sm text-gray-600">Autoriser les nouvelles inscriptions</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={generalSettings.registrationEnabled}
+                          onChange={() => setGeneralSettings({...generalSettings, registrationEnabled: !generalSettings.registrationEnabled})}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
                   </div>
 
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="maintenance-mode"
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="maintenance-mode" className="ml-2 block text-sm text-gray-900">
-                      Mode maintenance
-                    </label>
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={handleSaveGeneralSettings}
+                      isLoading={isLoading}
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                      icon={<Save className="h-4 w-4" />}
+                    >
+                      Sauvegarder
+                    </Button>
                   </div>
                 </div>
               </div>
             )}
 
             {/* Security Settings */}
-            {activeSection === 'security' && (
+            {activeTab === 'security' && (
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Paramètres de sécurité</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Paramètres de sécurité</h2>
                 
                 <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Authentification</h3>
-                    
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Authentification à deux facteurs</h4>
-                          <p className="text-sm text-gray-600">Exiger l'authentification à deux facteurs pour les administrateurs</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" defaultChecked />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Confirmation d'email</h4>
-                          <p className="text-sm text-gray-600">Exiger la confirmation d'email lors de l'inscription</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Connexion sociale</h4>
-                          <p className="text-sm text-gray-600">Autoriser la connexion via Google, Facebook, etc.</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Politique de mot de passe</h3>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Longueur minimale du mot de passe
-                        </label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                          <option value="6">6 caractères</option>
-                          <option value="8" selected>8 caractères</option>
-                          <option value="10">10 caractères</option>
-                          <option value="12">12 caractères</option>
-                        </select>
-                      </div>
-
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="require-uppercase"
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                          defaultChecked
-                        />
-                        <label htmlFor="require-uppercase" className="ml-2 block text-sm text-gray-900">
-                          Exiger au moins une lettre majuscule
-                        </label>
-                      </div>
-
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="require-number"
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                          defaultChecked
-                        />
-                        <label htmlFor="require-number" className="ml-2 block text-sm text-gray-900">
-                          Exiger au moins un chiffre
-                        </label>
-                      </div>
-
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="require-special"
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <label htmlFor="require-special" className="ml-2 block text-sm text-gray-900">
-                          Exiger au moins un caractère spécial
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Sessions</h3>
-                    
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Durée maximale de session (jours)
+                        Longueur minimale du mot de passe
                       </label>
                       <input
                         type="number"
-                        defaultValue="30"
+                        min="6"
+                        max="32"
+                        value={securitySettings.passwordMinLength}
+                        onChange={(e) => setSecuritySettings({...securitySettings, passwordMinLength: parseInt(e.target.value)})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nombre maximum de tentatives de connexion
+                      </label>
+                      <input
+                        type="number"
                         min="1"
-                        max="365"
+                        max="10"
+                        value={securitySettings.maxLoginAttempts}
+                        onChange={(e) => setSecuritySettings({...securitySettings, maxLoginAttempts: parseInt(e.target.value)})}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
 
-            {/* Email Settings */}
-            {activeSection === 'email' && (
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Configuration des emails</h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Paramètres SMTP</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Serveur SMTP
-                        </label>
-                        <input
-                          type="text"
-                          defaultValue="smtp.example.com"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Port
-                        </label>
-                        <input
-                          type="number"
-                          defaultValue="587"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Nom d'utilisateur
-                        </label>
-                        <input
-                          type="text"
-                          defaultValue="noreply@monfritkot.be"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Mot de passe
-                        </label>
-                        <input
-                          type="password"
-                          defaultValue="••••••••••••"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                      
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Email expéditeur
-                        </label>
-                        <input
-                          type="email"
-                          defaultValue="noreply@monfritkot.be"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mt-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                      >
-                        Tester la configuration
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Modèles d'emails</h3>
-                    
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Email de bienvenue</h4>
-                          <p className="text-sm text-gray-600">Envoyé aux nouveaux utilisateurs</p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                        >
-                          Modifier
-                        </Button>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Réinitialisation de mot de passe</h4>
-                          <p className="text-sm text-gray-600">Envoyé lors d'une demande de réinitialisation</p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                        >
-                          Modifier
-                        </Button>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Confirmation d'abonnement</h4>
-                          <p className="text-sm text-gray-600">Envoyé après la souscription à un abonnement</p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                        >
-                          Modifier
-                        </Button>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Facture</h4>
-                          <p className="text-sm text-gray-600">Envoyé avec chaque facture</p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                        >
-                          Modifier
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Notifications Settings */}
-            {activeSection === 'notifications' && (
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Paramètres des notifications</h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Notifications système</h3>
-                    
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Nouvel utilisateur</h4>
-                          <p className="text-sm text-gray-600">Notification lors de l'inscription d'un nouvel utilisateur</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" defaultChecked />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Nouvel abonnement</h4>
-                          <p className="text-sm text-gray-600">Notification lors d'un nouvel abonnement</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" defaultChecked />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Paiement réussi</h4>
-                          <p className="text-sm text-gray-600">Notification lors d'un paiement réussi</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" defaultChecked />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Échec de paiement</h4>
-                          <p className="text-sm text-gray-600">Notification lors d'un échec de paiement</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" defaultChecked />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Nouveau commentaire</h4>
-                          <p className="text-sm text-gray-600">Notification lors d'un nouveau commentaire</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Canaux de notification</h3>
-                    
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Email</h4>
-                          <p className="text-sm text-gray-600">Envoyer les notifications par email</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" defaultChecked />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Notifications push</h4>
-                          <p className="text-sm text-gray-600">Envoyer les notifications push</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">SMS</h4>
-                          <p className="text-sm text-gray-600">Envoyer les notifications par SMS</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Domain Settings */}
-            {activeSection === 'domain' && (
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Configuration du domaine</h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Domaine principal
-                    </label>
-                    <input
-                      type="text"
-                      defaultValue="monfritkot.be"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Domaines personnalisés
-                    </label>
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="text"
-                          defaultValue="www.monfritkot.be"
-                          className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          icon={<X className="h-4 w-4" />}
-                        />
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="text"
-                          defaultValue="app.monfritkot.be"
-                          className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          icon={<X className="h-4 w-4" />}
-                        />
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        icon={<Plus className="h-4 w-4" />}
-                      >
-                        Ajouter un domaine
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      SSL
-                    </label>
-                    <div className="flex items-center">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Durée de verrouillage (minutes)
+                      </label>
                       <input
-                        type="checkbox"
-                        id="force-ssl"
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        defaultChecked
+                        type="number"
+                        min="5"
+                        max="60"
+                        value={securitySettings.lockoutDuration}
+                        onChange={(e) => setSecuritySettings({...securitySettings, lockoutDuration: parseInt(e.target.value)})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
-                      <label htmlFor="force-ssl" className="ml-2 block text-sm text-gray-900">
-                        Forcer HTTPS
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Expiration de session (minutes)
+                      </label>
+                      <input
+                        type="number"
+                        min="5"
+                        max="1440"
+                        value={securitySettings.sessionTimeout}
+                        onChange={(e) => setSecuritySettings({...securitySettings, sessionTimeout: parseInt(e.target.value)})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Authentification à deux facteurs</h4>
+                        <p className="text-sm text-gray-600">Exiger l'authentification à deux facteurs pour tous les utilisateurs</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={securitySettings.twoFactorAuthEnabled}
+                          onChange={() => setSecuritySettings({...securitySettings, twoFactorAuthEnabled: !securitySettings.twoFactorAuthEnabled})}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Exiger une majuscule</h4>
+                        <p className="text-sm text-gray-600">Le mot de passe doit contenir au moins une lettre majuscule</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={securitySettings.passwordRequireUppercase}
+                          onChange={() => setSecuritySettings({...securitySettings, passwordRequireUppercase: !securitySettings.passwordRequireUppercase})}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Exiger un chiffre</h4>
+                        <p className="text-sm text-gray-600">Le mot de passe doit contenir au moins un chiffre</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={securitySettings.passwordRequireNumber}
+                          onChange={() => setSecuritySettings({...securitySettings, passwordRequireNumber: !securitySettings.passwordRequireNumber})}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Exiger un caractère spécial</h4>
+                        <p className="text-sm text-gray-600">Le mot de passe doit contenir au moins un caractère spécial</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={securitySettings.passwordRequireSpecial}
+                          onChange={() => setSecuritySettings({...securitySettings, passwordRequireSpecial: !securitySettings.passwordRequireSpecial})}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                       </label>
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Redirections</h3>
-                    
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="text"
-                          placeholder="Source"
-                          className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <span className="text-gray-500">→</span>
-                        <input
-                          type="text"
-                          placeholder="Destination"
-                          className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          icon={<X className="h-4 w-4" />}
-                        />
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        icon={<Plus className="h-4 w-4" />}
-                      >
-                        Ajouter une redirection
-                      </Button>
-                    </div>
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={handleSaveSecuritySettings}
+                      isLoading={isLoading}
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                      icon={<Save className="h-4 w-4" />}
+                    >
+                      Sauvegarder
+                    </Button>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Database Settings */}
-            {activeSection === 'database' && (
+            {/* Notification Settings */}
+            {activeTab === 'notifications' && (
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Paramètres de la base de données</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Paramètres de notification</h2>
                 
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                  <div className="flex items-center">
-                    <AlertCircle className="h-5 w-5 text-yellow-600 mr-2" />
-                    <div>
-                      <div className="text-sm font-medium text-yellow-800">
-                        Attention
-                      </div>
-                      <div className="text-sm text-yellow-700">
-                        La modification de ces paramètres peut affecter le fonctionnement de l'application. Procédez avec précaution.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
                 <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Configuration Firebase</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          API Key
-                        </label>
-                        <input
-                          type="password"
-                          defaultValue="••••••••••••••••••••••••••••••••"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Auth Domain
-                        </label>
-                        <input
-                          type="text"
-                          defaultValue="friterie-9c7d7.firebaseapp.com"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Project ID
-                        </label>
-                        <input
-                          type="text"
-                          defaultValue="friterie-9c7d7"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Storage Bucket
-                        </label>
-                        <input
-                          type="text"
-                          defaultValue="friterie-9c7d7.firebasestorage.app"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Sauvegarde</h3>
-                    
+                  <div className="border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Notifications par email</h3>
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-gray-900">Sauvegardes automatiques</h4>
-                          <p className="text-sm text-gray-600">Activer les sauvegardes automatiques</p>
+                          <h4 className="font-medium text-gray-900">Notifications par email</h4>
+                          <p className="text-sm text-gray-600">Activer l'envoi d'emails pour les notifications</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" defaultChecked />
+                          <input
+                            type="checkbox"
+                            checked={notificationSettings.emailNotificationsEnabled}
+                            onChange={() => setNotificationSettings({...notificationSettings, emailNotificationsEnabled: !notificationSettings.emailNotificationsEnabled})}
+                            className="sr-only peer"
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </label>
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Fréquence des sauvegardes
-                        </label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                          <option value="daily">Quotidienne</option>
-                          <option value="weekly" selected>Hebdomadaire</option>
-                          <option value="monthly">Mensuelle</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Rétention des sauvegardes (jours)
-                        </label>
-                        <input
-                          type="number"
-                          defaultValue="30"
-                          min="1"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                      >
-                        Créer une sauvegarde manuelle
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Payment Settings */}
-            {activeSection === 'payment' && (
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Configuration des paiements</h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Stripe</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Clé publique
-                        </label>
-                        <input
-                          type="text"
-                          defaultValue="pk_test_..."
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Clé secrète
-                        </label>
-                        <input
-                          type="password"
-                          defaultValue="••••••••••••••••••••••••••••••••"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Webhook Secret
-                        </label>
-                        <input
-                          type="password"
-                          defaultValue="••••••••••••••••••••••••••••••••"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Mode
-                        </label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                          <option value="test" selected>Test</option>
-                          <option value="live">Production</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="mt-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                      >
-                        Tester la connexion
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Plans d'abonnement</h3>
-                    
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-gray-900">Basic</h4>
-                          <p className="text-sm text-gray-600">€19.99/mois</p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          icon={<Edit className="h-4 w-4" />}
-                        >
-                          Modifier
-                        </Button>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Premium</h4>
-                          <p className="text-sm text-gray-600">€49.99/mois</p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          icon={<Edit className="h-4 w-4" />}
-                        >
-                          Modifier
-                        </Button>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Pro</h4>
-                          <p className="text-sm text-gray-600">€99.99/mois</p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          icon={<Edit className="h-4 w-4" />}
-                        >
-                          Modifier
-                        </Button>
-                      </div>
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        icon={<Plus className="h-4 w-4" />}
-                      >
-                        Ajouter un plan
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Devises</h3>
-                    
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Devise principale</h4>
-                          <p className="text-sm text-gray-600">Devise utilisée pour les paiements</p>
-                        </div>
-                        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                          <option value="EUR" selected>EUR (€)</option>
-                          <option value="USD">USD ($)</option>
-                          <option value="GBP">GBP (£)</option>
-                        </select>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Devises secondaires</h4>
-                          <p className="text-sm text-gray-600">Devises supplémentaires acceptées</p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                        >
-                          Configurer
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Users Settings */}
-            {activeSection === 'users' && (
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Paramètres des utilisateurs</h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Inscription</h3>
-                    
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">Inscription ouverte</h4>
-                          <p className="text-sm text-gray-600">Permettre aux utilisateurs de s'inscrire</p>
+                          <h4 className="font-medium text-gray-900">Email de bienvenue</h4>
+                          <p className="text-sm text-gray-600">Envoyer un email de bienvenue aux nouveaux utilisateurs</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" defaultChecked />
+                          <input
+                            type="checkbox"
+                            checked={notificationSettings.welcomeEmailEnabled}
+                            onChange={() => setNotificationSettings({...notificationSettings, welcomeEmailEnabled: !notificationSettings.welcomeEmailEnabled})}
+                            className="sr-only peer"
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </label>
                       </div>
 
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-gray-900">Essai gratuit</h4>
-                          <p className="text-sm text-gray-600">Offrir un essai gratuit aux nouveaux utilisateurs</p>
+                          <h4 className="font-medium text-gray-900">Email de réinitialisation de mot de passe</h4>
+                          <p className="text-sm text-gray-600">Envoyer un email pour réinitialiser le mot de passe</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" defaultChecked />
+                          <input
+                            type="checkbox"
+                            checked={notificationSettings.passwordResetEmailEnabled}
+                            onChange={() => setNotificationSettings({...notificationSettings, passwordResetEmailEnabled: !notificationSettings.passwordResetEmailEnabled})}
+                            className="sr-only peer"
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </label>
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Durée de l'essai gratuit (jours)
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-gray-900">Emails d'abonnement</h4>
+                          <p className="text-sm text-gray-600">Envoyer des emails concernant les abonnements</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={notificationSettings.subscriptionEmailsEnabled}
+                            onChange={() => setNotificationSettings({...notificationSettings, subscriptionEmailsEnabled: !notificationSettings.subscriptionEmailsEnabled})}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </label>
-                        <input
-                          type="number"
-                          defaultValue="7"
-                          min="1"
-                          max="90"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-gray-900">Emails marketing</h4>
+                          <p className="text-sm text-gray-600">Envoyer des emails marketing et promotionnels</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={notificationSettings.marketingEmailsEnabled}
+                            onChange={() => setNotificationSettings({...notificationSettings, marketingEmailsEnabled: !notificationSettings.marketingEmailsEnabled})}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
                       </div>
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Rôles et permissions</h3>
-                    
+                  <div className="border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Notifications administrateur</h3>
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-gray-900">Administrateur</h4>
-                          <p className="text-sm text-gray-600">Accès complet à toutes les fonctionnalités</p>
+                          <h4 className="font-medium text-gray-900">Notifications administrateur</h4>
+                          <p className="text-sm text-gray-600">Activer les notifications pour les administrateurs</p>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                        >
-                          Configurer
-                        </Button>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={notificationSettings.adminNotificationsEnabled}
+                            onChange={() => setNotificationSettings({...notificationSettings, adminNotificationsEnabled: !notificationSettings.adminNotificationsEnabled})}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
                       </div>
 
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-gray-900">Éditeur</h4>
-                          <p className="text-sm text-gray-600">Peut gérer le contenu et les utilisateurs</p>
+                          <h4 className="font-medium text-gray-900">Nouvel utilisateur</h4>
+                          <p className="text-sm text-gray-600">Notifier lors de l'inscription d'un nouvel utilisateur</p>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                        >
-                          Configurer
-                        </Button>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={notificationSettings.newUserNotification}
+                            onChange={() => setNotificationSettings({...notificationSettings, newUserNotification: !notificationSettings.newUserNotification})}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
                       </div>
 
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-gray-900">Utilisateur</h4>
-                          <p className="text-sm text-gray-600">Accès limité selon l'abonnement</p>
+                          <h4 className="font-medium text-gray-900">Nouvel abonnement</h4>
+                          <p className="text-sm text-gray-600">Notifier lors d'un nouvel abonnement</p>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                        >
-                          Configurer
-                        </Button>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={notificationSettings.newSubscriptionNotification}
+                            onChange={() => setNotificationSettings({...notificationSettings, newSubscriptionNotification: !notificationSettings.newSubscriptionNotification})}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-gray-900">Échec de paiement</h4>
+                          <p className="text-sm text-gray-600">Notifier lors d'un échec de paiement</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={notificationSettings.failedPaymentNotification}
+                            onChange={() => setNotificationSettings({...notificationSettings, failedPaymentNotification: !notificationSettings.failedPaymentNotification})}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
                       </div>
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Profil utilisateur</h3>
-                    
-                    <div className="space-y-4">
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="allow-avatar"
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                          defaultChecked
-                        />
-                        <label htmlFor="allow-avatar" className="ml-2 block text-sm text-gray-900">
-                          Permettre aux utilisateurs de télécharger un avatar
-                        </label>
-                      </div>
-
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="allow-bio"
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                          defaultChecked
-                        />
-                        <label htmlFor="allow-bio" className="ml-2 block text-sm text-gray-900">
-                          Permettre aux utilisateurs de modifier leur bio
-                        </label>
-                      </div>
-
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="allow-social"
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <label htmlFor="allow-social" className="ml-2 block text-sm text-gray-900">
-                          Permettre aux utilisateurs d'ajouter des liens sociaux
-                        </label>
-                      </div>
-                    </div>
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={handleSaveNotificationSettings}
+                      isLoading={isLoading}
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                      icon={<Save className="h-4 w-4" />}
+                    >
+                      Sauvegarder
+                    </Button>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Other Sections */}
-            {!['general', 'security', 'email', 'notifications', 'domain', 'database', 'payment', 'users'].includes(activeSection) && (
-              <div className="text-center py-12">
-                <Settings className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Section en développement</h3>
-                <p className="text-gray-600">Cette section sera disponible prochainement.</p>
+            {/* Domains Settings */}
+            {activeTab === 'domains' && (
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Domaines autorisés</h2>
+                
+                <div className="space-y-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <div className="flex items-center">
+                      <Globe className="h-5 w-5 text-blue-600 mr-2" />
+                      <div>
+                        <div className="text-sm font-medium text-blue-800">
+                          Domaines autorisés
+                        </div>
+                        <div className="text-sm text-blue-700">
+                          Ces domaines sont autorisés à accéder à l'API et aux ressources protégées.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2 mb-6">
+                    <input
+                      type="text"
+                      value={newDomain}
+                      onChange={(e) => setNewDomain(e.target.value)}
+                      placeholder="exemple.com"
+                      className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                    <Button
+                      onClick={handleAddDomain}
+                      icon={<Plus className="h-4 w-4" />}
+                    >
+                      Ajouter
+                    </Button>
+                  </div>
+
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    {allowedDomains.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Globe className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600">Aucun domaine autorisé</p>
+                      </div>
+                    ) : (
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Domaine
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Statut
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {allowedDomains.map((domain) => (
+                            <tr key={domain.id}>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {domain.domain}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                  domain.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {domain.isActive ? 'Actif' : 'Inactif'}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div className="flex items-center justify-end space-x-2">
+                                  <button
+                                    onClick={() => handleToggleDomain(domain.id)}
+                                    className={`p-1 rounded-full ${
+                                      domain.isActive 
+                                        ? 'text-green-600 hover:bg-green-100' 
+                                        : 'text-gray-400 hover:bg-gray-100'
+                                    }`}
+                                    title={domain.isActive ? 'Désactiver' : 'Activer'}
+                                  >
+                                    {domain.isActive ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                                  </button>
+                                  <button
+                                    onClick={() => handleRemoveDomain(domain.id)}
+                                    className="p-1 rounded-full text-red-600 hover:bg-red-100"
+                                    title="Supprimer"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* API Settings */}
+            {activeTab === 'api' && (
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Clés API</h2>
+                
+                <div className="space-y-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <div className="flex items-center">
+                      <Key className="h-5 w-5 text-blue-600 mr-2" />
+                      <div>
+                        <div className="text-sm font-medium text-blue-800">
+                          Clés API
+                        </div>
+                        <div className="text-sm text-blue-700">
+                          Ces clés permettent d'accéder à l'API de la plateforme. Gardez-les secrètes et ne les partagez jamais.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2 mb-6">
+                    <input
+                      type="text"
+                      value={newApiKeyName}
+                      onChange={(e) => setNewApiKeyName(e.target.value)}
+                      placeholder="Nom de la clé API"
+                      className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                    <Button
+                      onClick={handleGenerateApiKey}
+                      icon={<Key className="h-4 w-4" />}
+                    >
+                      Générer
+                    </Button>
+                  </div>
+
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    {apiKeys.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Key className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600">Aucune clé API</p>
+                      </div>
+                    ) : (
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Nom
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Clé
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Créée le
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Statut
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {apiKeys.map((apiKey) => (
+                            <tr key={apiKey.id}>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {apiKey.name}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {apiKey.key}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {apiKey.createdAt.toLocaleDateString('fr-FR')}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                  apiKey.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {apiKey.isActive ? 'Active' : 'Inactive'}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div className="flex items-center justify-end space-x-2">
+                                  <button
+                                    onClick={() => handleToggleApiKey(apiKey.id)}
+                                    className={`p-1 rounded-full ${
+                                      apiKey.isActive 
+                                        ? 'text-green-600 hover:bg-green-100' 
+                                        : 'text-gray-400 hover:bg-gray-100'
+                                    }`}
+                                    title={apiKey.isActive ? 'Désactiver' : 'Activer'}
+                                  >
+                                    {apiKey.isActive ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                                  </button>
+                                  <button
+                                    onClick={() => handleRemoveApiKey(apiKey.id)}
+                                    className="p-1 rounded-full text-red-600 hover:bg-red-100"
+                                    title="Supprimer"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* System Settings */}
+            {activeTab === 'system' && (
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Paramètres système</h2>
+                
+                <div className="space-y-6">
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                    <div className="flex items-center">
+                      <AlertCircle className="h-5 w-5 text-yellow-600 mr-2" />
+                      <div>
+                        <div className="text-sm font-medium text-yellow-800">
+                          Attention
+                        </div>
+                        <div className="text-sm text-yellow-700">
+                          Les actions dans cette section peuvent affecter l'ensemble du système. Procédez avec prudence.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Base de données</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-gray-900">Optimiser la base de données</h4>
+                          <p className="text-sm text-gray-600">Optimiser les tables et les index de la base de données</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          icon={<Database className="h-4 w-4" />}
+                          onClick={() => {
+                            addNotification({
+                              type: 'success',
+                              title: 'Base de données optimisée',
+                              message: 'La base de données a été optimisée avec succès.',
+                              category: 'system',
+                              priority: 'medium'
+                            });
+                          }}
+                        >
+                          Optimiser
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-gray-900">Sauvegarder la base de données</h4>
+                          <p className="text-sm text-gray-600">Créer une sauvegarde complète de la base de données</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          icon={<Download className="h-4 w-4" />}
+                          onClick={() => {
+                            addNotification({
+                              type: 'success',
+                              title: 'Sauvegarde créée',
+                              message: 'La sauvegarde de la base de données a été créée avec succès.',
+                              category: 'system',
+                              priority: 'medium'
+                            });
+                          }}
+                        >
+                          Sauvegarder
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Cache et fichiers</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-gray-900">Vider le cache</h4>
+                          <p className="text-sm text-gray-600">Supprimer tous les fichiers de cache</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            addNotification({
+                              type: 'success',
+                              title: 'Cache vidé',
+                              message: 'Le cache a été vidé avec succès.',
+                              category: 'system',
+                              priority: 'low'
+                            });
+                          }}
+                        >
+                          Vider
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-gray-900">Nettoyer les fichiers temporaires</h4>
+                          <p className="text-sm text-gray-600">Supprimer les fichiers temporaires inutilisés</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            addNotification({
+                              type: 'success',
+                              title: 'Fichiers nettoyés',
+                              message: 'Les fichiers temporaires ont été nettoyés avec succès.',
+                              category: 'system',
+                              priority: 'low'
+                            });
+                          }}
+                        >
+                          Nettoyer
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border border-red-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-red-900 mb-4">Zone dangereuse</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-red-900">Réinitialiser le système</h4>
+                          <p className="text-sm text-red-700">Réinitialiser le système aux paramètres par défaut</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 border-red-300 hover:bg-red-50"
+                          onClick={() => setShowResetModal(true)}
+                        >
+                          Réinitialiser
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Reset Confirmation Modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">
+              Réinitialiser le système
+            </h3>
+            
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center">
+                <AlertCircle className="h-5 w-5 text-red-600 mr-2" />
+                <div>
+                  <div className="text-sm font-medium text-red-800">
+                    Attention : Action irréversible
+                  </div>
+                  <div className="text-sm text-red-700">
+                    Cette action va réinitialiser tous les paramètres du système aux valeurs par défaut. Cette action est irréversible.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-gray-600 mb-6">
+              Veuillez taper <span className="font-mono font-bold">RÉINITIALISER</span> pour confirmer.
+            </p>
+
+            <div className="mb-6">
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                placeholder="RÉINITIALISER"
+              />
+            </div>
+
+            <div className="flex space-x-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowResetModal(false)}
+                className="flex-1"
+              >
+                Annuler
+              </Button>
+              <Button
+                onClick={handleResetSystem}
+                isLoading={isLoading}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+              >
+                Réinitialiser
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
