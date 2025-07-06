@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Bell, Check, X, Info, AlertTriangle, AlertCircle } from 'lucide-react';
+import { Bell, Check, X, Info, AlertTriangle, AlertCircle, XCircle } from 'lucide-react';
 
 export interface Notification {
   id: string;
@@ -23,6 +23,7 @@ interface NotificationContextType {
   markAllAsRead: () => void;
   removeNotification: (id: string) => void;
   clearAll: () => void;
+  closeAllToasts: () => void;
   showToast: (type: Notification['type'], title: string, message: string) => void;
 }
 
@@ -43,6 +44,11 @@ interface NotificationProviderProps {
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [toasts, setToasts] = useState<Notification[]>([]);
+
+  // Fonction pour fermer tous les toasts
+  const closeAllToasts = () => {
+    setToasts([]);
+  };
 
   // Fonction pour fermer tous les toasts
   const closeAllToasts = () => {
@@ -202,6 +208,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     markAllAsRead,
     removeNotification,
     clearAll,
+    closeAllToasts,
     showToast,
     closeAllToasts
   };
@@ -231,10 +238,22 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
                 >
                   <X className="h-4 w-4" />
                 </button>
-              </div>
+                </div>
+                <div className="ml-3 flex-1">
             </div>
           </div>
         ))}
+        {toasts.length > 1 && (
+          <button 
+            onClick={closeAllToasts}
+            className="ml-auto block bg-white text-gray-700 px-3 py-1 rounded-md text-sm font-medium shadow-md hover:bg-gray-50 transition-colors"
+          >
+            <div className="flex items-center">
+              <XCircle className="h-4 w-4 mr-1" />
+              Fermer toutes ({toasts.length})
+            </div>
+          </button>
+        )}
         {toasts.length > 1 && (
           <button 
             onClick={closeAllToasts}

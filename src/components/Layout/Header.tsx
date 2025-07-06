@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut, Settings, Crown } from 'lucide-react';
+import { Menu, X, User, LogOut, Settings, Crown, XCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import NotificationBell from '../notifications/NotificationBell';
+import { useNotifications } from '../../contexts/NotificationContext';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { currentUser, logout } = useAuth();
+  const { closeAllToasts } = useNotifications();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
+      // Fermer toutes les notifications avant de se déconnecter
+      closeAllToasts();
       await logout();
       navigate('/');
     } catch (error) {
@@ -127,6 +131,7 @@ const Header: React.FC = () => {
                     <button
                       onClick={handleLogout}
                       className="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+                      title="Déconnexion"
                     >
                       <LogOut className="h-4 w-4 mr-3" />
                       Déconnexion
