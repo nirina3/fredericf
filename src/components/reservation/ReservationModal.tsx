@@ -16,12 +16,13 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   friteryName
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
 
   // Empêcher le défilement du body quand le modal est ouvert
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
     }
     
     return () => {
@@ -32,15 +33,12 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   // Gestionnaire pour fermer le modal avec la touche Escape
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === 'Escape' && isOpen) {
         onClose();
       }
     };
 
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscapeKey);
-    }
-
+    document.addEventListener('keydown', handleEscapeKey);
     return () => {
       document.removeEventListener('keydown', handleEscapeKey);
     };
@@ -49,7 +47,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   // Gestionnaire pour fermer le modal en cliquant à l'extérieur
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Vérifier que le clic est sur l'overlay et non sur le contenu du modal
-    if (e.target === overlayRef.current && !modalRef.current?.contains(e.target as Node)) {
+    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       onClose();
     }
   };
@@ -58,7 +56,6 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   
   return (
     <div 
-      ref={overlayRef}
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={handleOverlayClick}
       aria-modal="true"
@@ -67,6 +64,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
       <div 
         ref={modalRef}
         className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()} // Empêche la propagation du clic au parent
       >
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
