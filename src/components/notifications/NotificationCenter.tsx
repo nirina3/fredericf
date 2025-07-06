@@ -135,8 +135,8 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
               {unreadCount > 0 && (
                 <Button
                   onClick={markAllAsRead}
-                  size="sm" 
-                  variant="ghost"
+                  size="sm"
+                  variant="outline"
                   icon={<Check className="h-4 w-4" />}
                 >
                   Tout marquer lu
@@ -157,7 +157,6 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
                 variant="ghost"
                 className="text-gray-600 hover:bg-gray-100"
                 icon={<XCircle className="h-4 w-4" />}
-                title="Fermer le centre de notifications"
               >
                 Fermer
               </Button>

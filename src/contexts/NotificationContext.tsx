@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Bell, Check, X, Info, AlertTriangle, AlertCircle, XCircle } from 'lucide-react';
+import { Bell, Check, X, Info, AlertTriangle, AlertCircle } from 'lucide-react';
 
 export interface Notification {
   id: string;
@@ -23,7 +23,6 @@ interface NotificationContextType {
   markAllAsRead: () => void;
   removeNotification: (id: string) => void;
   clearAll: () => void;
-  closeAllToasts: () => void;
   showToast: (type: Notification['type'], title: string, message: string) => void;
 }
 
@@ -214,24 +213,25 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       {/* Toast Container */}
       <div className="fixed top-4 right-4 z-50 space-y-2">
         {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`max-w-sm w-full border rounded-lg shadow-lg p-4 transition-all duration-300 transform ${getToastColors(toast.type)}`}
-          >
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                {getIcon(toast.type)}
+          <div key={toast.id}>
+            <div
+              className={`max-w-sm w-full border rounded-lg shadow-lg p-4 transition-all duration-300 transform ${getToastColors(toast.type)}`}
+            >
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  {getIcon(toast.type)}
+                </div>
+                <div className="ml-3 flex-1">
+                  <p className="text-sm font-medium">{toast.title}</p>
+                  <p className="text-sm mt-1 opacity-90">{toast.message}</p>
+                </div>
+                <button
+                  onClick={() => removeToast(toast.id)}
+                  className="ml-4 flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
-              <div className="ml-3 flex-1">
-                <p className="text-sm font-medium">{toast.title}</p>
-                <p className="text-sm mt-1 opacity-90">{toast.message}</p>
-              </div>
-              <button
-                onClick={() => removeToast(toast.id)}
-                className="ml-4 flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity"
-              >
-                <X className="h-4 w-4" />
-              </button>
             </div>
           </div>
         ))}
@@ -239,7 +239,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
           <button 
             onClick={closeAllToasts}
             className="ml-auto block bg-white text-gray-700 px-3 py-1 rounded-md text-sm font-medium shadow-md hover:bg-gray-50 transition-colors"
-            title="Fermer toutes les notifications"
           >
             <div className="flex items-center">
               <XCircle className="h-4 w-4 mr-1" />
