@@ -145,7 +145,7 @@ const Subscription: React.FC = () => {
               <Crown className="h-12 w-12 text-yellow-300 mb-4" />
               <h3 className="text-xl font-bold mb-2">{currentUser.subscription.plan.name}</h3>
               <div className="text-3xl font-bold mb-2">
-                €{currentUser.subscription.plan.price}
+                ${currentUser.subscription.plan.price}
                 <span className="text-lg font-normal text-orange-200">/{currentUser.subscription.plan.interval}</span>
               </div>
               <p className="text-orange-100">
@@ -276,14 +276,14 @@ const Subscription: React.FC = () => {
                     ) : (
                       <div className="mb-4">
                         <div className="text-5xl font-bold text-gray-900 mb-2">
-                          €{getPrice(plan)}
+                          ${getPrice(plan)}
                         </div>
                         <div className="text-gray-600">
                           /{billingCycle === 'monthly' ? 'mois' : 'an'}
                         </div>
                         {billingCycle === 'yearly' && plan.monthlyPrice > 0 && (
                           <div className="text-sm text-green-600 font-medium mt-2">
-                            Économisez €{savings.amount} ({savings.percentage}%)
+                            Économisez ${savings.amount} ({savings.percentage}%)
                           </div>
                         )}
                       </div>

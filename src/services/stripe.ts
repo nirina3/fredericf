@@ -336,7 +336,7 @@ class StripeService {
   formatAmount(amount: number, currency: string = 'EUR'): string {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
-      currency: currency.toUpperCase(),
+      currency: 'USD',
     }).format(amount / 100);
   }
 

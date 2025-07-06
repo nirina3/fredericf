@@ -32,7 +32,7 @@ export interface SubscriptionPlan {
   id: string;
   name: string;
   price: number;
-  currency: string;
+  currency: 'USD';
   interval: 'month' | 'year';
   features: string[];
   maxProjects: number;

@@ -30,7 +30,7 @@ class UserService {
             id: 'pro',
             name: 'Pro',
             price: 99.99,
-            currency: 'EUR',
+            currency: 'USD',
             interval: 'month',
             features: [
               'Projets illimités',
@@ -47,7 +47,7 @@ class UserService {
           startDate: new Date(),
           endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 an
           amount: userData.role === 'admin' ? 0 : 99.99, // Gratuit pour admin
-          currency: 'EUR'
+          currency: 'USD'
         },
         createdAt: new Date(),
         updatedAt: new Date()

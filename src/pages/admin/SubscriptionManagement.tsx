@@ -47,7 +47,7 @@ const SubscriptionManagement: React.FC = () => {
       startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
       endDate: new Date(Date.now() + 335 * 24 * 60 * 60 * 1000),
       amount: 10.00,
-      currency: 'EUR',
+      currency: 'USD',
       paymentMethod: 'Visa •••• 4242',
       autoRenew: true,
       lastPayment: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
@@ -64,7 +64,7 @@ const SubscriptionManagement: React.FC = () => {
       startDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
       endDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
       amount: 0,
-      currency: 'EUR',
+      currency: 'USD',
       paymentMethod: 'Mastercard •••• 5555',
       autoRenew: true,
       lastPayment: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
@@ -81,7 +81,7 @@ const SubscriptionManagement: React.FC = () => {
       startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
       endDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
       amount: 30.00,
-      currency: 'EUR',
+      currency: 'USD',
       paymentMethod: 'Visa •••• 1234',
       autoRenew: false,
       lastPayment: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000)
@@ -97,7 +97,7 @@ const SubscriptionManagement: React.FC = () => {
       startDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
       endDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
       amount: 9.99,
-      currency: 'EUR',
+      currency: 'USD',
       paymentMethod: 'Mastercard •••• 8888',
       autoRenew: true,
       lastPayment: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
@@ -114,7 +114,7 @@ const SubscriptionManagement: React.FC = () => {
       startDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
       endDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
       amount: 0,
-      currency: 'EUR',
+      currency: 'USD',
       paymentMethod: 'Aucun',
       autoRenew: false
     }
@@ -564,12 +564,10 @@ const SubscriptionManagement: React.FC = () => {
               <div className="flex items-center">
                 <AlertCircle className="h-5 w-5 text-yellow-600 mr-2" />
                 <div>
-                  <div className="text-sm font-medium text-yellow-800">
-                    Attention
-                  </div>
-                  <div className="text-sm text-yellow-700">
-                    Cette action désactivera le renouvellement automatique. L'abonnement restera actif jusqu'au {selectedSubscription.endDate.toLocaleDateString('fr-FR')}.
-                  </div>
+                  ${subscriptions
+                    .filter(s => s.status === 'active')
+                    .reduce((sum, sub) => sum + sub.amount, 0)
+                    .toFixed(2)}
                 </div>
               </div>
             </div>

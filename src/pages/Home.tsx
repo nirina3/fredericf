@@ -238,7 +238,7 @@ const Home: React.FC = () => {
               </div>
               <div className="text-center mb-8 text-white">
                 <h3 className="text-2xl font-bold mb-2">Standard</h3>
-                <div className="text-4xl font-bold mb-2">€9.99</div>
+                <div className="text-4xl font-bold mb-2">$10.00</div>
                 <div className="text-orange-100">/mois</div>
               </div>
               <ul className="space-y-4 mb-8 text-white">
@@ -264,7 +264,7 @@ const Home: React.FC = () => {
             <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-gray-200 hover:border-orange-300 transition-all duration-300 transform hover:-translate-y-1">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
-                <div className="text-4xl font-bold text-orange-600 mb-2">€19.99</div>
+                <div className="text-4xl font-bold text-orange-600 mb-2">$30.00</div>
                 <div className="text-gray-600">/mois</div>
               </div>
               <ul className="space-y-4 mb-8">

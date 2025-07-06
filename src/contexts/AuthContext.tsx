@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           id: 'trial',
           name: 'Trial',
           price: 0,
-          currency: 'EUR',
+          currency: 'USD',
           interval: 'month',
           features: ['Basic features', 'Email support'],
           maxProjects: 1,
@@ -86,7 +86,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days trial
         amount: 0,
-        currency: 'EUR'
+        currency: 'USD'
       },
       createdAt: new Date(),
       updatedAt: new Date()
