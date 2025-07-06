@@ -386,12 +386,18 @@ const Gallery: React.FC = () => {
             Débloquez l'accès à notre galerie complète avec des milliers d'images professionnelles
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <button className="bg-white text-orange-600 px-8 py-4 rounded-lg font-bold hover:bg-orange-50 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <Link 
+              to="/pricing" 
+              className="bg-white text-orange-600 px-8 py-4 rounded-lg font-bold hover:bg-orange-50 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
               Voir les abonnements
-            </button>
-            <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-bold hover:bg-white hover:text-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            </Link>
+            <Link 
+              to="/signup" 
+              className="border-2 border-white text-white px-8 py-4 rounded-lg font-bold hover:bg-white hover:text-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
               Essai gratuit
-            </button>
+            </Link>
           </div>
         </div>
       </section>
