@@ -46,6 +46,6 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
       </div>
     </div>
   );
-}
+};
 
-export default ReservationModal
+export default ReservationModal;
