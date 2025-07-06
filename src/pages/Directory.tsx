@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Search, MapPin, Phone, Mail, Globe, Star, Filter, Grid, List, Clock, Award, Verified } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ReservationButton from '../components/reservation/ReservationButton';
-import ReservationButton from '../components/reservation/ReservationButton';
 
 interface DirectoryEntry {
   id: string;
