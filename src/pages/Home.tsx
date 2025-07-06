@@ -134,10 +134,8 @@ const Home: React.FC = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" className="border-2 border-white hover:bg-white hover:text-orange-600 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
-                <Link to="/initialize-admin">
-                  <span className="text-white group-hover:text-orange-600">Initialiser Admin</span>
-                </Link>
+              <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-orange-600 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
+                <Link to="/initialize-admin"><span className="text-white hover:text-orange-600">Initialiser Admin</span></Link>
               </Button>
             </div>
 
@@ -443,20 +441,18 @@ const Home: React.FC = () => {
               Prêt à commencer votre <span className="text-yellow-300">aventure</span> ?
             </h2>
             <p className="text-xl mb-10 text-orange-100 leading-relaxed">
-              Rejoignez des milliers d'utilisateurs satisfaits et transformez votre passion pour la 
+              Rejoignez des milliers d'utilisateurs satisfaits et transformez votre passion pour la
               friterie en succès professionnel
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Button size="lg" className="bg-white hover:bg-orange-50 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
+              <Button size="lg" className="bg-white text-orange-600 hover:bg-orange-50 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
                 <Link to="/pricing" className="flex items-center">
                   <span className="text-orange-600">Commencer maintenant</span>
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" className="border-2 border-white hover:bg-white hover:text-orange-600 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
-                <Link to="/contact">
-                  <span className="text-white group-hover:text-orange-600">Nous contacter</span>
-                </Link>
+              <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-orange-600 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
+                <Link to="/contact"><span className="text-white hover:text-orange-600">Nous contacter</span></Link>
               </Button>
             </div>
           </div>
