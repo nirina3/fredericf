@@ -210,7 +210,7 @@ const Gallery: React.FC = () => {
     return currentUser && (
       currentUser.role === 'admin' || 
       currentUser.role === 'editor' ||
-      isSubscribed('premium')
+      (currentUser.subscription && currentUser.subscription.status === 'active')
     );
   };
 

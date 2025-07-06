@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Download, Eye, Edit, Trash2, Star, Crown, Calendar, User, Tag } from 'lucide-react';
+import { Heart, Download, Eye, Edit, Trash2, Star, Crown, Calendar, User, Tag, X } from 'lucide-react';
 import Button from '../ui/Button';
 import { ImageMetadata } from '../../services/storage';
 import { useAuth } from '../../contexts/AuthContext';
