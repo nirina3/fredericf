@@ -47,3 +47,5 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
     </div>
   );
 }
+
+export default ReservationModal
