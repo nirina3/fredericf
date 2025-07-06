@@ -21,6 +21,8 @@ import Billing from './pages/Billing';
 import Dashboard from './pages/admin/Dashboard';
 import UserManagement from './pages/admin/UserManagement';
 import CreateUser from './pages/admin/CreateUser';
+import SubscriptionManagement from './pages/admin/SubscriptionManagement';
+import SettingsManagement from './pages/admin/SettingsManagement';
 import InitializeAdmin from './pages/admin/InitializeAdmin';
 import ContentManagement from './pages/admin/ContentManagement';
 import GalleryManagement from './pages/admin/GalleryManagement';
@@ -59,14 +61,14 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="create-user" element={<CreateUser />} />
-              <Route path="subscriptions" element={<div className="text-center py-12"><h1 className="text-2xl">Gestion des abonnements - Coming Soon</h1></div>} />
+              <Route path="subscriptions" element={<SubscriptionManagement />} />
               <Route path="content" element={<ContentManagement />} />
               <Route path="blog" element={<BlogManagement />} />
               <Route path="gallery" element={<GalleryManagement />} />
               <Route path="directory" element={<DirectoryManagement />} />
               <Route path="analytics" element={<AnalyticsManagement />} />
               <Route path="moderation" element={<CommentModerationPanel />} />
-              <Route path="settings" element={<div className="text-center py-12"><h1 className="text-2xl">Paramètres - Coming Soon</h1></div>} />
+              <Route path="settings" element={<SettingsManagement />} />
             </Route>
 
             {/* Initialization route */}
