@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Calendar, Clock, Users, AlertCircle, Check, X } from 'lucide-react';
+import { Calendar, Clock, Users, AlertCircle, Check } from 'lucide-react';
 import Button from '../ui/Button';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
@@ -94,19 +94,10 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
     }
   };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('fr-FR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  };
-
   if (success) {
     return (
-      <div className="text-center py-8 animate-fade-in">
-        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6 animate-pulse">
+      <div className="text-center py-8">
+        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
           <Check className="h-8 w-8 text-green-600" />
         </div>
         

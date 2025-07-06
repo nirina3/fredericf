@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Calendar } from 'lucide-react';
 import Button from '../ui/Button';
+import ReservationModal from './ReservationModal';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
-import ReservationModal from './ReservationModal';
 
 interface ReservationButtonProps {
   friteryId: string;
@@ -54,10 +54,6 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
     setShowModal(true);
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
-
   return (
     <>
       <Button
@@ -73,7 +69,7 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
       {showModal && (
         <ReservationModal
           isOpen={showModal}
-          onClose={handleCloseModal}
+          onClose={() => setShowModal(false)}
           friteryId={friteryId}
           friteryName={friteryName}
         />

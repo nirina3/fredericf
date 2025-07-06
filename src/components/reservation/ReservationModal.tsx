@@ -33,7 +33,8 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   useEffect(() => {
     // Gestionnaire pour fermer le modal en cliquant à l'extérieur
     const handleClickOutside = (event: MouseEvent) => {
-      if (overlayRef.current === event.target) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node) && 
+          overlayRef.current && overlayRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
@@ -68,7 +69,6 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
       <div 
         ref={modalRef}
         className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()} // Empêche la propagation du clic
       >
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
