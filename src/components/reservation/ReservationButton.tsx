@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Calendar } from 'lucide-react';
 import Button from '../ui/Button';
 import ReservationModal from './ReservationModal';
-import ReservationModal from './ReservationModal';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
 
@@ -67,12 +66,6 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
         Réserver
       </Button>
 
-      <ReservationModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        friteryId={friteryId}
-        friteryName={friteryName}
-      />
       <ReservationModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
