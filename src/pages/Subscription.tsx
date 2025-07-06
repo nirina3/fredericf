@@ -11,19 +11,15 @@ const Subscription: React.FC = () => {
   const plans = [
     {
       id: 'gratuit',
-      name: 'Gratuit',
-      description: 'Pour les débutants',
+      name: 'Gratuit', 
+      description: 'Devenez parmi nos abonnés',
       monthlyPrice: 0,
       yearlyPrice: 0,
       features: [
-        { name: 'Accès limité à la galerie', included: true },
-        { name: 'Accès au blog', included: true },
-        { name: 'Accès à l\'annuaire', included: true },
-        { name: 'Commentaires limités', included: true },
-        { name: 'Téléchargements limités', included: false },
-        { name: 'Contenu exclusif', included: false },
-        { name: 'Support prioritaire', included: false },
-        { name: 'Accès aux événements', included: false }
+        { name: 'Consultation de l\'annuaire des Friterie', included: true },
+        { name: 'Ajout d\'1 Friterie pour 1 mois', included: true },
+        { name: 'Alerté sur tous les évènement et nouveauté', included: true },
+        { name: 'Désabonnement possible à tous moment', included: true }
       ],
       popular: false,
       color: 'border-gray-200',
@@ -31,19 +27,16 @@ const Subscription: React.FC = () => {
     },
     {
       id: 'standard',
-      name: 'Standard',
-      description: 'Pour les amateurs',
-      monthlyPrice: 9.99,
-      yearlyPrice: 99.99,
+      name: 'Client Accro',
+      description: 'Profitez pleinement vos privilèges en tant que client accro',
+      monthlyPrice: 10.00,
+      yearlyPrice: 100.00,
       features: [
-        { name: 'Accès limité à la galerie', included: true },
-        { name: 'Accès au blog', included: true },
-        { name: 'Accès à l\'annuaire', included: true },
-        { name: 'Commentaires illimités', included: true },
-        { name: 'Téléchargements limités', included: true },
-        { name: 'Contenu exclusif', included: true },
-        { name: 'Support prioritaire', included: false },
-        { name: 'Accès aux événements', included: false }
+        { name: 'Consultation de l\'annuaire des Friterie', included: true },
+        { name: 'Passer commande ou réserver une table', included: true },
+        { name: 'Alerté sur tous les évènement et nouveauté', included: true },
+        { name: 'Bénéficier des code promo', included: true },
+        { name: 'Désabonnement possible à tous moment', included: true }
       ],
       popular: true,
       color: 'border-orange-500',
@@ -51,19 +44,16 @@ const Subscription: React.FC = () => {
     },
     {
       id: 'pro',
-      name: 'Pro',
-      description: 'Pour les passionnés',
-      monthlyPrice: 19.99,
-      yearlyPrice: 199.99,
+      name: 'Friteries Premium',
+      description: 'Développez vos activités avec monfritkot.be',
+      monthlyPrice: 30.00,
+      yearlyPrice: 300.00,
       features: [
-        { name: 'Accès complet à la galerie', included: true },
-        { name: 'Accès au blog', included: true },
-        { name: 'Accès à l\'annuaire', included: true },
-        { name: 'Commentaires illimités', included: true },
-        { name: 'Téléchargements illimités', included: true },
-        { name: 'Contenu exclusif', included: true },
-        { name: 'Support prioritaire', included: true },
-        { name: 'Accès aux événements', included: true }
+        { name: 'Consultation de l\'annuaire des Friterie', included: true },
+        { name: 'Ajout d\'1 Friterie pour 1 mois', included: true },
+        { name: 'Accès à nos galléries photo premium', included: true },
+        { name: 'Alerté sur tous les évènement et nouveauté', included: true },
+        { name: 'Désabonnement possible à tous moment', included: true }
       ],
       popular: false,
       color: 'border-purple-500',
