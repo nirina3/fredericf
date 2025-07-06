@@ -68,6 +68,30 @@ const Home: React.FC = () => {
     { number: "98%", label: "Satisfaction client" }
   ];
 
+  const plans = [
+    {
+      name: "Gratuit",
+      price: "0",
+      description: "Devenez parmi nos abonnés",
+      features: ["Consultation de l'annuaire des Friterie", "Ajout d'1 Friterie pour 1 mois", "Alerté sur tous les évènement et nouveauté", "Désabonnement possible à tous moment"],
+      popular: false
+    },
+    {
+      name: "Client Accro",
+      price: "10.00",
+      description: "Profitez pleinement vos privilèges",
+      features: ["Consultation de l'annuaire des Friterie", "Passer commande ou réserver une table", "Alerté sur tous les évènement et nouveauté", "Bénéficier des code promo"],
+      popular: true
+    },
+    {
+      name: "Friteries Premium",
+      price: "30.00",
+      description: "Développez vos activités",
+      features: ["Consultation de l'annuaire des Friterie", "Ajout d'1 Friterie pour 1 mois", "Accès à nos galléries photo premium", "Alerté sur tous les évènement et nouveauté"],
+      popular: false
+    }
+  ];
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
