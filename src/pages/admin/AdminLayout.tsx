@@ -13,7 +13,6 @@ import {
   BarChart3,
   Crown,
   ShieldCheck as Shield
-  Shield
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
