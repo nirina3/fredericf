@@ -52,7 +52,6 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
     }
 
     setShowModal(true);
-    console.log("Modal should open now", showModal);
   };
 
   return (
@@ -62,17 +61,19 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
         variant={variant}
         size={size}
         className={className}
-        icon={<Calendar className="h-4 w-4" />}
+        icon={variant !== 'ghost' ? <Calendar className="h-4 w-4" /> : undefined}
       >
         {variant === 'ghost' ? 'Réserver' : 'Réserver une table'}
       </Button>
 
-      <ReservationModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        friteryId={friteryId}
-        friteryName={friteryName}
-      />
+      {showModal && (
+        <ReservationModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          friteryId={friteryId}
+          friteryName={friteryName}
+        />
+      )}
     </>
   );
 };

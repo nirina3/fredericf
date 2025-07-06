@@ -591,13 +591,13 @@ const Directory: React.FC = () => {
                           Voir détails
                         </button>
                         {canAccessDetails(entry) && (
-                          <ReservationButton
-                            friteryId={entry.id}
-                            friteryName={entry.name}
-                            variant="ghost"
-                            size="sm"
-                            className="text-blue-600 hover:text-blue-700 font-medium"
-                          />
+                        <ReservationButton
+                          friteryId={entry.id}
+                          friteryName={entry.name}
+                          variant="ghost"
+                          size="sm"
+                          className="text-blue-600 hover:text-blue-700"
+                        />
                         )}
                       </div>
                       

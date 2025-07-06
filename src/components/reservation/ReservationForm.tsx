@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { Calendar, Clock, Users, AlertCircle, Check, X } from 'lucide-react';
 import Button from '../ui/Button';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNotifications } from '../../contexts/NotificationContext';
 
 interface ReservationFormProps {
   friteryId: string;
@@ -25,6 +26,7 @@ type FormData = yup.InferType<typeof schema>;
 
 const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryName, onSuccess, onCancel }) => {
   const { currentUser } = useAuth();
+  const { addNotification } = useNotifications();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -63,13 +65,30 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
         createdAt: new Date()
       });
       
+      addNotification({
+        type: 'success',
+        title: 'Réservation effectuée',
+        message: `Votre réservation chez ${friteryName} a été enregistrée avec succès.`,
+        category: 'system',
+        priority: 'medium'
+      });
+      
       setSuccess(true);
       reset();
+      
+      // Attendre un peu avant de fermer le modal pour montrer le message de succès
       setTimeout(() => {
         onSuccess();
       }, 2000);
     } catch (error) {
       console.error('Erreur lors de la réservation:', error);
+      addNotification({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Une erreur est survenue lors de la réservation. Veuillez réessayer.',
+        category: 'system',
+        priority: 'high'
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -86,7 +105,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
 
   if (success) {
     return (
-      <div className="text-center py-8">
+      <div className="text-center py-8 animate-fade-in">
         <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6 animate-pulse">
           <Check className="h-8 w-8 text-green-600" />
         </div>
@@ -168,7 +187,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
           <Users className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
           <input
             type="number"
-            {...register('guests')}
+            {...register('guests', { valueAsNumber: true })}
             min="1"
             max="20"
             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
@@ -205,10 +224,11 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
       <div className="flex items-start">
         <input
           type="checkbox"
+          id="termsAccepted"
           {...register('termsAccepted')}
           className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded mt-1"
         />
-        <label className="ml-2 block text-sm text-gray-700">
+        <label htmlFor="termsAccepted" className="ml-2 block text-sm text-gray-700">
           J'accepte les conditions de réservation et la politique d'annulation *
         </label>
       </div>
@@ -236,7 +256,6 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
           variant="outline"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="px-4"
         >
           Annuler
         </Button>
@@ -244,7 +263,6 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
           type="submit"
           isLoading={isSubmitting}
           className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
-          size="md"
         >
           {isSubmitting ? 'Réservation en cours...' : 'Confirmer la réservation'}
         </Button>
