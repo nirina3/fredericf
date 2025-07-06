@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, Filter, Grid, List, Eye, Heart, Download, Star, Crown, Image as ImageIcon, Plus, Upload, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ImageUploadModal from '../components/gallery/ImageUploadModal';
