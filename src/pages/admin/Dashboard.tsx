@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Users, CreditCard, TrendingUp, FileText, Eye, DollarSign, UserCheck, AlertCircle } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { Analytics } from '../../types';
+import { useNotifications } from '../../contexts/NotificationContext';
 
 const Dashboard: React.FC = () => {
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
+  const { addNotification } = useNotifications();
 
   // Mock data for demonstration
   const mockData = {
@@ -47,8 +49,17 @@ const Dashboard: React.FC = () => {
     setTimeout(() => {
       setAnalytics(mockData);
       setLoading(false);
+      
+      // Notification de bienvenue pour les admins
+      addNotification({
+        type: 'success',
+        title: 'Tableau de bord chargé',
+        message: 'Toutes les données ont été mises à jour avec succès.',
+        category: 'system',
+        priority: 'low'
+      });
     }, 1000);
-  }, []);
+  }, [addNotification]);
 
   const stats = [
     {

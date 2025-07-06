@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { collection, getDocs, updateDoc, doc, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { User } from '../../types';
+import { useNotifications } from '../../contexts/NotificationContext';
 
 interface UserWithId extends User {
   id: string;
@@ -13,6 +14,7 @@ interface UserWithId extends User {
 
 const UserManagement: React.FC = () => {
   const { currentUser } = useAuth();
+  const { addNotification } = useNotifications();
   const [users, setUsers] = useState<UserWithId[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserWithId[]>([]);
   const [loading, setLoading] = useState(true);
@@ -85,10 +87,24 @@ const UserManagement: React.FC = () => {
         user.id === userId ? { ...user, role: newRole } : user
       ));
 
+      addNotification({
+        type: 'success',
+        title: 'Rôle mis à jour',
+        message: `Le rôle de l'utilisateur a été changé vers ${newRole}.`,
+        category: 'user',
+        priority: 'medium'
+      });
       setShowRoleModal(false);
       setSelectedUser(null);
     } catch (error) {
       console.error('Error updating user role:', error);
+      addNotification({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Impossible de mettre à jour le rôle utilisateur.',
+        category: 'system',
+        priority: 'high'
+      });
       alert('Erreur lors de la mise à jour du rôle');
     }
   };

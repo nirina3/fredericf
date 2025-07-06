@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, User, LogOut, Settings, Crown } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import NotificationBell from '../notifications/NotificationBell';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -60,6 +61,8 @@ const Header: React.FC = () => {
 
           {/* User Menu */}
           <div className="flex items-center space-x-4">
+            {currentUser && <NotificationBell />}
+            
             {currentUser ? (
               <div className="relative">
                 <button
