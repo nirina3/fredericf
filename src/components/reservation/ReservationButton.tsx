@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Calendar } from 'lucide-react';
 import Button from '../ui/Button';
-import ReservationModal from './ReservationModal';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
+import ReservationModal from './ReservationModal';
 
 interface ReservationButtonProps {
   friteryId: string;
@@ -23,7 +23,7 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
   const [showModal, setShowModal] = useState(false);
   const { currentUser, isSubscribed } = useAuth();
   const { addNotification } = useNotifications();
-
+  
   const handleClick = () => {
     if (!currentUser) {
       addNotification({
@@ -52,6 +52,7 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
     }
 
     setShowModal(true);
+    console.log("Modal should open now", showModal);
   };
 
   return (
@@ -63,7 +64,7 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
         className={className}
         icon={<Calendar className="h-4 w-4" />}
       >
-        Réserver
+        {variant === 'ghost' ? 'Réserver' : 'Réserver une table'}
       </Button>
 
       <ReservationModal

@@ -28,7 +28,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: {
       date: undefined,
@@ -51,7 +51,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
     
     try {
       // Simulation d'une requête API
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       console.log('Réservation soumise:', {
         friteryId,
@@ -64,6 +64,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
       });
       
       setSuccess(true);
+      reset();
       setTimeout(() => {
         onSuccess();
       }, 2000);
@@ -86,7 +87,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
   if (success) {
     return (
       <div className="text-center py-8">
-        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
+        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6 animate-pulse">
           <Check className="h-8 w-8 text-green-600" />
         </div>
         
@@ -104,7 +105,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-6">
+        <h3 className="text-lg font-bold text-gray-900 mb-4">
           Réserver chez {friteryName}
         </h3>
       </div>
@@ -222,9 +223,9 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
       <div className="bg-gray-50 p-4 rounded-lg">
         <h4 className="font-medium text-gray-900 mb-2">Informations de contact</h4>
         <div className="text-sm text-gray-600">
-          <p>Nom: {currentUser?.name}</p>
-          <p>Email: {currentUser?.email}</p>
-          <p>Téléphone: {currentUser?.phone || 'Non renseigné'}</p>
+          <p className="mb-1">Nom: {currentUser?.name}</p>
+          <p className="mb-1">Email: {currentUser?.email}</p>
+          <p className="mb-1">Téléphone: {currentUser?.phone || 'Non renseigné'}</p>
         </div>
       </div>
 
@@ -235,6 +236,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
           variant="outline"
           onClick={onCancel}
           disabled={isSubmitting}
+          className="px-4"
         >
           Annuler
         </Button>
@@ -242,6 +244,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ friteryId, friteryNam
           type="submit"
           isLoading={isSubmitting}
           className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
+          size="md"
         >
           {isSubmitting ? 'Réservation en cours...' : 'Confirmer la réservation'}
         </Button>
