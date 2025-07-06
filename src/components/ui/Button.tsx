@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   isLoading?: boolean;
   icon?: React.ReactNode;
 }
@@ -31,8 +31,9 @@ const Button: React.FC<ButtonProps> = ({
 
   const sizeClasses = {
     sm: 'h-8 px-3 text-sm',
-    md: 'h-10 px-4 text-sm',
-    lg: 'h-12 px-6 text-base'
+    md: 'h-10 px-4 text-sm', 
+    lg: 'h-12 px-6 text-base',
+    xl: 'h-14 px-8 text-lg'
   };
 
   return (

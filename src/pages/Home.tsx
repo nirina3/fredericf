@@ -128,13 +128,13 @@ const Home: React.FC = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-              <Button size="lg" className="bg-white text-orange-600 hover:bg-orange-50 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+              <Button size="lg" className="bg-white text-orange-600 hover:bg-orange-50 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
                 <Link to="/pricing" className="flex items-center">
                   Découvrir nos offres
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-orange-600 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+              <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-orange-600 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
                 <Link to="/initialize-admin">Initialiser Admin</Link>
               </Button>
             </div>
@@ -193,7 +193,7 @@ const Home: React.FC = () => {
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center bg-orange-100 rounded-full px-6 py-3 mb-6">
+            <div className="inline-flex items-center bg-orange-100 rounded-full px-6 py-3 mb-6 text-center">
               <Star className="h-5 w-5 text-orange-600 mr-2" />
               <span className="text-orange-800 font-medium">Pourquoi nous choisir</span>
             </div>
@@ -209,12 +209,12 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <div key={index} className="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="text-orange-600 mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="text-orange-600 mb-6 group-hover:scale-110 transition-transform duration-300 text-center">
                   {feature.icon}
+                  <h3 className="text-xl font-bold mt-3 text-gray-900 group-hover:text-orange-600 transition-colors">
+                    {feature.title}
+                  </h3>
                 </div>
-                <h3 className="text-xl font-bold mb-4 text-gray-900 group-hover:text-orange-600 transition-colors">
-                  {feature.title}
-                </h3>
                 <p className="text-gray-600 leading-relaxed">{feature.description}</p>
               </div>
             ))}
@@ -241,7 +241,10 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
               <div className="h-48 bg-gradient-to-r from-orange-500 to-red-600 flex items-center justify-center">
-                <Users className="h-16 w-16 text-white" />
+                <div className="text-center">
+                  <Users className="h-16 w-16 text-white mx-auto mb-4" />
+                  <span className="text-white text-xl font-bold">Annuaire</span>
+                </div>
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Annuaire</h3>
@@ -257,7 +260,10 @@ const Home: React.FC = () => {
 
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
               <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                <Award className="h-16 w-16 text-white" />
+                <div className="text-center">
+                  <Award className="h-16 w-16 text-white mx-auto mb-4" />
+                  <span className="text-white text-xl font-bold">Galerie Premium</span>
+                </div>
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Galerie Premium</h3>
@@ -273,7 +279,10 @@ const Home: React.FC = () => {
 
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
               <div className="h-48 bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center">
-                <TrendingUp className="h-16 w-16 text-white" />
+                <div className="text-center">
+                  <TrendingUp className="h-16 w-16 text-white mx-auto mb-4" />
+                  <span className="text-white text-xl font-bold">Blog Expert</span>
+                </div>
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Blog Expert</h3>
@@ -430,17 +439,17 @@ const Home: React.FC = () => {
               Prêt à commencer votre <span className="text-yellow-300">aventure</span> ?
             </h2>
             <p className="text-xl mb-10 text-orange-100 leading-relaxed">
-              Rejoignez des milliers d'utilisateurs satisfaits et transformez votre passion 
-              pour la friterie en succès professionnel
+              Rejoignez des milliers d'utilisateurs satisfaits et transformez votre passion pour la
+              friterie en succès professionnel
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Button size="lg" className="bg-white text-orange-600 hover:bg-orange-50 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+              <Button size="lg" className="bg-white text-orange-600 hover:bg-orange-50 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
                 <Link to="/pricing" className="flex items-center">
                   Commencer maintenant
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-orange-600 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+              <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-orange-600 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-4">
                 <Link to="/contact">Nous contacter</Link>
               </Button>
             </div>
