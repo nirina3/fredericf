@@ -97,3 +97,19 @@ export interface Analytics {
   conversionRate: number;
   period: 'day' | 'week' | 'month' | 'year';
 }
+
+export interface Reservation {
+  id: string;
+  friteryId: string;
+  friteryName: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  date: Date;
+  time: string;
+  guests: number;
+  specialRequests?: string;
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  createdAt: Date;
+  updatedAt?: Date;
+}

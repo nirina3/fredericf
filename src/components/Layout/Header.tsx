@@ -99,6 +99,13 @@ const Header: React.FC = () => {
                       Mon Abonnement
                     </Link>
                     <Link
+                      to="/reservations"
+                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                    >
+                      <Calendar className="h-4 w-4 mr-3" />
+                      Mes Réservations
+                    </Link>
+                    <Link
                       to="/billing"
                       className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
                     >

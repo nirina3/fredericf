@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, CreditCard, TrendingUp, FileText, Eye, DollarSign, UserCheck, AlertCircle } from 'lucide-react';
+import { Users, CreditCard, TrendingUp, FileText, Eye, DollarSign, UserCheck, AlertCircle, Calendar } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { Analytics } from '../../types';
 import { useNotifications } from '../../contexts/NotificationContext';
@@ -14,6 +14,7 @@ const Dashboard: React.FC = () => {
     visitors: 2547,
     pageViews: 8932,
     subscriptions: 342,
+    reservations: 128,
     revenue: 15678.50,
     conversionRate: 3.8,
     period: 'month' as const
@@ -80,6 +81,13 @@ const Dashboard: React.FC = () => {
       title: 'Abonnements actifs',
       value: analytics?.subscriptions || 0,
       icon: <UserCheck className="h-6 w-6" />,
+      color: 'bg-purple-500',
+      change: '+23%'
+    },
+    {
+      title: 'Réservations',
+      value: analytics?.reservations || 0,
+      icon: <Calendar className="h-6 w-6" />,
       color: 'bg-purple-500',
       change: '+23%'
     },

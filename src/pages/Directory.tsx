@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Phone, Mail, Globe, Star, Filter, Grid, List, Clock, Award, Verified } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import ReservationButton from '../components/reservation/ReservationButton';
 
 interface DirectoryEntry {
   id: string;
@@ -589,9 +590,13 @@ const Directory: React.FC = () => {
                           Voir détails
                         </button>
                         {canAccessDetails(entry) && (
-                          <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                            Contacter
-                          </button>
+                          <ReservationButton 
+                            friteryId={entry.id}
+                            friteryName={entry.name}
+                            variant="ghost"
+                            size="sm"
+                            className="text-blue-600 hover:text-blue-700"
+                          />
                         )}
                       </div>
                       
@@ -619,12 +624,12 @@ const Directory: React.FC = () => {
             Rejoignez notre annuaire et augmentez votre visibilité auprès de milliers de clients potentiels
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <button className="bg-white text-orange-600 px-8 py-4 rounded-lg font-bold hover:bg-orange-50 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <Link to="/signup" className="bg-white text-orange-600 px-8 py-4 rounded-lg font-bold hover:bg-orange-50 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
               Ajouter ma friterie
-            </button>
-            <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-bold hover:bg-white hover:text-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            </Link>
+            <Link to="/contact" className="border-2 border-white text-white px-8 py-4 rounded-lg font-bold hover:bg-white hover:text-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
               En savoir plus
-            </button>
+            </Link>
           </div>
         </div>
       </section>

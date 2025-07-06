@@ -13,6 +13,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 import Gallery from './pages/Gallery';
+import ReservationHistory from './pages/ReservationHistory';
 import Blog from './pages/Blog';
 import Directory from './pages/Directory';
 import Profile from './pages/Profile';
@@ -27,6 +28,7 @@ import InitializeAdmin from './pages/admin/InitializeAdmin';
 import ContentManagement from './pages/admin/ContentManagement';
 import GalleryManagement from './pages/admin/GalleryManagement';
 import BlogManagement from './pages/admin/BlogManagement';
+import ReservationManagement from './pages/admin/ReservationManagement';
 import DirectoryManagement from './pages/admin/DirectoryManagement';
 import AnalyticsManagement from './pages/admin/AnalyticsManagement';
 import CommentModerationPanel from './components/comments/CommentModerationPanel';
@@ -51,6 +53,7 @@ function App() {
               <Route path="gallery" element={<Gallery />} />
               <Route path="blog" element={<Blog />} />
               <Route path="directory" element={<Directory />} />
+              <Route path="reservations" element={<ReservationHistory />} />
               <Route path="profile" element={<Profile />} />
               <Route path="subscription" element={<Subscription />} />
               <Route path="billing" element={<Billing />} />
@@ -65,6 +68,7 @@ function App() {
               <Route path="content" element={<ContentManagement />} />
               <Route path="blog" element={<BlogManagement />} />
               <Route path="gallery" element={<GalleryManagement />} />
+              <Route path="reservations" element={<ReservationManagement />} />
               <Route path="directory" element={<DirectoryManagement />} />
               <Route path="analytics" element={<AnalyticsManagement />} />
               <Route path="moderation" element={<CommentModerationPanel />} />
