@@ -23,6 +23,9 @@ import CreateUser from './pages/admin/CreateUser';
 import InitializeAdmin from './pages/admin/InitializeAdmin';
 import ContentManagement from './pages/admin/ContentManagement';
 import GalleryManagement from './pages/admin/GalleryManagement';
+import BlogManagement from './pages/admin/BlogManagement';
+import DirectoryManagement from './pages/admin/DirectoryManagement';
+import AnalyticsManagement from './pages/admin/AnalyticsManagement';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 function App() {
@@ -55,10 +58,10 @@ function App() {
             <Route path="create-user" element={<CreateUser />} />
             <Route path="subscriptions" element={<div className="text-center py-12"><h1 className="text-2xl">Gestion des abonnements - Coming Soon</h1></div>} />
             <Route path="content" element={<ContentManagement />} />
-            <Route path="blog" element={<div className="text-center py-12"><h1 className="text-2xl">Gestion du blog - Coming Soon</h1></div>} />
+            <Route path="blog" element={<BlogManagement />} />
             <Route path="gallery" element={<GalleryManagement />} />
-            <Route path="directory" element={<div className="text-center py-12"><h1 className="text-2xl">Gestion de l'annuaire - Coming Soon</h1></div>} />
-            <Route path="analytics" element={<div className="text-center py-12"><h1 className="text-2xl">Statistiques - Coming Soon</h1></div>} />
+            <Route path="directory" element={<DirectoryManagement />} />
+            <Route path="analytics" element={<AnalyticsManagement />} />
             <Route path="settings" element={<div className="text-center py-12"><h1 className="text-2xl">Paramètres - Coming Soon</h1></div>} />
           </Route>
 
