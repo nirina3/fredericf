@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Grid, List, Eye, Heart, Download, Star, Crown, Image as ImageIcon, Plus, Upload } from 'lucide-react';
+import { Search, Filter, Grid, List, Eye, Heart, Download, Star, Crown, Image as ImageIcon, Plus, Upload, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ImageUploadModal from '../components/gallery/ImageUploadModal';
 import ImageCard from '../components/gallery/ImageCard';
-import Button from '../components/ui/Button';
+import Button from '../components/ui/Button'; 
 import CommentSystem from '../components/comments/CommentSystem';
 import storageService, { ImageMetadata } from '../services/storage';
 
@@ -18,8 +18,8 @@ const Gallery: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<ImageMetadata | null>(null);
   const { currentUser, isSubscribed } = useAuth();
 
-  // Mock data - quelques images représentatives
-  const mockItems: GalleryItem[] = [
+  // Mock data for gallery items
+  const mockItems: ImageMetadata[] = [
     {
       id: '1',
       title: 'Friterie Traditionnelle Belge',
@@ -33,7 +33,11 @@ const Gallery: React.FC = () => {
       requiredPlan: 'basic',
       likes: 45,
       downloads: 23,
-      featured: true
+      featured: true,
+      dimensions: { width: 1200, height: 800 },
+      fileSize: 1024000,
+      fileName: 'friterie-traditionnelle.jpg',
+      mimeType: 'image/jpeg'
     },
     {
       id: '2',
@@ -48,7 +52,11 @@ const Gallery: React.FC = () => {
       requiredPlan: 'basic',
       likes: 67,
       downloads: 34,
-      featured: false
+      featured: false,
+      dimensions: { width: 1200, height: 800 },
+      fileSize: 1024000,
+      fileName: 'frites-dorees.jpg',
+      mimeType: 'image/jpeg'
     },
     {
       id: '3',
@@ -63,7 +71,11 @@ const Gallery: React.FC = () => {
       requiredPlan: 'premium',
       likes: 32,
       downloads: 18,
-      featured: true
+      featured: true,
+      dimensions: { width: 1200, height: 800 },
+      fileSize: 1024000,
+      fileName: 'equipement-pro.jpg',
+      mimeType: 'image/jpeg'
     },
     {
       id: '4',
@@ -78,7 +90,11 @@ const Gallery: React.FC = () => {
       requiredPlan: 'premium',
       likes: 89,
       downloads: 45,
-      featured: false
+      featured: false,
+      dimensions: { width: 1200, height: 800 },
+      fileSize: 1024000,
+      fileName: 'ambiance-conviviale.jpg',
+      mimeType: 'image/jpeg'
     },
     {
       id: '5',
@@ -93,7 +109,11 @@ const Gallery: React.FC = () => {
       requiredPlan: 'pro',
       likes: 56,
       downloads: 28,
-      featured: true
+      featured: true,
+      dimensions: { width: 1200, height: 800 },
+      fileSize: 1024000,
+      fileName: 'formation-pro.jpg',
+      mimeType: 'image/jpeg'
     },
     {
       id: '6',
@@ -108,7 +128,11 @@ const Gallery: React.FC = () => {
       requiredPlan: 'pro',
       likes: 73,
       downloads: 41,
-      featured: false
+      featured: false,
+      dimensions: { width: 1200, height: 800 },
+      fileSize: 1024000,
+      fileName: 'innovation-culinaire.jpg',
+      mimeType: 'image/jpeg'
     }
   ];
 

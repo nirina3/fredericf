@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Calendar, User, Tag, Clock, ArrowRight, BookOpen, TrendingUp, Eye, MessageCircle } from 'lucide-react';
+import { Search, Calendar, User, Tag, Clock, ArrowRight, BookOpen, TrendingUp, Eye, MessageCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import CommentSystem from '../components/comments/CommentSystem';

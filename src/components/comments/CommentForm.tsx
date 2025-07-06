@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Send, Image, Smile, X } from 'lucide-react';
 import Button from '../ui/Button';
-import EmojiPicker from 'emoji-picker-react';
-import { Theme, EmojiClickData } from 'emoji-picker-react';
+import EmojiPicker, { Theme, EmojiClickData } from 'emoji-picker-react';
 
 interface CommentFormProps {
   onSubmit: (content: string) => void;
