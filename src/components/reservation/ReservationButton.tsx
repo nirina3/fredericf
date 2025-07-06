@@ -20,11 +20,11 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
   variant = 'primary',
   size = 'md'
 }) => {
-  const [showModal, setShowModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { currentUser, isSubscribed } = useAuth();
   const { addNotification } = useNotifications();
   
-  const handleClick = () => {
+  const handleOpenModal = () => {
     if (!currentUser) {
       addNotification({
         type: 'info',
@@ -51,13 +51,17 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
       return;
     }
 
-    setShowModal(true);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
     <>
       <Button
-        onClick={handleClick}
+        onClick={handleOpenModal}
         variant={variant}
         size={size}
         className={className}
@@ -66,14 +70,12 @@ const ReservationButton: React.FC<ReservationButtonProps> = ({
         {variant === 'ghost' ? 'Réserver' : 'Réserver une table'}
       </Button>
 
-      {showModal && (
-        <ReservationModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          friteryId={friteryId}
-          friteryName={friteryName}
-        />
-      )}
+      <ReservationModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        friteryId={friteryId}
+        friteryName={friteryName}
+      />
     </>
   );
 };

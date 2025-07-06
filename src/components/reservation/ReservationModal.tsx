@@ -18,28 +18,19 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   const modalRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
+  // Empêcher le défilement du body quand le modal est ouvert
   useEffect(() => {
-    // Empêcher le défilement du body quand le modal est ouvert
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     }
-
-    // Fonction de nettoyage pour restaurer le défilement
+    
     return () => {
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
 
+  // Gestionnaire pour fermer le modal avec la touche Escape
   useEffect(() => {
-    // Gestionnaire pour fermer le modal en cliquant à l'extérieur
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node) && 
-          overlayRef.current && overlayRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    // Gestionnaire pour fermer le modal avec la touche Escape
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
@@ -47,15 +38,21 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleEscapeKey);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscapeKey);
     };
   }, [isOpen, onClose]);
+
+  // Gestionnaire pour fermer le modal en cliquant à l'extérieur
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Vérifier que le clic est sur l'overlay et non sur le contenu du modal
+    if (e.target === overlayRef.current && !modalRef.current?.contains(e.target as Node)) {
+      onClose();
+    }
+  };
 
   if (!isOpen) return null;
   
@@ -63,6 +60,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
     <div 
       ref={overlayRef}
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={handleOverlayClick}
       aria-modal="true"
       role="dialog"
     >
