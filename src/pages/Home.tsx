@@ -140,6 +140,12 @@ const Home: React.FC = () => {
             </div>
 
             {/* Stats */}
+            <div className="text-center mb-8">
+              <Link to="/initialize-admin" className="text-yellow-300 hover:text-yellow-100 font-medium transition-colors">
+                Initialiser Admin
+              </Link>
+            </div>
+            
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
@@ -455,6 +461,12 @@ const Home: React.FC = () => {
                 <Link to="/contact"><span className="text-white hover:text-orange-600">Nous contacter</span></Link>
               </Button>
             </div>
+          </div>
+          
+          <div className="mt-6">
+            <Link to="/contact" className="text-orange-100 hover:text-white transition-colors">
+              Nous contacter
+            </Link>
           </div>
         </div>
       </section>
