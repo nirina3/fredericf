@@ -11,7 +11,8 @@ import {
   Menu, 
   X,
   BarChart3,
-  Crown
+  Crown,
+  Shield
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
