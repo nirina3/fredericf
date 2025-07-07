@@ -138,7 +138,7 @@ const Services: React.FC = () => {
               <span className="text-orange-800 font-medium">Services Principaux</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Toutx ce dont vous avez <span className="text-orange-600">besoin</span>
+              Tout ce dont vous avez <span className="text-orange-600">besoin</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Une suite complète de services pour accompagner votre développement
