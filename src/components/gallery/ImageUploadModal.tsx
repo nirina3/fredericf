@@ -154,7 +154,6 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
     if (!currentUser || files.length === 0) return;
 
     setIsUploading(true);
-    let uploadSuccessful = false;
     const uploadedImages: ImageMetadata[] = [];
 
     try {
@@ -162,21 +161,16 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
         const file = files[i];
 
         try {
-          // Préparer les métadonnées
-          const uploadMetadata = file.metadata && typeof file.metadata === 'object' 
-            ? {
-                ...file.metadata,
-                uploadedBy: currentUser.id
-              } 
-            : {
-                title: file.name.split('.')[0],
-                description: '',
-                category: 'friteries',
-                tags: [],
-                requiredPlan: 'basic',
-                featured: false,
-                uploadedBy: currentUser.id
-              };
+          // Préparer les métadonnées (s'assurer qu'elles sont correctement formatées)
+          const uploadMetadata = {
+            title: file.metadata?.title || file.name.split('.')[0],
+            description: file.metadata?.description || '',
+            category: file.metadata?.category || 'friteries',
+            tags: file.metadata?.tags || [],
+            requiredPlan: file.metadata?.requiredPlan || 'basic',
+            featured: file.metadata?.featured || false,
+            uploadedBy: currentUser.id
+          };
           
           // Upload l'image
           const uploadedImage = await storageService.uploadImage(
@@ -187,7 +181,6 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                 const newFiles = [...prev];
                 if (newFiles[i]) {
                   newFiles[i].progress = progress;
-                  console.log(`Progress update for file ${i}: ${progress.progress}%, status: ${progress.status}`, progress);
                 }
                 return newFiles;
               });
@@ -196,7 +189,6 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
           
           // Vérifier que l'image uploadée est valide et a un ID
           if (uploadedImage && uploadedImage.id) {
-            console.log('Upload successful, adding to uploadedImages array:', uploadedImage.id);
             uploadedImages.push(uploadedImage);
           } else {
             console.error('Uploaded image is missing ID or is invalid:', uploadedImage);
@@ -229,18 +221,12 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       }
 
       if (uploadedImages.length > 0) {
-        uploadSuccessful = true;
-        
-        // Vérifier que onSuccess est une fonction avant de l'appeler
-        if (typeof onSuccess === 'function') {
-          console.log('Calling onSuccess with', uploadedImages.length, 'image(s)');
-          onSuccess(uploadedImages);
-        } else {
-          console.error('onSuccess is not a function:', onSuccess);
-        }
-        
-        // Fermer immédiatement après un upload réussi
-        handleClose();
+        // Appeler onSuccess et fermer le modal
+        onSuccess(uploadedImages);
+        setFiles([]);
+        setIsUploading(false);
+        onClose();
+        return;
       } else {
         console.error('No images were successfully uploaded');
         alert('Erreur lors de l\'upload des images. Veuillez réessayer.');
@@ -255,7 +241,6 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
 
   const handleClose = () => {
     if (!isUploading) {
-      console.log('Closing upload modal and cleaning up resources');
       // Nettoyer les URLs d'aperçu
       files.forEach(file => {
         if (file.preview) URL.revokeObjectURL(file.preview);
@@ -403,7 +388,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                   </div>
 
                   {/* Files List */}
-                  <div className="space-y-4">
+                        disabled={files.length === 0 || isUploading}
                     {files && files.length > 0 && files.map((file, index) => (
                       <div key={index} className="bg-white border border-gray-200 rounded-xl p-6">
                         <div className="flex items-start space-x-6">
@@ -646,18 +631,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       </div>
     );
   } catch (error) {
-    console.error('Erreur dans le rendu de ImageUploadModal:', error);
-    
-    // Notification d'erreur
-    if (addNotification) {
-      addNotification({
-        type: 'error',
-        title: 'Erreur dans le modal d\'upload',
-        message: error instanceof Error ? error.message : 'Une erreur inconnue s\'est produite',
-        category: 'system',
-        priority: 'high'
-      });
-    }
+    console.error('Error in ImageUploadModal:', error);
     
     // Rendu de secours en cas d'erreur
     return (

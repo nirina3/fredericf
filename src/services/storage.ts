@@ -36,12 +36,19 @@ class StorageService {
   // Upload une image avec génération automatique de thumbnail
   async uploadImage(
     file: File,
-    metadata: Omit<ImageMetadata, 'id' | 'url' | 'thumbnail' | 'fileName' | 'fileSize' | 'mimeType' | 'dimensions' | 'uploadedAt' | 'likes' | 'downloads'> & { uploadedBy: string },
-    onProgress?: (progress: UploadProgress) => void
+    metadata: {
+      title: string;
+      description: string;
+      category: string;
+      tags: string[];
+      requiredPlan: 'basic' | 'premium' | 'pro';
+      featured: boolean;
+      uploadedBy: string;
+    },
+    onProgress?: (progress: UploadProgress) => void,
   ): Promise<ImageMetadata> {
     try {
       onProgress?.({ progress: 0, status: 'uploading' });
-      console.log('Starting upload process for:', file.name);
       
       // Vérifier la configuration Firebase
       if (!storage) {
@@ -50,22 +57,18 @@ class StorageService {
 
       // Validation du fichier
       this.validateFile(file);
-      console.log('File validation passed:', file.name);
 
       // Génération d'un nom de fichier unique
       const fileName = this.generateFileName(file);
       const imagePath = `gallery/${fileName}`;
-      console.log('Generated file path:', imagePath);
 
       // Upload de l'image originale
       const imageRef = ref(storage, imagePath);
-      console.log('Starting upload to path:', imagePath);
       
       // Utiliser uploadBytes au lieu de uploadBytesResumable pour simplifier
       try {
         await uploadBytes(imageRef, file);
         onProgress?.({ progress: 50, status: 'processing' });
-        console.log('Original image uploaded successfully');
       } catch (error) {
         console.error('Error uploading original image:', error);
         onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'upload de l\'image originale' });
@@ -73,9 +76,9 @@ class StorageService {
       }
 
       // Génération du thumbnail
+      let thumbnailUrl = '';
       try {
         const thumbnailBlob = await this.generateThumbnail(file);
-        console.log('Thumbnail generated for:', fileName);
         
         // Définir le chemin du thumbnail après sa génération
         const thumbnailPath = `gallery/thumbnails/${fileName}`;
@@ -83,50 +86,40 @@ class StorageService {
         await uploadBytes(thumbnailRef, thumbnailBlob);
         onProgress?.({ progress: 75, status: 'processing' });
         
-        console.log('Thumbnail uploaded successfully');
+        // Obtenir l'URL du thumbnail
+        thumbnailUrl = await getDownloadURL(thumbnailRef);
       } catch (error) {
         console.error('Error with thumbnail:', error);
-        // Continue même si la génération du thumbnail échoue
-        onProgress?.({ progress: 75, status: 'processing' });
+        // En cas d'erreur, on continue sans thumbnail
+        onProgress?.({ progress: 75, status: 'processing', error: 'Erreur avec le thumbnail, utilisation de l\'image originale' });
       }
 
       // Obtention des URLs
-      let imageUrl = '';
-      let thumbnailUrl = '';
-      
+      let imageUrl;
       try {
         imageUrl = await getDownloadURL(imageRef);
-        console.log('Original image URL obtained:', imageUrl);
       } catch (error) {
         console.error('Error getting image URL:', error);
         onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'obtention de l\'URL de l\'image' });
         throw error;
       }
       
-      try {
-        const thumbnailRef = ref(storage, `gallery/thumbnails/${fileName}`);
-        thumbnailUrl = await getDownloadURL(thumbnailRef);
-        console.log('Thumbnail URL obtained:', thumbnailUrl);
-      } catch (error) {
-        console.error('Error getting thumbnail URL:', error);
-        // Utiliser l'URL de l'image originale comme fallback pour le thumbnail
+      // Si on n'a pas pu obtenir l'URL du thumbnail, on utilise l'URL de l'image originale
+      if (!thumbnailUrl) {
         thumbnailUrl = imageUrl;
       }
 
       onProgress?.({ progress: 85, status: 'processing' });
-      console.log('Getting image dimensions...');
 
       // Obtention des dimensions de l'image avec gestion d'erreur
       let dimensions;
       try {
         dimensions = await this.getImageDimensions(file);
-        console.log('Image dimensions obtained:', dimensions);
       } catch (error) {
         console.error('Error getting image dimensions, using defaults:', error);
         dimensions = { width: 800, height: 600 }; // Valeurs par défaut
       }
 
-      console.log('Preparing metadata for Firestore...');
       // Préparation des métadonnées
       const metadataToSave: Omit<ImageMetadata, 'id'> = {
         title: metadata.title || file.name.split('.')[0],
@@ -149,11 +142,9 @@ class StorageService {
       
       onProgress?.({ progress: 90, status: 'processing' });
 
-      console.log('Saving metadata to Firestore...');
       let docRef;
       try {
         docRef = await addDoc(collection(db, 'gallery'), metadataToSave);
-        console.log('Image metadata saved successfully to Firestore with ID:', docRef.id);
       } catch (error) {
         console.error('Error saving metadata to Firestore:', error);
         onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'enregistrement des métadonnées' });
@@ -162,10 +153,6 @@ class StorageService {
 
       // Mettre à jour la progression à 100%
       onProgress?.({ progress: 100, status: 'complete' });
-      console.log('Upload complete!');
-      
-      // Attendre un peu pour que l'utilisateur voie le 100%
-      // Ne pas attendre pour éviter de bloquer le processus
 
       // Retourner l'objet complet avec l'ID
       const result: ImageMetadata = {
@@ -173,12 +160,10 @@ class StorageService {
         ...metadataToSave
       };
 
-      console.log('Returning complete image object with ID:', result.id);
       return result;
     } catch (error: any) {
       console.error('Error in uploadImage:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue lors de l\'upload';
-      console.error('Upload failed with error:', errorMessage);
       if (onProgress) {
         onProgress({ progress: 0, status: 'error', error: errorMessage });
       }
