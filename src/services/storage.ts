@@ -1,4 +1,5 @@
 import { ref, uploadBytes, getDownloadURL, deleteObject, listAll } from 'firebase/storage';
+import { uploadBytesResumable } from 'firebase/storage';
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { storage, db } from '../firebase/config';
 
@@ -36,7 +37,7 @@ class StorageService {
   async uploadImage(
     file: File,
     metadata: Omit<ImageMetadata, 'id' | 'url' | 'thumbnail' | 'fileName' | 'fileSize' | 'mimeType' | 'dimensions' | 'uploadedAt' | 'likes' | 'downloads'> & { uploadedBy: string },
-    onProgress?: (progress: UploadProgress) => void,
+    onProgress?: (progress: UploadProgress) => void
     timeoutMs: number = 30000
   ): Promise<ImageMetadata> {
     try {
@@ -65,7 +66,30 @@ class StorageService {
       onProgress?.({ progress: 25, status: 'uploading' });
       console.log('Uploading original image...');
       
-      const uploadResult = await uploadBytes(imageRef, file);
+      // Utiliser uploadBytesResumable pour suivre la progression
+      const uploadTask = uploadBytesResumable(imageRef, file);
+      
+      // Attendre que l'upload soit terminé
+      await new Promise<void>((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            // Calculer la progression de 0% à 50%
+            const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 50);
+            onProgress?.({ progress: progress, status: 'uploading' });
+            console.log(`Upload progress: ${progress}%`);
+          },
+          (error) => {
+            console.error('Error during upload:', error);
+            reject(error);
+          },
+          () => {
+            console.log('Original image uploaded successfully');
+            resolve();
+          }
+        );
+      });
+      
       console.log('Original image uploaded successfully');
       
       // Mettre à jour la progression à 50%
@@ -82,8 +106,30 @@ class StorageService {
       console.log('Uploading thumbnail to:', thumbnailPath);
       
       // Upload du thumbnail
-      onProgress?.({ progress: 75, status: 'processing' });
-      await uploadBytes(thumbnailRef, thumbnailBlob);
+      // Utiliser uploadBytesResumable pour le thumbnail aussi
+      const thumbnailUploadTask = uploadBytesResumable(thumbnailRef, thumbnailBlob);
+      
+      // Attendre que l'upload du thumbnail soit terminé
+      await new Promise<void>((resolve, reject) => {
+        thumbnailUploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            // Calculer la progression de 50% à 75%
+            const thumbnailProgress = 50 + Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 25);
+            onProgress?.({ progress: thumbnailProgress, status: 'processing' });
+            console.log(`Thumbnail upload progress: ${thumbnailProgress}%`);
+          },
+          (error) => {
+            console.error('Error during thumbnail upload:', error);
+            reject(error);
+          },
+          () => {
+            console.log('Thumbnail uploaded successfully');
+            resolve();
+          }
+        );
+      });
+      
       console.log('Thumbnail uploaded successfully');
       
       console.log('Getting download URLs...');
