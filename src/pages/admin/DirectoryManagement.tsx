@@ -3,6 +3,8 @@ import { Plus, Edit, Trash2, Eye, MapPin, Phone, Mail, Globe, Star, Search, Filt
 import Button from '../../components/ui/Button';
 import { useAuth } from '../../contexts/AuthContext';
 import CSVImportModal from '../../components/directory/CSVImportModal';
+import directoryService from '../../services/directoryService';
+import { useNotifications } from '../../contexts/NotificationContext';
 
 interface DirectoryEntry {
   id: string;
@@ -46,6 +48,7 @@ interface DirectoryEntry {
 
 const DirectoryManagement: React.FC = () => {
   const { currentUser } = useAuth();
+  const { addNotification } = useNotifications();
   const [entries, setEntries] = useState<DirectoryEntry[]>([]);
   const [filteredEntries, setFilteredEntries] = useState<DirectoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -208,12 +211,31 @@ const DirectoryManagement: React.FC = () => {
   ];
 
   useEffect(() => {
-    setTimeout(() => {
+    loadEntries();
+  }, []);
+
+  const loadEntries = async () => {
+    try {
+      setLoading(true);
+      const fetchedEntries = await directoryService.getAllEntries();
+      
+      if (fetchedEntries.length === 0) {
+        // Si aucune entrée n'est trouvée, utiliser les données de démonstration
+        setEntries(mockEntries);
+        setFilteredEntries(mockEntries);
+      } else {
+        setEntries(fetchedEntries);
+        setFilteredEntries(fetchedEntries);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des entrées:', error);
+      // En cas d'erreur, utiliser les données de démonstration
       setEntries(mockEntries);
       setFilteredEntries(mockEntries);
+    } finally {
       setLoading(false);
-    }, 1000);
-  }, []);
+    }
+  };
 
   useEffect(() => {
     filterEntries();
@@ -247,28 +269,127 @@ const DirectoryManagement: React.FC = () => {
     setFilteredEntries(filtered);
   };
 
-  const handleImportEntries = (newEntries: DirectoryEntry[]) => {
-    // Dans une application réelle, vous enverriez ces données à votre backend
-    // Pour cette démo, nous les ajoutons simplement à l'état local
-    setEntries(prev => [...prev, ...newEntries]);
-    setFilteredEntries(prev => [...prev, ...newEntries]);
+  const handleImportEntries = async (newEntries: DirectoryEntry[]) => {
+    try {
+      // Sauvegarder les entrées dans Firestore
+      await directoryService.addMultipleEntries(newEntries);
+      
+      // Recharger les entrées pour obtenir les IDs générés par Firestore
+      await loadEntries();
+      
+      addNotification({
+        type: 'success',
+        title: 'Import réussi',
+        message: `${newEntries.length} friteries ont été importées avec succès.`,
+        category: 'system',
+        priority: 'medium'
+      });
+    } catch (error) {
+      console.error('Erreur lors de l\'import des entrées:', error);
+      addNotification({
+        type: 'error',
+        title: 'Erreur d\'import',
+        message: 'Une erreur est survenue lors de l\'import des friteries.',
+        category: 'system',
+        priority: 'high'
+      });
+      
+      // En cas d'erreur, ajouter quand même les entrées à l'état local
+      setEntries(prev => [...prev, ...newEntries]);
+      setFilteredEntries(prev => [...prev, ...newEntries]);
+    }
   };
 
-  const toggleVerification = (entryId: string) => {
-    setEntries(prev => prev.map(entry =>
-      entry.id === entryId ? { ...entry, verified: !entry.verified } : entry
-    ));
+  const toggleVerification = async (entryId: string) => {
+    try {
+      const entry = entries.find(e => e.id === entryId);
+      if (!entry) return;
+      
+      const newStatus = !entry.verified;
+      await directoryService.toggleVerifiedStatus(entryId, newStatus);
+      
+      // Mettre à jour l'état local
+      setEntries(prev => prev.map(entry =>
+        entry.id === entryId ? { ...entry, verified: newStatus } : entry
+      ));
+      
+      addNotification({
+        type: 'success',
+        title: 'Statut mis à jour',
+        message: `La friterie a été ${newStatus ? 'vérifiée' : 'non vérifiée'} avec succès.`,
+        category: 'system',
+        priority: 'low'
+      });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du statut de vérification:', error);
+      addNotification({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Une erreur est survenue lors de la mise à jour du statut.',
+        category: 'system',
+        priority: 'medium'
+      });
+    }
   };
 
-  const togglePremium = (entryId: string) => {
-    setEntries(prev => prev.map(entry =>
-      entry.id === entryId ? { ...entry, premium: !entry.premium } : entry
-    ));
+  const togglePremium = async (entryId: string) => {
+    try {
+      const entry = entries.find(e => e.id === entryId);
+      if (!entry) return;
+      
+      const newStatus = !entry.premium;
+      await directoryService.togglePremiumStatus(entryId, newStatus);
+      
+      // Mettre à jour l'état local
+      setEntries(prev => prev.map(entry =>
+        entry.id === entryId ? { ...entry, premium: newStatus } : entry
+      ));
+      
+      addNotification({
+        type: 'success',
+        title: 'Statut premium mis à jour',
+        message: `La friterie est maintenant ${newStatus ? 'premium' : 'standard'}.`,
+        category: 'system',
+        priority: 'low'
+      });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du statut premium:', error);
+      addNotification({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Une erreur est survenue lors de la mise à jour du statut premium.',
+        category: 'system',
+        priority: 'medium'
+      });
+    }
   };
 
-  const deleteEntry = (entryId: string) => {
+  const deleteEntry = async (entryId: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?')) return;
-    setEntries(prev => prev.filter(entry => entry.id !== entryId));
+    
+    try {
+      await directoryService.deleteEntry(entryId);
+      
+      // Mettre à jour l'état local
+      setEntries(prev => prev.filter(entry => entry.id !== entryId));
+      
+      addNotification({
+        type: 'success',
+        title: 'Entrée supprimée',
+        message: 'La friterie a été supprimée avec succès.',
+        category: 'system',
+        priority: 'medium'
+      });
+    } catch (error) {
+      console.error('Erreur lors de la suppression de l\'entrée:', error);
+      addNotification({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Une erreur est survenue lors de la suppression de la friterie.',
+        category: 'system',
+        priority: 'high'
+      });
+    }
   };
 
   const renderStars = (rating: number) => {

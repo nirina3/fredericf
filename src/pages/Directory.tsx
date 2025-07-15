@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, MapPin, Phone, Mail, Globe, Star, Filter, Grid, List, Clock, Award, Verified } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ReservationButton from '../components/reservation/ReservationButton';
+import directoryService from '../services/directoryService';
 
 interface DirectoryEntry {
   id: string;
@@ -293,13 +294,31 @@ const Directory: React.FC = () => {
   ];
 
   useEffect(() => {
-    // Simulate loading
-    setTimeout(() => {
+    loadEntries();
+  }, []);
+
+  const loadEntries = async () => {
+    try {
+      setLoading(true);
+      const fetchedEntries = await directoryService.getAllEntries();
+      
+      if (fetchedEntries.length === 0) {
+        // Si aucune entrée n'est trouvée, utiliser les données de démonstration
+        setEntries(mockEntries);
+        setFilteredEntries(mockEntries);
+      } else {
+        setEntries(fetchedEntries);
+        setFilteredEntries(fetchedEntries);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des entrées:', error);
+      // En cas d'erreur, utiliser les données de démonstration
       setEntries(mockEntries);
       setFilteredEntries(mockEntries);
+    } finally {
       setLoading(false);
-    }, 1000);
-  }, []);
+    }
+  };
 
   useEffect(() => {
     let filtered = entries;
