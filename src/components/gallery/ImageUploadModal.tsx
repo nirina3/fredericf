@@ -184,10 +184,13 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
           const uploadedImage = await storageService.uploadImage(
             file,
             uploadMetadata,
-            (progress) => {
+            (progress: UploadProgress) => {
               setFiles(prev => {
                 const newFiles = [...prev];
-                newFiles[i].progress = progress;
+                if (newFiles[i]) {
+                  newFiles[i].progress = progress;
+                  console.log(`Progress update for file ${i}: ${progress.progress}%, status: ${progress.status}`);
+                }
                 return newFiles;
               });
             }
@@ -197,10 +200,32 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
           
           // Vérifier que l'image uploadée est valide et a un ID
           if (uploadedImage && uploadedImage.id) {
+            console.log('Upload successful, adding to uploadedImages array:', uploadedImage.id);
             uploadedImages.push(uploadedImage);
-            console.log('Added image to uploadedImages array, ID:', uploadedImage.id);
+            
+            // Mettre à jour le statut à 100% pour cette image
+            setFiles(prev => {
+              const newFiles = [...prev];
+              if (newFiles[i]) {
+                newFiles[i].progress = { progress: 100, status: 'complete' };
+              }
+              return newFiles;
+            });
           } else {
             console.error('Uploaded image is missing ID or is invalid:', uploadedImage);
+            
+            // Mettre à jour le statut d'erreur pour cette image
+            setFiles(prev => {
+              const newFiles = [...prev];
+              if (newFiles[i]) {
+                newFiles[i].progress = { 
+                  progress: 0, 
+                  status: 'error', 
+                  error: 'L\'upload a échoué - ID manquant' 
+                };
+              }
+              return newFiles;
+            });
           }
         } catch (error) {
           console.error(`Error uploading ${file.name}:`, error);

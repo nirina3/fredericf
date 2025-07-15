@@ -35,12 +35,13 @@ class StorageService {
   // Upload une image avec génération automatique de thumbnail
   async uploadImage(
     file: File,
-    metadata: Omit<ImageMetadata, 'id' | 'url' | 'thumbnail' | 'fileName' | 'fileSize' | 'mimeType' | 'dimensions' | 'uploadedAt' | 'likes' | 'downloads'> | any,
+    metadata: Omit<ImageMetadata, 'id' | 'url' | 'thumbnail' | 'fileName' | 'fileSize' | 'mimeType' | 'dimensions' | 'uploadedAt' | 'likes' | 'downloads'>,
     onProgress?: (progress: UploadProgress) => void,
     timeoutMs: number = 30000
   ): Promise<ImageMetadata> {
     try {
       onProgress?.({ progress: 0, status: 'uploading' });
+      console.log('Starting upload process for:', file.name);
       
       // Validation du fichier
       this.validateFile(file);
@@ -54,20 +55,31 @@ class StorageService {
       // Génération d'un nom de fichier unique
       const fileName = this.generateFileName(file);
       const imagePath = `gallery/${fileName}`;
-      const thumbnailPath = `gallery/thumbnails/${fileName}`;
 
       // Upload de l'image originale
       const imageRef = ref(storage, imagePath);
       console.log('Starting upload to path:', imagePath);
+      
+      // Mettre à jour la progression à 25%
+      onProgress?.({ progress: 25, status: 'uploading' });
+      
       await uploadBytes(imageRef, file);
+      console.log('Original image uploaded successfully');
+      
+      // Mettre à jour la progression à 50%
+      onProgress?.({ progress: 50, status: 'processing' });
       onProgress?.({ progress: 50, status: 'processing' });
 
       // Génération du thumbnail
       const thumbnailBlob = await this.generateThumbnail(file);
       console.log('Thumbnail generated for:', fileName);
+      
+      // Définir le chemin du thumbnail après sa génération
+      const thumbnailPath = `gallery/thumbnails/${fileName}`;
       const thumbnailRef = ref(storage, thumbnailPath);
       
       // Upload du thumbnail
+      onProgress?.({ progress: 75, status: 'processing' });
       await uploadBytes(thumbnailRef, thumbnailBlob);
       console.log('Thumbnail uploaded successfully');
       
@@ -78,7 +90,7 @@ class StorageService {
       const thumbnailUrl = await getDownloadURL(thumbnailRef);
       console.log('Thumbnail URL obtained:', thumbnailUrl);
 
-      onProgress?.({ progress: 80, status: 'processing' });
+      onProgress?.({ progress: 90, status: 'processing' });
 
       // Obtention des dimensions de l'image avec gestion d'erreur
       let dimensions;
@@ -114,6 +126,7 @@ class StorageService {
       const docRef = await addDoc(collection(db, 'gallery'), metadataToSave);
       console.log('Image metadata saved successfully to Firestore with ID:', docRef.id);
 
+      // Mettre à jour la progression à 100%
       onProgress?.({ progress: 100, status: 'complete' });
 
       // Retourner l'objet complet avec l'ID
@@ -127,6 +140,7 @@ class StorageService {
     } catch (error: any) {
       console.error('Error in uploadImage:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue lors de l\'upload';
+      console.error('Upload failed with error:', errorMessage);
       onProgress?.({ progress: 0, status: 'error', error: errorMessage });
       throw new Error(`Erreur lors de l'upload: ${errorMessage}`);
     }
