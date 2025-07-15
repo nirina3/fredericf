@@ -43,6 +43,7 @@ interface NotificationProviderProps {
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [toasts, setToasts] = useState<Notification[]>([]);
+  const [notificationPosition, setNotificationPosition] = useState<'top-right' | 'bottom-right'>('top-right');
 
   // Mock notifications pour la démonstration
   useEffect(() => {
@@ -200,12 +201,26 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     showToast
   };
 
+  // Fonction pour basculer la position des notifications
+  const toggleNotificationPosition = () => {
+    setNotificationPosition(prev => prev === 'top-right' ? 'bottom-right' : 'top-right');
+  };
+
   return (
     <NotificationContext.Provider value={value}>
       {children}
       
       {/* Toast Container */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
+      <div className={`fixed ${notificationPosition === 'top-right' ? 'top-4' : 'bottom-4'} right-4 z-50 space-y-2`}>
+        {/* Bouton pour changer la position des notifications */}
+        <button 
+          onClick={toggleNotificationPosition}
+          className="bg-gray-800/70 text-white p-2 rounded-full hover:bg-gray-700 transition-colors ml-auto block mb-2"
+          title={notificationPosition === 'top-right' ? 'Déplacer en bas' : 'Déplacer en haut'}
+        >
+          {notificationPosition === 'top-right' ? '↓' : '↑'}
+        </button>
+        
         {toasts.map((toast) => (
           <div
             key={toast.id}
@@ -218,6 +233,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
               <div className="ml-3 flex-1">
                 <p className="text-sm font-medium">{toast.title}</p>
                 <p className="text-sm mt-1 opacity-90">{toast.message}</p>
+                {toast.actionUrl && (
+                  <a 
+                    href={toast.actionUrl} 
+                    className="text-xs mt-1 font-medium underline"
+                  >
+                    {toast.actionText || 'Voir plus'}
+                  </a>
+                )}
               </div>
               <button
                 onClick={() => removeToast(toast.id)}

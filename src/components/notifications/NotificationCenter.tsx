@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, Check, X, Trash2, Settings, Filter, Clock, User, CreditCard, Shield, FileText } from 'lucide-react';
+import { Bell, Check, X, Trash2, Settings, Filter, Clock, User, CreditCard, Shield, FileText, ArrowDown, ArrowUp } from 'lucide-react';
 import Button from '../ui/Button';
 import { useNotifications, Notification } from '../../contexts/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
@@ -74,6 +74,11 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
 
   if (!isOpen) return null;
 
+  // Fonction pour fermer le centre de notifications
+  const handleClose = () => {
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-end z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md h-full max-h-[90vh] overflow-hidden flex flex-col">
@@ -84,14 +89,15 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
               <Bell className="h-6 w-6 mr-2" />
               Notifications
               {unreadCount > 0 && (
-                <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full flex items-center justify-center min-w-[1.5rem]">
                   {unreadCount}
                 </span>
               )}
             </h2>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Fermer"
             >
               <X className="h-6 w-6" />
             </button>
