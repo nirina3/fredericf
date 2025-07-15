@@ -156,9 +156,9 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
     console.log('Starting upload process for', files.length, 'files');
     setIsUploading(true);
     let uploadSuccessful = false;
+    const uploadedImages: ImageMetadata[] = [];
 
     try {
-      const uploadedImages: ImageMetadata[] = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -167,7 +167,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
         try {
           const uploadedImage = await storageService.uploadImage(
             file,
-            file.metadata ? {
+            file.metadata && typeof file.metadata === 'object' ? {
               ...file.metadata,
               uploadedBy: currentUser.id
             } : {
@@ -188,8 +188,14 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
             }
           );
           console.log('Upload successful for:', file.name, 'with ID:', uploadedImage?.id);
-
-          uploadedImages.push(uploadedImage);
+          
+          // Vérifier que l'image uploadée est valide et a un ID
+          if (uploadedImage && uploadedImage.id) {
+            uploadedImages.push(uploadedImage);
+            console.log('Added image to uploadedImages array, current count:', uploadedImages.length);
+          } else {
+            console.error('Uploaded image is missing ID or is invalid:', uploadedImage);
+          }
         } catch (error) {
           console.error(`Error uploading ${file.name}:`, error);
           setFiles(prev => {
@@ -205,9 +211,17 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       }
 
       if (uploadedImages.length > 0) {
-        console.log('All uploads completed successfully:', uploadedImages.length, 'images');
+        console.log('Uploads completed successfully:', uploadedImages.length, 'images');
         uploadSuccessful = true;
-        onSuccess(uploadedImages);
+        
+        // Vérifier que onSuccess est une fonction avant de l'appeler
+        if (typeof onSuccess === 'function') {
+          console.log('Calling onSuccess with', uploadedImages.length, 'images');
+          onSuccess(uploadedImages);
+        } else {
+          console.error('onSuccess is not a function:', onSuccess);
+        }
+        
         // Ne pas fermer automatiquement pour éviter la redirection
         // La fermeture sera gérée après un délai
       } else {
@@ -223,8 +237,12 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       // Si l'upload a réussi, fermer la modal après un court délai
       if (uploadSuccessful) {
         setTimeout(() => {
-          console.log('Closing modal after successful upload');
-          handleClose();
+          try {
+            console.log('Closing modal after successful upload');
+            handleClose();
+          } catch (closeError) {
+            console.error('Error closing modal:', closeError);
+          }
         }, 2000); // Délai de 2 secondes pour montrer le statut complet
       }
     }
