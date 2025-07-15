@@ -34,45 +34,53 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Mock user for development
-  const mockUser: User = {
-    id: 'mock-user-id',
-    email: 'user@example.com',
-    name: 'Utilisateur Test',
-    role: 'admin',
-    subscription: {
-      id: 'sub_mock',
-      userId: 'mock-user-id',
-      planId: 'standard',
-      plan: {
-        id: 'standard',
-        name: 'Client Accro',
-        price: 10.00,
-        currency: 'USD',
-        interval: 'month',
-        features: ['Accès complet', 'Support prioritaire'],
-        maxProjects: 10,
-        support: 'Email',
-        popular: true
+  // Créer un utilisateur simulé pour le développement
+  const createMockUser = (): User => {
+    console.log("Création d'un utilisateur simulé");
+    return {
+      id: 'mock-user-id',
+      email: 'user@example.com',
+      name: 'Utilisateur Test',
+      role: 'admin',
+      subscription: {
+        id: 'sub_mock',
+        userId: 'mock-user-id',
+        planId: 'standard',
+        plan: {
+          id: 'standard',
+          name: 'Client Accro',
+          price: 10.00,
+          currency: 'USD',
+          interval: 'month',
+          features: ['Accès complet', 'Support prioritaire'],
+          maxProjects: 10,
+          support: 'Email',
+          popular: true
+        },
+        status: 'active',
+        startDate: new Date(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        amount: 10.00,
+        currency: 'USD'
       },
-      status: 'active',
-      startDate: new Date(),
-      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      amount: 10.00,
-      currency: 'USD'
-    },
-    createdAt: new Date(),
-    updatedAt: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
   };
 
   useEffect(() => {
-    // For development, use mock user immediately to avoid white screen
+    console.log("AuthContext - useEffect appelé");
+    
+    // Utiliser immédiatement un utilisateur simulé pour éviter l'écran blanc
+    const mockUser = createMockUser();
     setCurrentUser(mockUser);
     setLoading(false);
     
-    // Still try to connect to Firebase in the background
+    // Essayer de se connecter à Firebase en arrière-plan
     try {
+      console.log("Tentative de connexion à Firebase Auth");
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        console.log("Firebase Auth state changed:", user ? "User logged in" : "No user");
         setFirebaseUser(user);
         
         if (user) {
@@ -83,6 +91,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             }
           } catch (error) {
             console.error('Error fetching user data:', error);
+            // Garder l'utilisateur simulé en cas d'erreur
           }
         }
       });
@@ -90,6 +99,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return unsubscribe;
     } catch (error) {
       console.error("Auth state change error:", error);
+      // Garder l'utilisateur simulé en cas d'erreur
       return () => {};
     }
   }, []);
@@ -145,7 +155,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     try {
       await signOut(auth);
-      // Keep using mock user after logout for development
+      // Continuer à utiliser l'utilisateur simulé après la déconnexion pour le développement
+      const mockUser = createMockUser();
       setCurrentUser(mockUser);
     } catch (error) {
       console.error("Logout error:", error);
@@ -180,14 +191,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading ? children : (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement de l'application...</p>
-          </div>
-        </div>
-      )}
+      {children}
     </AuthContext.Provider>
   );
 };

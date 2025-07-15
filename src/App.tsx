@@ -21,15 +21,17 @@ const LoadingFallback = () => (
   </div>
 );
 
-// Composant simple pour tester le rendu
-const TestComponent = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
-    <div className="text-center p-8 bg-white rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold text-orange-600 mb-4">Test de rendu réussi</h1>
-      <p className="text-gray-700">Si vous voyez ce message, React fonctionne correctement.</p>
-    </div>
-  </div>
-);
+// Lazy load des pages moins critiques
+const About = lazy(() => import('./pages/About'));
+const Blog = lazy(() => import('./pages/Blog'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Directory = lazy(() => import('./pages/Directory'));
+const Gallery = lazy(() => import('./pages/Gallery'));
+const Services = lazy(() => import('./pages/Services'));
+const Pricing = lazy(() => import('./pages/Pricing'));
+const Profile = lazy(() => import('./pages/Profile'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const InitializeAdmin = lazy(() => import('./pages/admin/InitializeAdmin'));
 
 // Error boundary component
 class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: Error | null}> {
@@ -79,9 +81,71 @@ function App() {
   
   return (
     <ErrorBoundary>
-      <div>
-        <TestComponent />
-      </div>
+      <AuthProvider>
+        <NotificationProvider>
+          <Router>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<Home />} />
+                  <Route path="about" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <About />
+                    </Suspense>
+                  } />
+                  <Route path="blog" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Blog />
+                    </Suspense>
+                  } />
+                  <Route path="contact" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Contact />
+                    </Suspense>
+                  } />
+                  <Route path="directory" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Directory />
+                    </Suspense>
+                  } />
+                  <Route path="gallery" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Gallery />
+                    </Suspense>
+                  } />
+                  <Route path="services" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Services />
+                    </Suspense>
+                  } />
+                  <Route path="pricing" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Pricing />
+                    </Suspense>
+                  } />
+                  <Route path="profile" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Profile />
+                    </Suspense>
+                  } />
+                </Route>
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/forgot-password" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ForgotPassword />
+                  </Suspense>
+                } />
+                <Route path="/initialize-admin" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <InitializeAdmin />
+                  </Suspense>
+                } />
+              </Routes>
+            </Suspense>
+          </Router>
+        </NotificationProvider>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }
