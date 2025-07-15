@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext'; 
@@ -38,11 +38,9 @@ class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasErr
   constructor(props: {children: React.ReactNode}) {
     super(props);
     this.state = { hasError: false, error: null };
-    console.log("ErrorBoundary - Constructeur appelé");
   }
 
   static getDerivedStateFromError(error: Error) {
-    console.log("ErrorBoundary - getDerivedStateFromError appelé");
     return { hasError: true, error };
   }
 
@@ -51,8 +49,6 @@ class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasErr
   }
 
   render() {
-    console.log("ErrorBoundary - render appelé, hasError:", this.state.hasError);
-    
     if (this.state.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -79,20 +75,14 @@ class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasErr
 function App() {
   console.log("App.tsx - Rendu du composant App");
 
-  // Effet pour signaler que l'application est chargée
-  useEffect(() => {
+  // Masquer le loader initial
+  React.useEffect(() => {
     console.log("App.tsx - Composant App monté");
-    
-    // Masquer le loader initial après un court délai
-    const timer = setTimeout(() => {
-      const initialLoader = document.getElementById('initial-loader');
-      if (initialLoader) {
-        initialLoader.style.display = 'none';
-        console.log("App.tsx - Loader initial masqué");
-      }
-    }, 1000);
-    
-    return () => clearTimeout(timer);
+    const initialLoader = document.getElementById('initial-loader');
+    if (initialLoader) {
+      initialLoader.style.display = 'none';
+      console.log("App.tsx - Loader initial masqué");
+    }
   }, []);
   
   return (
@@ -100,65 +90,63 @@ function App() {
       <AuthProvider>
         <NotificationProvider>
           <Router>
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                <Route path="/" element={<Layout />}>
-                  <Route index element={<Home />} />
-                  <Route path="about" element={
-                    <Suspense fallback={<LoadingFallback />}>
-                      <About />
-                    </Suspense>
-                  } />
-                  <Route path="blog" element={
-                    <Suspense fallback={<LoadingFallback />}>
-                      <Blog />
-                    </Suspense>
-                  } />
-                  <Route path="contact" element={
-                    <Suspense fallback={<LoadingFallback />}>
-                      <Contact />
-                    </Suspense>
-                  } />
-                  <Route path="directory" element={
-                    <Suspense fallback={<LoadingFallback />}>
-                      <Directory />
-                    </Suspense>
-                  } />
-                  <Route path="gallery" element={
-                    <Suspense fallback={<LoadingFallback />}>
-                      <Gallery />
-                    </Suspense>
-                  } />
-                  <Route path="services" element={
-                    <Suspense fallback={<LoadingFallback />}>
-                      <Services />
-                    </Suspense>
-                  } />
-                  <Route path="pricing" element={
-                    <Suspense fallback={<LoadingFallback />}>
-                      <Pricing />
-                    </Suspense>
-                  } />
-                  <Route path="profile" element={
-                    <Suspense fallback={<LoadingFallback />}>
-                      <Profile />
-                    </Suspense>
-                  } />
-                </Route>
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/forgot-password" element={
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Home />} />
+                <Route path="about" element={
                   <Suspense fallback={<LoadingFallback />}>
-                    <ForgotPassword />
+                    <About />
                   </Suspense>
                 } />
-                <Route path="/initialize-admin" element={
+                <Route path="blog" element={
                   <Suspense fallback={<LoadingFallback />}>
-                    <InitializeAdmin />
+                    <Blog />
                   </Suspense>
                 } />
-              </Routes>
-            </Suspense>
+                <Route path="contact" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Contact />
+                  </Suspense>
+                } />
+                <Route path="directory" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Directory />
+                  </Suspense>
+                } />
+                <Route path="gallery" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Gallery />
+                  </Suspense>
+                } />
+                <Route path="services" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Services />
+                  </Suspense>
+                } />
+                <Route path="pricing" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Pricing />
+                  </Suspense>
+                } />
+                <Route path="profile" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Profile />
+                  </Suspense>
+                } />
+              </Route>
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={
+                <Suspense fallback={<LoadingFallback />}>
+                  <ForgotPassword />
+                </Suspense>
+              } />
+              <Route path="/initialize-admin" element={
+                <Suspense fallback={<LoadingFallback />}>
+                  <InitializeAdmin />
+                </Suspense>
+              } />
+            </Routes>
           </Router>
         </NotificationProvider>
       </AuthProvider>
