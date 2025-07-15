@@ -79,9 +79,9 @@ const GalleryManagement: React.FC = () => {
   const handleUploadSuccess = (newImages: ImageMetadata[]) => {
     console.log('Upload successful in GalleryManagement, received new images:', newImages.length);
     // Vérifier que newImages est un tableau et qu'il contient des éléments valides
-    if (Array.isArray(newImages) && newImages.length > 0) {
+    if (Array.isArray(newImages)) {
       // Filtrer les images qui ont un ID valide
-      const validImages = newImages.filter(img => img && img.id);
+      const validImages = newImages.filter(img => img && typeof img === 'object' && img.id);
       if (validImages.length > 0) {
         setImages(prev => [...validImages, ...prev]);
         console.log('Added', validImages.length, 'valid images to the gallery');
@@ -318,7 +318,7 @@ const GalleryManagement: React.FC = () => {
             : 'space-y-4'
           }>
             {filteredImages.map((image) => (
-              image && image.id ? (
+              image && typeof image === 'object' && image.id ? (
               <div key={image.id} className={`bg-gray-50 border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all ${
                 selectedImages.includes(image.id!) ? 'ring-2 ring-orange-500' : ''
               } ${viewMode === 'list' ? 'flex' : ''}`}>

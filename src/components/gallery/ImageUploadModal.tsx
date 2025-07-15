@@ -153,32 +153,37 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   const handleUpload = async () => {
     if (!currentUser || files.length === 0) return;
 
-    console.log('Starting upload process for', files.length, 'files');
+    console.log('Starting upload process for', files.length, 'file(s)');
     setIsUploading(true);
     let uploadSuccessful = false;
     const uploadedImages: ImageMetadata[] = [];
 
     try {
-
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         
-        console.log(`Uploading file ${i+1}/${files.length}:`, file.name, 'size:', storageService.formatFileSize(file.size));
+        console.log(`Uploading file ${i+1}/${files.length}:`, file.name);
         try {
+          // Préparer les métadonnées
+          const uploadMetadata = file.metadata && typeof file.metadata === 'object' 
+            ? {
+                ...file.metadata,
+                uploadedBy: currentUser.id
+              } 
+            : {
+                title: file.name.split('.')[0],
+                description: '',
+                category: 'friteries',
+                tags: [],
+                requiredPlan: 'basic',
+                featured: false,
+                uploadedBy: currentUser.id
+              };
+          
+          // Upload l'image
           const uploadedImage = await storageService.uploadImage(
             file,
-            file.metadata && typeof file.metadata === 'object' ? {
-              ...file.metadata,
-              uploadedBy: currentUser.id
-            } : {
-              title: file.name.split('.')[0],
-              description: '',
-              category: 'friteries',
-              tags: [],
-              requiredPlan: 'basic',
-              featured: false,
-              uploadedBy: currentUser.id
-            },
+            uploadMetadata,
             (progress) => {
               setFiles(prev => {
                 const newFiles = [...prev];
@@ -187,12 +192,13 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
               });
             }
           );
-          console.log('Upload successful for:', file.name, 'with ID:', uploadedImage?.id);
+          
+          console.log('Upload successful for:', file.name);
           
           // Vérifier que l'image uploadée est valide et a un ID
           if (uploadedImage && uploadedImage.id) {
             uploadedImages.push(uploadedImage);
-            console.log('Added image to uploadedImages array, current count:', uploadedImages.length);
+            console.log('Added image to uploadedImages array, ID:', uploadedImage.id);
           } else {
             console.error('Uploaded image is missing ID or is invalid:', uploadedImage);
           }
@@ -211,12 +217,12 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       }
 
       if (uploadedImages.length > 0) {
-        console.log('Uploads completed successfully:', uploadedImages.length, 'images');
+        console.log('Uploads completed successfully:', uploadedImages.length, 'image(s)');
         uploadSuccessful = true;
         
         // Vérifier que onSuccess est une fonction avant de l'appeler
         if (typeof onSuccess === 'function') {
-          console.log('Calling onSuccess with', uploadedImages.length, 'images');
+          console.log('Calling onSuccess with', uploadedImages.length, 'image(s)');
           onSuccess(uploadedImages);
         } else {
           console.error('onSuccess is not a function:', onSuccess);
@@ -237,13 +243,9 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       // Si l'upload a réussi, fermer la modal après un court délai
       if (uploadSuccessful) {
         setTimeout(() => {
-          try {
-            console.log('Closing modal after successful upload');
-            handleClose();
-          } catch (closeError) {
-            console.error('Error closing modal:', closeError);
-          }
-        }, 2000); // Délai de 2 secondes pour montrer le statut complet
+          console.log('Closing modal after successful upload');
+          handleClose();
+        }, 1000); // Délai d'une seconde pour montrer le statut complet
       }
     }
   };

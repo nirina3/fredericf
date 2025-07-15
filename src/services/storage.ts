@@ -35,18 +35,13 @@ class StorageService {
   // Upload une image avec génération automatique de thumbnail
   async uploadImage(
     file: File,
-    metadata: Omit<ImageMetadata, 'id' | 'url' | 'thumbnail' | 'fileName' | 'fileSize' | 'mimeType' | 'dimensions' | 'uploadedAt' | 'likes' | 'downloads'>,
+    metadata: Omit<ImageMetadata, 'id' | 'url' | 'thumbnail' | 'fileName' | 'fileSize' | 'mimeType' | 'dimensions' | 'uploadedAt' | 'likes' | 'downloads'> | any,
     onProgress?: (progress: UploadProgress) => void,
     timeoutMs: number = 30000
   ): Promise<ImageMetadata> {
     try {
       onProgress?.({ progress: 0, status: 'uploading' });
       
-      // Ajouter un timeout pour éviter l'attente infinie
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('L\'upload a expiré après 30 secondes')), timeoutMs);
-      });
-
       // Validation du fichier
       this.validateFile(file);
       console.log('File validation passed:', file.name);
@@ -61,82 +56,79 @@ class StorageService {
       const imagePath = `gallery/${fileName}`;
       const thumbnailPath = `gallery/thumbnails/${fileName}`;
 
-      // Créer une promesse pour l'upload avec gestion de progression
-      const uploadPromise = new Promise<ImageMetadata>(async (resolve, reject) => {
-        try {
-          // Upload de l'image originale
-          const imageRef = ref(storage, imagePath);
-          console.log('Starting upload to path:', imagePath);
-          await uploadBytes(imageRef, file);
-          onProgress?.({ progress: 50, status: 'processing' });
+      // Upload de l'image originale
+      const imageRef = ref(storage, imagePath);
+      console.log('Starting upload to path:', imagePath);
+      await uploadBytes(imageRef, file);
+      onProgress?.({ progress: 50, status: 'processing' });
 
-          // Génération du thumbnail
-          const thumbnailBlob = await this.generateThumbnail(file);
-          console.log('Thumbnail generated for:', fileName);
-          const thumbnailRef = ref(storage, thumbnailPath);
-          
-          // Utiliser Promise.race pour le thumbnail
-          const thumbnailUploadTask = uploadBytes(thumbnailRef, thumbnailBlob);
-          await Promise.race([thumbnailUploadTask, timeoutPromise]);
-          
-          const thumbnailUrl = await getDownloadURL(thumbnailRef);
-          console.log('Thumbnail URL obtained:', thumbnailUrl);
+      // Génération du thumbnail
+      const thumbnailBlob = await this.generateThumbnail(file);
+      console.log('Thumbnail generated for:', fileName);
+      const thumbnailRef = ref(storage, thumbnailPath);
+      
+      // Upload du thumbnail
+      await uploadBytes(thumbnailRef, thumbnailBlob);
+      console.log('Thumbnail uploaded successfully');
+      
+      // Obtention des URLs
+      const imageUrl = await getDownloadURL(imageRef);
+      console.log('Original image URL obtained:', imageUrl);
+      
+      const thumbnailUrl = await getDownloadURL(thumbnailRef);
+      console.log('Thumbnail URL obtained:', thumbnailUrl);
 
-          // Obtention des dimensions de l'image avec gestion d'erreur
-          let dimensions;
-          try {
-            dimensions = await this.getImageDimensions(file);
-            console.log('Image dimensions obtained:', dimensions);
-          } catch (error) {
-            console.error('Error getting image dimensions, using defaults:', error);
-            dimensions = { width: 800, height: 600 }; // Valeurs par défaut
-          }
+      onProgress?.({ progress: 80, status: 'processing' });
 
-          // Obtention de l'URL de l'image originale
-          const imageUrl = await getDownloadURL(imageRef);
-          console.log('Original image URL obtained:', imageUrl);
+      // Obtention des dimensions de l'image avec gestion d'erreur
+      let dimensions;
+      try {
+        dimensions = await this.getImageDimensions(file);
+        console.log('Image dimensions obtained:', dimensions);
+      } catch (error) {
+        console.error('Error getting image dimensions, using defaults:', error);
+        dimensions = { width: 800, height: 600 }; // Valeurs par défaut
+      }
 
-          onProgress?.({ progress: 80, status: 'processing' });
+      // Préparation des métadonnées
+      const metadataToSave: Omit<ImageMetadata, 'id'> = {
+        title: metadata.title || file.name.split('.')[0],
+        description: metadata.description || '',
+        category: metadata.category || 'friteries',
+        tags: metadata.tags || [],
+        url: imageUrl,
+        thumbnail: thumbnailUrl,
+        fileName,
+        fileSize: file.size,
+        mimeType: file.type,
+        dimensions,
+        uploadedAt: new Date(),
+        uploadedBy: metadata.uploadedBy || 'unknown',
+        requiredPlan: metadata.requiredPlan || 'basic',
+        featured: metadata.featured || false,
+        likes: 0,
+        downloads: 0
+      };
 
-          // Sauvegarde des métadonnées en base
-          const imageMetadata: Omit<ImageMetadata, 'id'> = {
-            ...metadata,
-            url: imageUrl, // Maintenant imageUrl est défini
-            thumbnail: thumbnailUrl,
-            fileName,
-            fileSize: file.size,
-            mimeType: file.type,
-            dimensions,
-            uploadedAt: new Date(),
-            likes: 0,
-            downloads: 0
-          };
+      console.log('Saving metadata to Firestore:', metadataToSave);
+      const docRef = await addDoc(collection(db, 'gallery'), metadataToSave);
+      console.log('Image metadata saved successfully to Firestore with ID:', docRef.id);
 
-          const docRef = await addDoc(collection(db, 'gallery'), imageMetadata);
-          console.log('Image metadata saved successfully to Firestore with ID:', docRef.id);
+      onProgress?.({ progress: 100, status: 'complete' });
 
-          onProgress?.({ progress: 100, status: 'complete' });
+      // Retourner l'objet complet avec l'ID
+      const result: ImageMetadata = {
+        id: docRef.id,
+        ...metadataToSave
+      };
 
-          return {
-            id: docRef.id,
-            ...imageMetadata
-          };
-        } catch (error) {
-          console.error('Error uploading image:', error);
-          const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue lors de l\'upload';
-          console.error('Detailed error:', error);
-          onProgress?.({ progress: 0, status: 'error', error: errorMessage });
-          alert(`Erreur lors de l'upload de l'image: ${errorMessage}`);
-          throw error;
-        }
-      });
-    } catch (error) {
-      console.error('Error uploading image:', error);
+      console.log('Returning complete image object with ID:', result.id);
+      return result;
+    } catch (error: any) {
+      console.error('Error in uploadImage:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue lors de l\'upload';
-      console.error('Detailed error:', error);
       onProgress?.({ progress: 0, status: 'error', error: errorMessage });
-      alert(`Erreur lors de l'upload de l'image: ${errorMessage}`);
-      throw error;
+      throw new Error(`Erreur lors de l'upload: ${errorMessage}`);
     }
   }
 
@@ -194,7 +186,7 @@ class StorageService {
   // Génération d'un thumbnail
   private async generateThumbnail(file: File, maxWidth: number = 400, maxHeight: number = 400): Promise<Blob> {
     return new Promise((resolve, reject) => {
-      console.log('Starting thumbnail generation for:', file.name, 'size:', this.formatFileSize(file.size));
+      console.log('Starting thumbnail generation for:', file.name);
       try {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -209,12 +201,21 @@ class StorageService {
           try {
             // Calcul des nouvelles dimensions en conservant le ratio
             console.log('Original dimensions:', img.width, 'x', img.height);
-            const { width, height } = this.calculateThumbnailDimensions(
-              img.width,
-              img.height,
-              maxWidth,
-              maxHeight
-            );
+            let width = img.width;
+            let height = img.height;
+            
+            // Redimensionnement si nécessaire
+            if (width > maxWidth || height > maxHeight) {
+              const { width: newWidth, height: newHeight } = this.calculateThumbnailDimensions(
+                img.width,
+                img.height,
+                maxWidth,
+                maxHeight
+              );
+              width = newWidth;
+              height = newHeight;
+            }
+            
             console.log('Calculated thumbnail dimensions:', width, 'x', height);
     
             canvas.width = width;
@@ -226,7 +227,7 @@ class StorageService {
             canvas.toBlob(
               (blob) => {
                 if (blob) {
-                  console.log('Thumbnail blob created successfully, size:', this.formatFileSize(blob.size));
+                  console.log('Thumbnail blob created successfully');
                   resolve(blob);
                 } else {
                   console.error('Failed to create thumbnail blob');
@@ -260,7 +261,7 @@ class StorageService {
   // Méthode de secours pour générer un thumbnail simple si la méthode principale échoue
   private async generateSimpleThumbnail(file: File): Promise<Blob> {
     // Retourne simplement une copie du fichier original comme thumbnail
-    console.log('Using fallback thumbnail generation for:', file.name, 'size:', this.formatFileSize(file.size));
+    console.log('Using fallback thumbnail generation for:', file.name);
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
@@ -294,8 +295,8 @@ class StorageService {
     maxHeight: number
   ): { width: number; height: number } {
     // Vérifier les dimensions d'origine
-    if (originalWidth <= 0 || originalHeight <= 0) {
-      console.warn('Invalid original dimensions:', originalWidth, 'x', originalHeight);
+    if (!originalWidth || !originalHeight || originalWidth <= 0 || originalHeight <= 0) {
+      console.warn('Invalid original dimensions, using defaults');
       return { width: maxWidth, height: maxHeight };
     }
     
@@ -319,7 +320,7 @@ class StorageService {
   // Obtention des dimensions de l'image
   private async getImageDimensions(file: File): Promise<{ width: number; height: number }> {
     return new Promise((resolve, reject) => {
-      console.log('Getting image dimensions for:', file.name);
+      console.log('Getting image dimensions');
       const img = new Image();
       img.onload = () => {
         console.log('Image dimensions obtained:', img.width, 'x', img.height);
@@ -327,8 +328,7 @@ class StorageService {
       };
       img.onerror = (e) => {
         console.error('Error reading image dimensions:', e);
-        // Valeurs par défaut en cas d'erreur
-        resolve({ width: 800, height: 600 });
+        reject(new Error('Impossible de lire les dimensions de l\'image'));
       };
       img.src = URL.createObjectURL(file);
     });
