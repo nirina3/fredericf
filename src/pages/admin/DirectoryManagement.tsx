@@ -314,6 +314,7 @@ const DirectoryManagement: React.FC = () => {
               Importer CSV
             </Button>
             <Button
+              onClick={() => alert("Fonctionnalité en cours de développement")}
               className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
               icon={<Plus className="h-4 w-4" />}
             >
