@@ -60,29 +60,58 @@ class StorageService {
       // Upload de l'image originale
       const imageRef = ref(storage, imagePath);
       console.log('Starting upload to path:', imagePath);
-      await uploadBytes(imageRef, file);
-      onProgress?.({ progress: 50, status: 'processing' });
       
-      console.log('Original image uploaded successfully');
+      // Utiliser uploadBytes au lieu de uploadBytesResumable pour simplifier
+      try {
+        await uploadBytes(imageRef, file);
+        onProgress?.({ progress: 50, status: 'processing' });
+        console.log('Original image uploaded successfully');
+      } catch (error) {
+        console.error('Error uploading original image:', error);
+        onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'upload de l\'image originale' });
+        throw error;
+      }
 
       // Génération du thumbnail
-      const thumbnailBlob = await this.generateThumbnail(file);
-      console.log('Thumbnail generated for:', fileName);
-      
-      // Définir le chemin du thumbnail après sa génération
-      const thumbnailPath = `gallery/thumbnails/${fileName}`;
-      const thumbnailRef = ref(storage, thumbnailPath);
-      await uploadBytes(thumbnailRef, thumbnailBlob);
-      onProgress?.({ progress: 75, status: 'processing' });
-      
-      console.log('Thumbnail uploaded successfully');
+      try {
+        const thumbnailBlob = await this.generateThumbnail(file);
+        console.log('Thumbnail generated for:', fileName);
+        
+        // Définir le chemin du thumbnail après sa génération
+        const thumbnailPath = `gallery/thumbnails/${fileName}`;
+        const thumbnailRef = ref(storage, thumbnailPath);
+        await uploadBytes(thumbnailRef, thumbnailBlob);
+        onProgress?.({ progress: 75, status: 'processing' });
+        
+        console.log('Thumbnail uploaded successfully');
+      } catch (error) {
+        console.error('Error with thumbnail:', error);
+        // Continue même si la génération du thumbnail échoue
+        onProgress?.({ progress: 75, status: 'processing' });
+      }
 
       // Obtention des URLs
-      const imageUrl = await getDownloadURL(imageRef);
-      console.log('Original image URL obtained:', imageUrl);
+      let imageUrl = '';
+      let thumbnailUrl = '';
       
-      const thumbnailUrl = await getDownloadURL(thumbnailRef);
-      console.log('Thumbnail URL obtained:', thumbnailUrl);
+      try {
+        imageUrl = await getDownloadURL(imageRef);
+        console.log('Original image URL obtained:', imageUrl);
+      } catch (error) {
+        console.error('Error getting image URL:', error);
+        onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'obtention de l\'URL de l\'image' });
+        throw error;
+      }
+      
+      try {
+        const thumbnailRef = ref(storage, `gallery/thumbnails/${fileName}`);
+        thumbnailUrl = await getDownloadURL(thumbnailRef);
+        console.log('Thumbnail URL obtained:', thumbnailUrl);
+      } catch (error) {
+        console.error('Error getting thumbnail URL:', error);
+        // Utiliser l'URL de l'image originale comme fallback pour le thumbnail
+        thumbnailUrl = imageUrl;
+      }
 
       onProgress?.({ progress: 85, status: 'processing' });
       console.log('Getting image dimensions...');
@@ -121,15 +150,22 @@ class StorageService {
       onProgress?.({ progress: 90, status: 'processing' });
 
       console.log('Saving metadata to Firestore...');
-      const docRef = await addDoc(collection(db, 'gallery'), metadataToSave);
-      console.log('Image metadata saved successfully to Firestore with ID:', docRef.id);
+      let docRef;
+      try {
+        docRef = await addDoc(collection(db, 'gallery'), metadataToSave);
+        console.log('Image metadata saved successfully to Firestore with ID:', docRef.id);
+      } catch (error) {
+        console.error('Error saving metadata to Firestore:', error);
+        onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'enregistrement des métadonnées' });
+        throw error;
+      }
 
       // Mettre à jour la progression à 100%
       onProgress?.({ progress: 100, status: 'complete' });
       console.log('Upload complete!');
       
       // Attendre un peu pour que l'utilisateur voie le 100%
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Ne pas attendre pour éviter de bloquer le processus
 
       // Retourner l'objet complet avec l'ID
       const result: ImageMetadata = {

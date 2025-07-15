@@ -239,8 +239,8 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
           console.error('onSuccess is not a function:', onSuccess);
         }
         
-        // Ne pas fermer automatiquement pour éviter la redirection
-        // La fermeture sera gérée après un délai
+        // Fermer immédiatement après un upload réussi
+        handleClose();
       } else {
         console.error('No images were successfully uploaded');
         alert('Erreur lors de l\'upload des images. Veuillez réessayer.');
@@ -250,10 +250,6 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       alert('Erreur lors de l\'upload des images. Veuillez réessayer.');
     } finally {
       setIsUploading(false);
-      
-      // Si l'upload a réussi, fermer la modal après un court délai
-      // Fermer la modal immédiatement après un upload réussi
-      handleClose();
     }
   };
 
