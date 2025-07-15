@@ -573,7 +573,6 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                         </div>
                       </div>
                     ))}
-                  </div>
 
                   {/* Add More Files */}
                   <div className="text-center">
