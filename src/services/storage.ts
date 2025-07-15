@@ -37,7 +37,7 @@ class StorageService {
   async uploadImage(
     file: File,
     metadata: Omit<ImageMetadata, 'id' | 'url' | 'thumbnail' | 'fileName' | 'fileSize' | 'mimeType' | 'dimensions' | 'uploadedAt' | 'likes' | 'downloads'> & { uploadedBy: string },
-    onProgress?: (progress: UploadProgress) => void
+    onProgress?: (progress: UploadProgress) => void,
     timeoutMs: number = 30000
   ): Promise<ImageMetadata> {
     try {
