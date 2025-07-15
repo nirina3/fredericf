@@ -167,8 +167,16 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
         try {
           const uploadedImage = await storageService.uploadImage(
             file,
-            {
+            file.metadata ? {
               ...file.metadata,
+              uploadedBy: currentUser.id
+            } : {
+              title: file.name.split('.')[0],
+              description: '',
+              category: 'friteries',
+              tags: [],
+              requiredPlan: 'basic',
+              featured: false,
               uploadedBy: currentUser.id
             },
             (progress) => {
@@ -179,7 +187,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
               });
             }
           );
-          console.log('Upload successful for:', file.name, 'with ID:', uploadedImage.id);
+          console.log('Upload successful for:', file.name, 'with ID:', uploadedImage?.id);
 
           uploadedImages.push(uploadedImage);
         } catch (error) {
@@ -589,7 +597,6 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                       onClick={handleClose}
                       type="button"
                       variant="outline"
-                      type="button"
                       disabled={isUploading}
                     >
                       Annuler

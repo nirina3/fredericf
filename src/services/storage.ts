@@ -67,7 +67,7 @@ class StorageService {
           // Upload de l'image originale
           const imageRef = ref(storage, imagePath);
           console.log('Starting upload to path:', imagePath);
-          
+          await uploadBytes(imageRef, file);
           onProgress?.({ progress: 50, status: 'processing' });
 
           // Génération du thumbnail
@@ -75,7 +75,7 @@ class StorageService {
           console.log('Thumbnail generated for:', fileName);
           const thumbnailRef = ref(storage, thumbnailPath);
           
-          // Utiliser Promise.race pour le thumbnail aussi
+          // Utiliser Promise.race pour le thumbnail
           const thumbnailUploadTask = uploadBytes(thumbnailRef, thumbnailBlob);
           await Promise.race([thumbnailUploadTask, timeoutPromise]);
           
@@ -83,8 +83,15 @@ class StorageService {
           const thumbnailUrl = await getDownloadURL(thumbnailRef);
           console.log('Thumbnail URL obtained:', thumbnailUrl);
 
-          // Obtention des dimensions de l'image
-          const dimensions = await this.getImageDimensions(file);
+          // Obtention des dimensions de l'image avec gestion d'erreur
+          let dimensions;
+          try {
+            dimensions = await this.getImageDimensions(file);
+            console.log('Image dimensions obtained:', dimensions);
+          } catch (error) {
+            console.error('Error getting image dimensions, using defaults:', error);
+            dimensions = { width: 800, height: 600 }; // Valeurs par défaut
+          }
 
           // Obtention de l'URL de l'image originale
           const imageUrl = await getDownloadURL(imageRef);
