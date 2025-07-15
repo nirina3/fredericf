@@ -79,7 +79,6 @@ class StorageService {
           const thumbnailUploadTask = uploadBytes(thumbnailRef, thumbnailBlob);
           await Promise.race([thumbnailUploadTask, timeoutPromise]);
           
-          await uploadBytes(thumbnailRef, thumbnailBlob);
           const thumbnailUrl = await getDownloadURL(thumbnailRef);
           console.log('Thumbnail URL obtained:', thumbnailUrl);
 
