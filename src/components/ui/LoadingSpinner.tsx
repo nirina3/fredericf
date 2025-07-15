@@ -4,14 +4,9 @@ import { Loader2 } from 'lucide-react';
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-  color?: string;
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
-  size = 'md', 
-  className = '',
-  color = 'border-orange-500'
-}) => {
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 'md', className = '' }) => {
   const sizeClasses = {
     sm: 'h-4 w-4',
     md: 'h-8 w-8',
@@ -20,7 +15,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      <div className={`animate-spin rounded-full ${sizeClasses[size]} border-2 border-b-transparent ${color}`}></div>
+      <Loader2 className={`animate-spin ${sizeClasses[size]}`} />
     </div>
   );
 };

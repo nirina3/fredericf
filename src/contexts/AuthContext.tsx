@@ -32,7 +32,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -50,11 +50,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         setCurrentUser(null);
       }
-
-      // Réduire le délai de chargement
-      setTimeout(() => {
-        setLoading(false);
-      }, 500);
+      
+      setLoading(false);
     });
 
     return unsubscribe;
