@@ -37,8 +37,7 @@ class StorageService {
   async uploadImage(
     file: File,
     metadata: Omit<ImageMetadata, 'id' | 'url' | 'thumbnail' | 'fileName' | 'fileSize' | 'mimeType' | 'dimensions' | 'uploadedAt' | 'likes' | 'downloads'> & { uploadedBy: string },
-    onProgress?: (progress: UploadProgress) => void,
-    timeoutMs: number = 30000
+    onProgress?: (progress: UploadProgress) => void
   ): Promise<ImageMetadata> {
     try {
       onProgress?.({ progress: 0, status: 'uploading' });
@@ -61,40 +60,10 @@ class StorageService {
       // Upload de l'image originale
       const imageRef = ref(storage, imagePath);
       console.log('Starting upload to path:', imagePath);
-      
-      // Mettre à jour la progression à 25%
-      onProgress?.({ progress: 25, status: 'uploading' });
-      console.log('Uploading original image...');
-      
-      // Utiliser uploadBytesResumable pour suivre la progression
-      const uploadTask = uploadBytesResumable(imageRef, file);
-      
-      // Attendre que l'upload soit terminé
-      await new Promise<void>((resolve, reject) => {
-        uploadTask.on(
-          'state_changed',
-          (snapshot) => {
-            // Calculer la progression de 0% à 50%
-            const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 50);
-            onProgress?.({ progress: progress, status: 'uploading' });
-            console.log(`Upload progress: ${progress}%`);
-          },
-          (error) => {
-            console.error('Error during upload:', error);
-            reject(error);
-          },
-          () => {
-            console.log('Original image uploaded successfully');
-            resolve();
-          }
-        );
-      });
+      await uploadBytes(imageRef, file);
+      onProgress?.({ progress: 50, status: 'processing' });
       
       console.log('Original image uploaded successfully');
-      
-      // Mettre à jour la progression à 50%
-      onProgress?.({ progress: 50, status: 'processing' });
-      console.log('Generating thumbnail...');
 
       // Génération du thumbnail
       const thumbnailBlob = await this.generateThumbnail(file);
@@ -103,36 +72,11 @@ class StorageService {
       // Définir le chemin du thumbnail après sa génération
       const thumbnailPath = `gallery/thumbnails/${fileName}`;
       const thumbnailRef = ref(storage, thumbnailPath);
-      console.log('Uploading thumbnail to:', thumbnailPath);
-      
-      // Upload du thumbnail
-      // Utiliser uploadBytesResumable pour le thumbnail aussi
-      const thumbnailUploadTask = uploadBytesResumable(thumbnailRef, thumbnailBlob);
-      
-      // Attendre que l'upload du thumbnail soit terminé
-      await new Promise<void>((resolve, reject) => {
-        thumbnailUploadTask.on(
-          'state_changed',
-          (snapshot) => {
-            // Calculer la progression de 50% à 75%
-            const thumbnailProgress = 50 + Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 25);
-            onProgress?.({ progress: thumbnailProgress, status: 'processing' });
-            console.log(`Thumbnail upload progress: ${thumbnailProgress}%`);
-          },
-          (error) => {
-            console.error('Error during thumbnail upload:', error);
-            reject(error);
-          },
-          () => {
-            console.log('Thumbnail uploaded successfully');
-            resolve();
-          }
-        );
-      });
+      await uploadBytes(thumbnailRef, thumbnailBlob);
+      onProgress?.({ progress: 75, status: 'processing' });
       
       console.log('Thumbnail uploaded successfully');
-      
-      console.log('Getting download URLs...');
+
       // Obtention des URLs
       const imageUrl = await getDownloadURL(imageRef);
       console.log('Original image URL obtained:', imageUrl);
@@ -140,7 +84,7 @@ class StorageService {
       const thumbnailUrl = await getDownloadURL(thumbnailRef);
       console.log('Thumbnail URL obtained:', thumbnailUrl);
 
-      onProgress?.({ progress: 90, status: 'processing' });
+      onProgress?.({ progress: 85, status: 'processing' });
       console.log('Getting image dimensions...');
 
       // Obtention des dimensions de l'image avec gestion d'erreur
@@ -173,6 +117,8 @@ class StorageService {
         likes: 0,
         downloads: 0
       };
+      
+      onProgress?.({ progress: 90, status: 'processing' });
 
       console.log('Saving metadata to Firestore...');
       const docRef = await addDoc(collection(db, 'gallery'), metadataToSave);
@@ -181,6 +127,9 @@ class StorageService {
       // Mettre à jour la progression à 100%
       onProgress?.({ progress: 100, status: 'complete' });
       console.log('Upload complete!');
+      
+      // Attendre un peu pour que l'utilisateur voie le 100%
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // Retourner l'objet complet avec l'ID
       const result: ImageMetadata = {

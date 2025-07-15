@@ -153,7 +153,6 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   const handleUpload = async () => {
     if (!currentUser || files.length === 0) return;
 
-    console.log('Starting upload process for', files.length, 'file(s)');
     setIsUploading(true);
     let uploadSuccessful = false;
     const uploadedImages: ImageMetadata[] = [];
@@ -161,8 +160,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
-        console.log(`Uploading file ${i+1}/${files.length}:`, file.name);
+
         try {
           // Préparer les métadonnées
           const uploadMetadata = file.metadata && typeof file.metadata === 'object' 
@@ -196,21 +194,10 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
             }
           );
           
-          console.log('Upload successful for:', file.name);
-          
           // Vérifier que l'image uploadée est valide et a un ID
           if (uploadedImage && uploadedImage.id) {
             console.log('Upload successful, adding to uploadedImages array:', uploadedImage.id);
             uploadedImages.push(uploadedImage);
-            
-            // Mettre à jour le statut à 100% pour cette image
-            setFiles(prev => {
-              const newFiles = [...prev];
-              if (newFiles[i]) {
-                newFiles[i].progress = { progress: 100, status: 'complete' };
-              }
-              return newFiles;
-            });
           } else {
             console.error('Uploaded image is missing ID or is invalid:', uploadedImage);
             
@@ -242,7 +229,6 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       }
 
       if (uploadedImages.length > 0) {
-        console.log('Uploads completed successfully:', uploadedImages.length, 'image(s)');
         uploadSuccessful = true;
         
         // Vérifier que onSuccess est une fonction avant de l'appeler
@@ -268,9 +254,8 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       // Si l'upload a réussi, fermer la modal après un court délai
       if (uploadSuccessful) {
         setTimeout(() => {
-          console.log('Closing modal after successful upload');
           handleClose();
-        }, 1000); // Délai d'une seconde pour montrer le statut complet
+        }, 1500); // Délai plus long pour montrer le statut complet
       }
     }
   };
