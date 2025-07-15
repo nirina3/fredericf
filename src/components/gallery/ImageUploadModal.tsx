@@ -252,11 +252,8 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       setIsUploading(false);
       
       // Si l'upload a réussi, fermer la modal après un court délai
-      if (uploadSuccessful) {
-        setTimeout(() => {
-          handleClose();
-        }, 1500); // Délai plus long pour montrer le statut complet
-      }
+      // Fermer la modal immédiatement après un upload réussi
+      handleClose();
     }
   };
 
