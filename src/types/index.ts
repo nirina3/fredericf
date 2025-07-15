@@ -82,11 +82,35 @@ export interface DirectoryEntry {
     email: string;
     phone: string;
     website?: string;
-    address?: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    region: string;
   };
   logo?: string;
+  images: string[];
   verified: boolean;
+  premium: boolean;
+  rating: number;
+  reviewCount: number;
+  openingHours: {
+    [key: string]: string;
+  };
+  specialties: string[];
+  features: string[];
+  priceRange: string;
   createdAt: Date;
+  lastUpdated: Date;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
+  socialMedia?: {
+    facebook: string;
+    instagram: string;
+    other: string;
+  };
+  mapsUrl?: string;
 }
 
 export interface Analytics {

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Eye, MapPin, Phone, Mail, Globe, Star, Search, Filter, Verified } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, MapPin, Phone, Mail, Globe, Star, Search, Filter, Verified, Upload, FileText } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import { useAuth } from '../../contexts/AuthContext';
+import CSVImportModal from '../../components/directory/CSVImportModal';
 
 interface DirectoryEntry {
   id: string;
@@ -18,12 +19,29 @@ interface DirectoryEntry {
     region: string;
   };
   logo?: string;
+  images: string[];
   verified: boolean;
   premium: boolean;
   rating: number;
   reviewCount: number;
+  openingHours: {
+    [key: string]: string;
+  };
+  specialties: string[];
+  features: string[];
+  priceRange: string;
   createdAt: Date;
   lastUpdated: Date;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
+  socialMedia?: {
+    facebook: string;
+    instagram: string;
+    other: string;
+  };
+  mapsUrl?: string;
 }
 
 const DirectoryManagement: React.FC = () => {
@@ -34,6 +52,7 @@ const DirectoryManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showImportModal, setShowImportModal] = useState(false);
 
   // Mock data
   const mockEntries: DirectoryEntry[] = [
@@ -54,10 +73,36 @@ const DirectoryManagement: React.FC = () => {
       logo: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=200',
       verified: true,
       premium: true,
+      images: [
+        'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
+        'https://images.pexels.com/photos/1893556/pexels-photo-1893556.jpeg?auto=compress&cs=tinysrgb&w=800'
+      ],
       rating: 4.8,
       reviewCount: 127,
+      openingHours: {
+        'Lundi': '11:30 - 14:00, 17:30 - 22:00',
+        'Mardi': '11:30 - 14:00, 17:30 - 22:00',
+        'Mercredi': '11:30 - 14:00, 17:30 - 22:00',
+        'Jeudi': '11:30 - 14:00, 17:30 - 22:00',
+        'Vendredi': '11:30 - 14:00, 17:30 - 23:00',
+        'Samedi': '11:30 - 23:00',
+        'Dimanche': '17:30 - 22:00'
+      },
+      specialties: ['Frites belges', 'Sauces maison', 'Boulettes', 'Fricadelles'],
+      features: ['Terrasse', 'Livraison', 'Paiement carte', 'WiFi'],
+      priceRange: '€€',
       createdAt: new Date('2023-01-15'),
-      lastUpdated: new Date('2024-02-20')
+      lastUpdated: new Date('2024-02-20'),
+      coordinates: {
+        latitude: 50.6327095,
+        longitude: 4.652785778
+      },
+      socialMedia: {
+        facebook: 'https://facebook.com/chezmarcel',
+        instagram: 'https://instagram.com/chezmarcel',
+        other: ''
+      },
+      mapsUrl: 'https://maps.google.com/?q=50.6327095,4.652785778'
     },
     {
       id: '2',
@@ -75,10 +120,36 @@ const DirectoryManagement: React.FC = () => {
       },
       verified: true,
       premium: false,
+      images: [
+        'https://images.pexels.com/photos/3184183/pexels-photo-3184183.jpeg?auto=compress&cs=tinysrgb&w=800',
+        'https://images.pexels.com/photos/4253312/pexels-photo-4253312.jpeg?auto=compress&cs=tinysrgb&w=800'
+      ],
       rating: 4.6,
       reviewCount: 89,
+      openingHours: {
+        'Lundi': 'Fermé',
+        'Mardi': '12:00 - 14:30, 18:00 - 22:30',
+        'Mercredi': '12:00 - 14:30, 18:00 - 22:30',
+        'Jeudi': '12:00 - 14:30, 18:00 - 22:30',
+        'Vendredi': '12:00 - 14:30, 18:00 - 23:00',
+        'Samedi': '12:00 - 23:00',
+        'Dimanche': '18:00 - 22:00'
+      },
+      specialties: ['Frites bio', 'Burgers artisanaux', 'Salades', 'Smoothies'],
+      features: ['Bio', 'Végétarien', 'Terrasse', 'Parking'],
+      priceRange: '€€€',
       createdAt: new Date('2023-03-10'),
-      lastUpdated: new Date('2024-02-18')
+      lastUpdated: new Date('2024-02-18'),
+      coordinates: {
+        latitude: 51.0543422,
+        longitude: 3.7174243
+      },
+      socialMedia: {
+        facebook: 'https://facebook.com/labaraque',
+        instagram: 'https://instagram.com/labaraque',
+        other: ''
+      },
+      mapsUrl: 'https://maps.google.com/?q=51.0543422,3.7174243'
     },
     {
       id: '3',
@@ -95,10 +166,35 @@ const DirectoryManagement: React.FC = () => {
       },
       verified: false,
       premium: false,
+      images: [
+        'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800'
+      ],
       rating: 4.3,
       reviewCount: 45,
+      openingHours: {
+        'Lundi': '11:00 - 14:00, 17:00 - 21:00',
+        'Mardi': '11:00 - 14:00, 17:00 - 21:00',
+        'Mercredi': '11:00 - 14:00, 17:00 - 21:00',
+        'Jeudi': '11:00 - 14:00, 17:00 - 21:00',
+        'Vendredi': '11:00 - 14:00, 17:00 - 22:00',
+        'Samedi': '11:00 - 22:00',
+        'Dimanche': 'Fermé'
+      },
+      specialties: ['Frites classiques', 'Mitraillette', 'Snacks'],
+      features: ['Prix abordables', 'Ambiance familiale'],
+      priceRange: '€',
       createdAt: new Date('2023-06-20'),
-      lastUpdated: new Date('2024-01-15')
+      lastUpdated: new Date('2024-01-15'),
+      coordinates: {
+        latitude: 50.6412,
+        longitude: 5.5718
+      },
+      socialMedia: {
+        facebook: '',
+        instagram: '',
+        other: ''
+      },
+      mapsUrl: 'https://maps.google.com/?q=50.6412,5.5718'
     }
   ];
 
@@ -149,6 +245,13 @@ const DirectoryManagement: React.FC = () => {
     }
 
     setFilteredEntries(filtered);
+  };
+
+  const handleImportEntries = (newEntries: DirectoryEntry[]) => {
+    // Dans une application réelle, vous enverriez ces données à votre backend
+    // Pour cette démo, nous les ajoutons simplement à l'état local
+    setEntries(prev => [...prev, ...newEntries]);
+    setFilteredEntries(prev => [...prev, ...newEntries]);
   };
 
   const toggleVerification = (entryId: string) => {
@@ -202,12 +305,21 @@ const DirectoryManagement: React.FC = () => {
               {entries.length} friterie{entries.length > 1 ? 's' : ''} dans l'annuaire
             </p>
           </div>
-          <Button
-            className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
-            icon={<Plus className="h-4 w-4" />}
-          >
-            Ajouter une friterie
-          </Button>
+          <div className="flex space-x-4">
+            <Button
+              onClick={() => setShowImportModal(true)}
+              className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
+              icon={<FileText className="h-4 w-4" />}
+            >
+              Importer CSV
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
+              icon={<Plus className="h-4 w-4" />}
+            >
+              Ajouter une friterie
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -413,6 +525,14 @@ const DirectoryManagement: React.FC = () => {
           </div>
         )}
       </div>
+      
+      {/* Import Modal */}
+      <CSVImportModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onImport={handleImportEntries}
+        existingEntries={entries}
+      />
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
