@@ -21,6 +21,7 @@ let db;
 let storage;
 
 try {
+  console.log("Initialisation de Firebase");
   // Initialize Firebase
   app = initializeApp(firebaseConfig);
   
@@ -28,6 +29,7 @@ try {
   auth = getAuth(app);
   db = getFirestore(app);
   storage = getStorage(app);
+  console.log("Firebase initialisé avec succès");
 } catch (error) {
   console.error("Erreur d'initialisation Firebase:", error);
   
