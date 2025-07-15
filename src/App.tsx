@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext'; 
@@ -13,7 +13,7 @@ console.log("App.tsx - Composant App chargé");
 
 // Loading component
 const LoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+  <div className="min-h-[50vh] flex items-center justify-center bg-gray-50">
     <div className="text-center">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
       <p className="text-gray-600">Chargement...</p>
@@ -78,6 +78,22 @@ class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasErr
 
 function App() {
   console.log("App.tsx - Rendu du composant App");
+
+  // Effet pour signaler que l'application est chargée
+  useEffect(() => {
+    console.log("App.tsx - Composant App monté");
+    
+    // Masquer le loader initial après un court délai
+    const timer = setTimeout(() => {
+      const initialLoader = document.getElementById('initial-loader');
+      if (initialLoader) {
+        initialLoader.style.display = 'none';
+        console.log("App.tsx - Loader initial masqué");
+      }
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   return (
     <ErrorBoundary>
