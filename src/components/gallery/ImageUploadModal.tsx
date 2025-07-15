@@ -388,7 +388,6 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                   </div>
 
                   {/* Files List */}
-                        disabled={files.length === 0 || isUploading}
                     {files && files.length > 0 && files.map((file, index) => (
                       <div key={index} className="bg-white border border-gray-200 rounded-xl p-6">
                         <div className="flex items-start space-x-6">
