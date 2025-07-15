@@ -78,12 +78,29 @@ const GalleryManagement: React.FC = () => {
 
   const handleUploadSuccess = (newImages: ImageMetadata[]) => {
     console.log('Upload successful in GalleryManagement, received new images:', newImages.length);
-    setImages(prev => [...newImages, ...prev]);
+    // Vérifier que newImages est un tableau et qu'il contient des éléments valides
+    if (Array.isArray(newImages) && newImages.length > 0) {
+      // Filtrer les images qui ont un ID valide
+      const validImages = newImages.filter(img => img && img.id);
+      if (validImages.length > 0) {
+        setImages(prev => [...validImages, ...prev]);
+        console.log('Added', validImages.length, 'valid images to the gallery');
+      } else {
+        console.error('No valid images received from upload');
+      }
+    } else {
+      console.error('Invalid newImages array received:', newImages);
+    }
     // Le modal se fermera automatiquement après un court délai
     // Pas besoin de le fermer ici pour éviter les problèmes de redirection
   };
 
   const handleDeleteImage = async (imageId: string) => {
+    if (!imageId) {
+      console.error('Attempted to delete image with undefined id');
+      return;
+    }
+    
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) return;
 
     try {
@@ -111,6 +128,11 @@ const GalleryManagement: React.FC = () => {
   };
 
   const toggleImageSelection = (imageId: string) => {
+    if (!imageId) {
+      console.error('Attempted to toggle selection for image with undefined id');
+      return;
+    }
+    
     setSelectedImages(prev =>
       prev.includes(imageId)
         ? prev.filter(id => id !== imageId)
@@ -127,6 +149,11 @@ const GalleryManagement: React.FC = () => {
   };
 
   const toggleFeatured = async (imageId: string, currentFeatured: boolean) => {
+    if (!imageId) {
+      console.error('Attempted to toggle featured status for image with undefined id');
+      return;
+    }
+    
     try {
       await storageService.updateImageMetadata(imageId, {
         featured: !currentFeatured
@@ -291,6 +318,7 @@ const GalleryManagement: React.FC = () => {
             : 'space-y-4'
           }>
             {filteredImages.map((image) => (
+              image && image.id ? (
               <div key={image.id} className={`bg-gray-50 border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all ${
                 selectedImages.includes(image.id!) ? 'ring-2 ring-orange-500' : ''
               } ${viewMode === 'list' ? 'flex' : ''}`}>
@@ -402,6 +430,7 @@ const GalleryManagement: React.FC = () => {
                   </div>
                 </div>
               </div>
+              ) : null
             ))}
           </div>
         )}
