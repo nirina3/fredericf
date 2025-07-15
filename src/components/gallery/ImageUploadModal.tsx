@@ -152,6 +152,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
     if (!currentUser || files.length === 0) return;
 
     setIsUploading(true);
+    let uploadSuccessful = false;
 
     try {
       const uploadedImages: ImageMetadata[] = [];
@@ -191,8 +192,10 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       }
 
       if (uploadedImages.length > 0) {
+        uploadSuccessful = true;
         onSuccess(uploadedImages);
-        handleClose();
+        // Ne pas fermer automatiquement pour éviter la redirection
+        // La fermeture sera gérée après un délai
       } else {
         console.error('No images were successfully uploaded');
         alert('Erreur lors de l\'upload des images. Veuillez réessayer.');
@@ -202,6 +205,13 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       alert('Erreur lors de l\'upload des images. Veuillez réessayer.');
     } finally {
       setIsUploading(false);
+      
+      // Si l'upload a réussi, fermer la modal après un court délai
+      if (uploadSuccessful) {
+        setTimeout(() => {
+          handleClose();
+        }, 1000); // Délai de 1 seconde pour montrer le statut complet
+      }
     }
   };
 
@@ -539,6 +549,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                 <div className="text-center">
                   <Button
                     onClick={() => fileInputRef.current?.click()}
+                    type="button"
                     variant="outline"
                     disabled={isUploading}
                     icon={<Plus className="h-4 w-4" />}
@@ -562,12 +573,14 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                   <Button
                     onClick={handleClose}
                     variant="outline"
+                    type="button"
                     disabled={isUploading}
                   >
                     Annuler
                   </Button>
                   <Button
                     onClick={handleUpload}
+                    type="button"
                     isLoading={isUploading}
                     disabled={files.length === 0 || files.some(f => !f.metadata.title.trim()) || isUploading}
                     className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"

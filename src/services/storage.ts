@@ -43,6 +43,7 @@ class StorageService {
 
       // Validation du fichier
       this.validateFile(file);
+      console.log('File validation passed:', file.name);
 
       // Génération d'un nom de fichier unique
       const fileName = this.generateFileName(file);
@@ -52,12 +53,14 @@ class StorageService {
       // Upload de l'image originale
       const imageRef = ref(storage, imagePath);
       const uploadResult = await uploadBytes(imageRef, file);
+      console.log('Original image uploaded:', fileName);
       const imageUrl = await getDownloadURL(uploadResult.ref);
 
       onProgress?.({ progress: 50, status: 'processing' });
 
       // Génération du thumbnail
       const thumbnailBlob = await this.generateThumbnail(file);
+      console.log('Thumbnail generated for:', fileName);
       const thumbnailRef = ref(storage, thumbnailPath);
       await uploadBytes(thumbnailRef, thumbnailBlob);
       const thumbnailUrl = await getDownloadURL(thumbnailRef);
@@ -82,7 +85,7 @@ class StorageService {
       };
 
       const docRef = await addDoc(collection(db, 'gallery'), imageMetadata);
-      console.log('Image metadata saved with ID:', docRef.id);
+      console.log('Image metadata saved successfully with ID:', docRef.id);
 
       onProgress?.({ progress: 100, status: 'complete' });
 
@@ -93,6 +96,7 @@ class StorageService {
     } catch (error) {
       console.error('Error uploading image:', error);
       onProgress?.({ progress: 0, status: 'error', error: (error as Error).message });
+      alert(`Erreur lors de l'upload de l'image: ${(error as Error).message}`);
       throw error;
     }
   }
@@ -151,6 +155,7 @@ class StorageService {
   // Génération d'un thumbnail
   private async generateThumbnail(file: File, maxWidth: number = 400, maxHeight: number = 400): Promise<Blob> {
     return new Promise((resolve, reject) => {
+      console.log('Starting thumbnail generation for:', file.name);
       try {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -164,6 +169,7 @@ class StorageService {
         img.onload = () => {
           try {
             // Calcul des nouvelles dimensions en conservant le ratio
+            console.log('Calculating thumbnail dimensions');
             const { width, height } = this.calculateThumbnailDimensions(
               img.width,
               img.height,
@@ -180,8 +186,10 @@ class StorageService {
             canvas.toBlob(
               (blob) => {
                 if (blob) {
+                  console.log('Thumbnail blob created successfully');
                   resolve(blob);
                 } else {
+                  console.error('Failed to create thumbnail blob');
                   reject(new Error('Erreur lors de la génération du thumbnail'));
                 }
               },
@@ -189,13 +197,18 @@ class StorageService {
               0.8
             );
           } catch (err) {
+            console.error('Error during thumbnail processing:', err);
             reject(new Error(`Erreur lors du traitement de l'image: ${err}`));
           }
         };
     
-        img.onerror = () => reject(new Error('Erreur lors du chargement de l\'image'));
+        img.onerror = () => {
+          console.error('Error loading image for thumbnail');
+          reject(new Error('Erreur lors du chargement de l\'image'));
+        };
         img.src = URL.createObjectURL(file);
       } catch (err) {
+        console.error('Error in thumbnail generation:', err);
         reject(new Error(`Erreur lors de la génération du thumbnail: ${err}`));
       }
     });
@@ -204,6 +217,7 @@ class StorageService {
   // Méthode de secours pour générer un thumbnail simple si la méthode principale échoue
   private async generateSimpleThumbnail(file: File): Promise<Blob> {
     // Retourne simplement une copie du fichier original comme thumbnail
+    console.log('Using fallback thumbnail generation for:', file.name);
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {

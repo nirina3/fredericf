@@ -77,8 +77,10 @@ const GalleryManagement: React.FC = () => {
   };
 
   const handleUploadSuccess = (newImages: ImageMetadata[]) => {
+    console.log('Upload successful in GalleryManagement, received new images:', newImages.length);
     setImages(prev => [...newImages, ...prev]);
-    setShowUploadModal(false);
+    // Le modal se fermera automatiquement après un court délai
+    // Pas besoin de le fermer ici pour éviter les problèmes de redirection
   };
 
   const handleDeleteImage = async (imageId: string) => {
