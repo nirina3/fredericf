@@ -82,6 +82,7 @@ class StorageService {
       };
 
       const docRef = await addDoc(collection(db, 'gallery'), imageMetadata);
+      console.log('Image metadata saved with ID:', docRef.id);
 
       onProgress?.({ progress: 100, status: 'complete' });
 
@@ -150,38 +151,69 @@ class StorageService {
   // Génération d'un thumbnail
   private async generateThumbnail(file: File, maxWidth: number = 400, maxHeight: number = 400): Promise<Blob> {
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Impossible de créer le contexte canvas'));
+          return;
+        }
+        
+        const img = new Image();
+        
+        img.onload = () => {
+          try {
+            // Calcul des nouvelles dimensions en conservant le ratio
+            const { width, height } = this.calculateThumbnailDimensions(
+              img.width,
+              img.height,
+              maxWidth,
+              maxHeight
+            );
+    
+            canvas.width = width;
+            canvas.height = height;
+    
+            // Dessin de l'image redimensionnée
+            ctx.drawImage(img, 0, 0, width, height);
+    
+            canvas.toBlob(
+              (blob) => {
+                if (blob) {
+                  resolve(blob);
+                } else {
+                  reject(new Error('Erreur lors de la génération du thumbnail'));
+                }
+              },
+              'image/jpeg',
+              0.8
+            );
+          } catch (err) {
+            reject(new Error(`Erreur lors du traitement de l'image: ${err}`));
+          }
+        };
+    
+        img.onerror = () => reject(new Error('Erreur lors du chargement de l\'image'));
+        img.src = URL.createObjectURL(file);
+      } catch (err) {
+        reject(new Error(`Erreur lors de la génération du thumbnail: ${err}`));
+      }
+    });
+  }
+
+  // Méthode de secours pour générer un thumbnail simple si la méthode principale échoue
+  private async generateSimpleThumbnail(file: File): Promise<Blob> {
+    // Retourne simplement une copie du fichier original comme thumbnail
+    return new Promise((resolve, reject) => {
       const img = new Image();
-
       img.onload = () => {
-        // Calcul des nouvelles dimensions en conservant le ratio
-        const { width, height } = this.calculateThumbnailDimensions(
-          img.width,
-          img.height,
-          maxWidth,
-          maxHeight
-        );
-
-        canvas.width = width;
-        canvas.height = height;
-
-        // Dessin de l'image redimensionnée
-        ctx?.drawImage(img, 0, 0, width, height);
-
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              resolve(blob);
-            } else {
-              reject(new Error('Erreur lors de la génération du thumbnail'));
-            }
-          },
-          'image/jpeg',
-          0.8
-        );
+        file.arrayBuffer().then(buffer => {
+          const blob = new Blob([buffer], { type: file.type });
+          resolve(blob);
+        }).catch(err => {
+          reject(err);
+        });
       };
-
       img.onerror = () => reject(new Error('Erreur lors du chargement de l\'image'));
       img.src = URL.createObjectURL(file);
     });

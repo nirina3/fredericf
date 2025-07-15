@@ -193,9 +193,13 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       if (uploadedImages.length > 0) {
         onSuccess(uploadedImages);
         handleClose();
+      } else {
+        console.error('No images were successfully uploaded');
+        alert('Erreur lors de l\'upload des images. Veuillez réessayer.');
       }
     } catch (error) {
       console.error('Upload error:', error);
+      alert('Erreur lors de l\'upload des images. Veuillez réessayer.');
     } finally {
       setIsUploading(false);
     }
@@ -204,7 +208,9 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   const handleClose = () => {
     if (!isUploading) {
       // Nettoyer les URLs d'aperçu
-      files.forEach(file => URL.revokeObjectURL(file.preview));
+      files.forEach(file => {
+        if (file.preview) URL.revokeObjectURL(file.preview);
+      });
       setFiles([]);
       onClose();
     }
@@ -213,8 +219,8 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full my-4 max-h-[90vh] overflow-hidden">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -231,7 +237,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-6" style={{ maxHeight: 'calc(80vh - 140px)' }}>
             {files.length === 0 ? (
               /* Upload Zone */
               <div
@@ -546,7 +552,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
 
           {/* Footer */}
           {files.length > 0 && (
-            <div className="border-t border-gray-200 p-6">
+            <div className="border-t border-gray-200 p-6 bg-white">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">
                   {files.length} image{files.length > 1 ? 's' : ''} sélectionnée{files.length > 1 ? 's' : ''}
@@ -563,11 +569,11 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                   <Button
                     onClick={handleUpload}
                     isLoading={isUploading}
-                    disabled={files.length === 0 || files.some(f => !f.metadata.title.trim())}
+                    disabled={files.length === 0 || files.some(f => !f.metadata.title.trim()) || isUploading}
                     className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
                     icon={<Upload className="h-4 w-4" />}
                   >
-                    {isUploading ? 'Upload en cours...' : `Uploader ${files.length} image${files.length > 1 ? 's' : ''}`}
+                    {isUploading ? `Upload en cours (${files.filter(f => f.progress?.status === 'complete').length}/${files.length})` : `Uploader ${files.length} image${files.length > 1 ? 's' : ''}`}
                   </Button>
                 </div>
               </div>
