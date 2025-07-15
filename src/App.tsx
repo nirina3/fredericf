@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { NotificationProvider } from './contexts/NotificationContext';
+import { NotificationProvider } from './contexts/NotificationContext'; 
+import LoadingSpinner from './components/ui/LoadingSpinner';
 import Layout from './components/Layout/Layout';
 import AdminLayout from './pages/admin/AdminLayout';
 import Home from './pages/Home';
@@ -32,9 +33,30 @@ import ReservationManagement from './pages/admin/ReservationManagement';
 import DirectoryManagement from './pages/admin/DirectoryManagement';
 import AnalyticsManagement from './pages/admin/AnalyticsManagement';
 import CommentModerationPanel from './components/comments/CommentModerationPanel';
-import LoadingSpinner from './components/ui/LoadingSpinner';
 
 function App() {
+  const [isLoading, setIsLoading] = React.useState(true);
+  
+  React.useEffect(() => {
+    // Simuler un temps de chargement pour permettre à Firebase de s'initialiser
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <LoadingSpinner size="lg" className="mb-4" />
+          <p className="text-gray-600">Chargement de MonFritkot...</p>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <AuthProvider>
       <NotificationProvider>
