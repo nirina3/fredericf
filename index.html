@@ -9,15 +9,106 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* Styles de secours pour le chargement initial */
+      .initial-loader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+        background-color: #f9fafb;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+      }
+      .initial-loader-content {
+        text-align: center;
+        font-family: 'Inter', sans-serif;
+      }
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f97316;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+        margin-bottom: 16px;
+      }
+      @keyframes rotation {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
+    <!-- Loader de secours qui s'affichera même si React ne se charge pas -->
+    <div class="initial-loader" id="initial-loader">
+      <div class="initial-loader-content">
+        <div class="spinner"></div>
+        <p>Chargement de MonFritkot...</p>
+      </div>
+    </div>
+    
     <div id="root"></div>
+    
     <noscript>
       <div style="padding: 20px; text-align: center; font-family: sans-serif;">
         <h1>JavaScript est désactivé</h1>
         <p>Cette application nécessite JavaScript pour fonctionner. Veuillez l'activer dans les paramètres de votre navigateur.</p>
       </div>
     </noscript>
+    
+    <script>
+      // Script de diagnostic pour détecter les problèmes
+      console.log("HTML chargé - Avant le chargement de l'application React");
+      
+      // Vérifier si le DOM est prêt
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOM entièrement chargé");
+      });
+      
+      // Vérifier si la page est complètement chargée
+      window.addEventListener('load', function() {
+        console.log("Page entièrement chargée (y compris toutes les ressources)");
+        
+        // Vérifier si React a démarré après 5 secondes
+        setTimeout(function() {
+          if (document.getElementById('initial-loader')) {
+            console.error("React n'a pas réussi à démarrer après 5 secondes");
+            document.getElementById('initial-loader').innerHTML = `
+              <div class="initial-loader-content">
+                <h2 style="color: #dc2626; margin-bottom: 16px;">Problème de chargement</h2>
+                <p style="margin-bottom: 16px;">L'application n'a pas pu démarrer correctement.</p>
+                <button onclick="window.location.reload()" style="background-color: #f97316; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                  Recharger la page
+                </button>
+              </div>
+            `;
+          }
+        }, 5000);
+      });
+      
+      // Capturer les erreurs globales
+      window.onerror = function(message, source, lineno, colno, error) {
+        console.error("Erreur JavaScript globale:", message, "à", source, "ligne:", lineno);
+        document.getElementById('initial-loader').innerHTML = `
+          <div class="initial-loader-content">
+            <h2 style="color: #dc2626; margin-bottom: 16px;">Erreur détectée</h2>
+            <p style="margin-bottom: 16px;">${message}</p>
+            <p style="margin-bottom: 16px;">Source: ${source}, Ligne: ${lineno}</p>
+            <button onclick="window.location.reload()" style="background-color: #f97316; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+              Recharger la page
+            </button>
+          </div>
+        `;
+        return true;
+      };
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
