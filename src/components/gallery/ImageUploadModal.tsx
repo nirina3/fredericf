@@ -189,7 +189,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                 const newFiles = [...prev];
                 if (newFiles[i]) {
                   newFiles[i].progress = progress;
-                  console.log(`Progress update for file ${i}: ${progress.progress}%, status: ${progress.status}`);
+                  console.log(`Progress update for file ${i}: ${progress.progress}%, status: ${progress.status}`, progress);
                 }
                 return newFiles;
               });
