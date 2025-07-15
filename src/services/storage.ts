@@ -68,50 +68,58 @@ class StorageService {
           const imageRef = ref(storage, imagePath);
           console.log('Starting upload to path:', imagePath);
           
-      
-      // Utiliser Promise.race pour le thumbnail aussi
-      const thumbnailUploadTask = uploadBytes(thumbnailRef, thumbnailBlob);
-      await Promise.race([thumbnailUploadTask, timeoutPromise]);
-      
+          // Utiliser Promise.race pour le thumbnail aussi
+          const thumbnailUploadTask = uploadBytes(thumbnailRef, thumbnailBlob);
+          await Promise.race([thumbnailUploadTask, timeoutPromise]);
+          
 
-      onProgress?.({ progress: 50, status: 'processing' });
+          onProgress?.({ progress: 50, status: 'processing' });
 
-      // Génération du thumbnail
-      const thumbnailBlob = await this.generateThumbnail(file);
-      console.log('Thumbnail generated for:', fileName);
-      const thumbnailRef = ref(storage, thumbnailPath);
-      await uploadBytes(thumbnailRef, thumbnailBlob);
-      const thumbnailUrl = await getDownloadURL(thumbnailRef);
-      console.log('Thumbnail URL obtained:', thumbnailUrl);
+          // Génération du thumbnail
+          const thumbnailBlob = await this.generateThumbnail(file);
+          console.log('Thumbnail generated for:', fileName);
+          const thumbnailRef = ref(storage, thumbnailPath);
+          await uploadBytes(thumbnailRef, thumbnailBlob);
+          const thumbnailUrl = await getDownloadURL(thumbnailRef);
+          console.log('Thumbnail URL obtained:', thumbnailUrl);
 
-      // Obtention des dimensions de l'image
-      const dimensions = await this.getImageDimensions(file);
+          // Obtention des dimensions de l'image
+          const dimensions = await this.getImageDimensions(file);
 
-      onProgress?.({ progress: 80, status: 'processing' });
+          onProgress?.({ progress: 80, status: 'processing' });
 
-      // Sauvegarde des métadonnées en base
-      const imageMetadata: Omit<ImageMetadata, 'id'> = {
-        ...metadata,
-        url: imageUrl,
-        thumbnail: thumbnailUrl,
-        fileName,
-        fileSize: file.size,
-        mimeType: file.type,
-        dimensions,
-        uploadedAt: new Date(),
-        likes: 0,
-        downloads: 0
-      };
+          // Sauvegarde des métadonnées en base
+          const imageMetadata: Omit<ImageMetadata, 'id'> = {
+            ...metadata,
+            url: imageUrl,
+            thumbnail: thumbnailUrl,
+            fileName,
+            fileSize: file.size,
+            mimeType: file.type,
+            dimensions,
+            uploadedAt: new Date(),
+            likes: 0,
+            downloads: 0
+          };
 
-      const docRef = await addDoc(collection(db, 'gallery'), imageMetadata);
-      console.log('Image metadata saved successfully to Firestore with ID:', docRef.id);
+          const docRef = await addDoc(collection(db, 'gallery'), imageMetadata);
+          console.log('Image metadata saved successfully to Firestore with ID:', docRef.id);
 
-      onProgress?.({ progress: 100, status: 'complete' });
+          onProgress?.({ progress: 100, status: 'complete' });
 
-      return {
-        id: docRef.id,
-        ...imageMetadata
-      };
+          return {
+            id: docRef.id,
+            ...imageMetadata
+          };
+        } catch (error) {
+          console.error('Error uploading image:', error);
+          const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue lors de l\'upload';
+          console.error('Detailed error:', error);
+          onProgress?.({ progress: 0, status: 'error', error: errorMessage });
+          alert(`Erreur lors de l'upload de l'image: ${errorMessage}`);
+          throw error;
+        }
+      });
     } catch (error) {
       console.error('Error uploading image:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue lors de l\'upload';
