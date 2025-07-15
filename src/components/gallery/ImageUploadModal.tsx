@@ -151,6 +151,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   const handleUpload = async () => {
     if (!currentUser || files.length === 0) return;
 
+    console.log('Starting upload process for', files.length, 'files');
     setIsUploading(true);
     let uploadSuccessful = false;
 
@@ -160,6 +161,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         
+        console.log(`Uploading file ${i+1}/${files.length}:`, file.name, 'size:', storageService.formatFileSize(file.size));
         try {
           const uploadedImage = await storageService.uploadImage(
             file,
@@ -175,6 +177,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
               });
             }
           );
+          console.log('Upload successful for:', file.name, 'with ID:', uploadedImage.id);
 
           uploadedImages.push(uploadedImage);
         } catch (error) {
@@ -192,6 +195,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       }
 
       if (uploadedImages.length > 0) {
+        console.log('All uploads completed successfully:', uploadedImages.length, 'images');
         uploadSuccessful = true;
         onSuccess(uploadedImages);
         // Ne pas fermer automatiquement pour éviter la redirection
@@ -209,14 +213,16 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       // Si l'upload a réussi, fermer la modal après un court délai
       if (uploadSuccessful) {
         setTimeout(() => {
+          console.log('Closing modal after successful upload');
           handleClose();
-        }, 1000); // Délai de 1 seconde pour montrer le statut complet
+        }, 2000); // Délai de 2 secondes pour montrer le statut complet
       }
     }
   };
 
   const handleClose = () => {
     if (!isUploading) {
+      console.log('Closing upload modal and cleaning up resources');
       // Nettoyer les URLs d'aperçu
       files.forEach(file => {
         if (file.preview) URL.revokeObjectURL(file.preview);
@@ -574,6 +580,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                     onClick={handleClose}
                     variant="outline"
                     type="button"
+                    type="button"
                     disabled={isUploading}
                   >
                     Annuler
@@ -581,12 +588,15 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                   <Button
                     onClick={handleUpload}
                     type="button"
-                    isLoading={isUploading}
+                    isLoading={isLoading}
                     disabled={files.length === 0 || files.some(f => !f.metadata.title.trim()) || isUploading}
                     className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
                     icon={<Upload className="h-4 w-4" />}
                   >
-                    {isUploading ? `Upload en cours (${files.filter(f => f.progress?.status === 'complete').length}/${files.length})` : `Uploader ${files.length} image${files.length > 1 ? 's' : ''}`}
+                    {isLoading 
+                      ? `Upload en cours (${files.filter(f => f.progress?.status === 'complete').length}/${files.length})` 
+                      : `Uploader ${files.length} image${files.length > 1 ? 's' : ''}`
+                    }
                   </Button>
                 </div>
               </div>
