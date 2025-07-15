@@ -1,156 +1,108 @@
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext'; 
+import LoadingSpinner from './components/ui/LoadingSpinner';
 import Layout from './components/Layout/Layout';
-
-// Importation directe des composants essentiels pour éviter le lazy loading
+import AdminLayout from './pages/admin/AdminLayout';
 import Home from './pages/Home';
+import About from './pages/About';
+import Services from './pages/Services';
+import Contact from './pages/Contact';
+import Pricing from './pages/Pricing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-
-console.log("App.tsx - Composant App chargé");
-
-// Loading component
-const LoadingFallback = () => (
-  <div className="min-h-[50vh] flex items-center justify-center bg-gray-50">
-    <div className="text-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-      <p className="text-gray-600">Chargement...</p>
-    </div>
-  </div>
-);
-
-// Lazy load des pages moins critiques
-const About = lazy(() => import('./pages/About'));
-const Blog = lazy(() => import('./pages/Blog'));
-const Contact = lazy(() => import('./pages/Contact'));
-const Directory = lazy(() => import('./pages/Directory'));
-const Gallery = lazy(() => import('./pages/Gallery'));
-const Services = lazy(() => import('./pages/Services'));
-const Pricing = lazy(() => import('./pages/Pricing'));
-const Profile = lazy(() => import('./pages/Profile'));
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
-const InitializeAdmin = lazy(() => import('./pages/admin/InitializeAdmin'));
-
-// Error boundary component
-class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: Error | null}> {
-  constructor(props: {children: React.ReactNode}) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("Erreur capturée par ErrorBoundary:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center max-w-md p-6 bg-white rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Une erreur est survenue</h2>
-            <p className="text-gray-700 mb-4">
-              {this.state.error ? this.state.error.message : "Erreur inconnue"}
-            </p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-            >
-              Recharger la page
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
+import ForgotPassword from './pages/ForgotPassword';
+import Gallery from './pages/Gallery';
+import ReservationHistory from './pages/ReservationHistory';
+import Blog from './pages/Blog';
+import Directory from './pages/Directory';
+import Profile from './pages/Profile';
+import Subscription from './pages/Subscription';
+import Billing from './pages/Billing';
+import Dashboard from './pages/admin/Dashboard';
+import UserManagement from './pages/admin/UserManagement';
+import CreateUser from './pages/admin/CreateUser';
+import SubscriptionManagement from './pages/admin/SubscriptionManagement';
+import SettingsManagement from './pages/admin/SettingsManagement';
+import InitializeAdmin from './pages/admin/InitializeAdmin';
+import ContentManagement from './pages/admin/ContentManagement';
+import GalleryManagement from './pages/admin/GalleryManagement';
+import BlogManagement from './pages/admin/BlogManagement';
+import ReservationManagement from './pages/admin/ReservationManagement';
+import DirectoryManagement from './pages/admin/DirectoryManagement';
+import AnalyticsManagement from './pages/admin/AnalyticsManagement';
+import CommentModerationPanel from './components/comments/CommentModerationPanel';
 
 function App() {
-  console.log("App.tsx - Rendu du composant App");
-
-  // Masquer le loader initial
+  const [isLoading, setIsLoading] = React.useState(true);
+  
   React.useEffect(() => {
-    console.log("App.tsx - Composant App monté");
-    const initialLoader = document.getElementById('initial-loader');
-    if (initialLoader) {
-      initialLoader.style.display = 'none';
-      console.log("App.tsx - Loader initial masqué");
-    }
+    // Simuler un temps de chargement pour permettre à Firebase de s'initialiser
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+    
+    return () => clearTimeout(timer);
   }, []);
   
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <LoadingSpinner size="lg" className="mb-4" />
+          <p className="text-gray-600">Chargement de MonFritkot...</p>
+        </div>
+      </div>
+    );
+  }
+  
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <NotificationProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
-                <Route path="about" element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <About />
-                  </Suspense>
-                } />
-                <Route path="blog" element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <Blog />
-                  </Suspense>
-                } />
-                <Route path="contact" element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <Contact />
-                  </Suspense>
-                } />
-                <Route path="directory" element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <Directory />
-                  </Suspense>
-                } />
-                <Route path="gallery" element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <Gallery />
-                  </Suspense>
-                } />
-                <Route path="services" element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <Services />
-                  </Suspense>
-                } />
-                <Route path="pricing" element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <Pricing />
-                  </Suspense>
-                } />
-                <Route path="profile" element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <Profile />
-                  </Suspense>
-                } />
-              </Route>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/forgot-password" element={
-                <Suspense fallback={<LoadingFallback />}>
-                  <ForgotPassword />
-                </Suspense>
-              } />
-              <Route path="/initialize-admin" element={
-                <Suspense fallback={<LoadingFallback />}>
-                  <InitializeAdmin />
-                </Suspense>
-              } />
-            </Routes>
-          </Router>
-        </NotificationProvider>
-      </AuthProvider>
-    </ErrorBoundary>
+    <AuthProvider>
+      <NotificationProvider>
+        <Router>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="about" element={<About />} />
+              <Route path="services" element={<Services />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="pricing" element={<Pricing />} />
+              <Route path="login" element={<Login />} />
+              <Route path="signup" element={<Signup />} />
+              <Route path="forgot-password" element={<ForgotPassword />} />
+              <Route path="gallery" element={<Gallery />} />
+              <Route path="blog" element={<Blog />} />
+              <Route path="directory" element={<Directory />} />
+              <Route path="reservations" element={<ReservationHistory />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="subscription" element={<Subscription />} />
+              <Route path="billing" element={<Billing />} />
+            </Route>
+
+            {/* Admin routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="create-user" element={<CreateUser />} />
+              <Route path="subscriptions" element={<SubscriptionManagement />} />
+              <Route path="content" element={<ContentManagement />} />
+              <Route path="blog" element={<BlogManagement />} />
+              <Route path="gallery" element={<GalleryManagement />} />
+              <Route path="reservations" element={<ReservationManagement />} />
+              <Route path="directory" element={<DirectoryManagement />} />
+              <Route path="analytics" element={<AnalyticsManagement />} />
+              <Route path="moderation" element={<CommentModerationPanel />} />
+              <Route path="settings" element={<SettingsManagement />} />
+            </Route>
+
+            {/* Initialization route */}
+            <Route path="/initialize-admin" element={<InitializeAdmin />} />
+          </Routes>
+        </Router>
+      </NotificationProvider>
+    </AuthProvider>
   );
 }
 

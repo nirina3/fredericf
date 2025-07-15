@@ -9,62 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-      /* Styles de secours pour le chargement initial */
-      .initial-loader {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        width: 100vw;
-        background-color: #f9fafb;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 9999;
-      }
-      .initial-loader-content {
-        text-align: center;
-        font-family: 'Inter', sans-serif;
-        max-width: 80%;
-        margin: 0 auto;
-      }
-      .spinner {
-        width: 50px;
-        height: 50px;
-        border: 5px solid #f97316;
-        border-bottom-color: transparent;
-        border-radius: 50%;
-        display: inline-block;
-        box-sizing: border-box;
-        animation: rotation 1s linear infinite;
-        margin-bottom: 16px;
-      }
-      @keyframes rotation {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    </style>
   </head>
   <body>
-    <!-- Loader de secours qui s'affichera même si React ne se charge pas -->
-    <div class="initial-loader" id="initial-loader">
-      <div class="initial-loader-content">
-        <div class="spinner"></div>
-        <p>Chargement de MonFritkot... <span id="loading-status">Initialisation</span></p>
-        <div id="loading-error" style="display: none; color: #dc2626; margin-top: 16px;"></div>
-      </div>
-    </div>
-    
     <div id="root"></div>
-    
-    <noscript>
-      <div style="padding: 20px; text-align: center; font-family: sans-serif;">
-        <h1>JavaScript est désactivé</h1>
-        <p>Cette application nécessite JavaScript pour fonctionner. Veuillez l'activer dans les paramètres de votre navigateur.</p>
-      </div>
-    </noscript>
-    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
