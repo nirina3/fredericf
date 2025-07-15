@@ -68,17 +68,17 @@ class StorageService {
           const imageRef = ref(storage, imagePath);
           console.log('Starting upload to path:', imagePath);
           
-          // Utiliser Promise.race pour le thumbnail aussi
-          const thumbnailUploadTask = uploadBytes(thumbnailRef, thumbnailBlob);
-          await Promise.race([thumbnailUploadTask, timeoutPromise]);
-          
-
           onProgress?.({ progress: 50, status: 'processing' });
 
           // Génération du thumbnail
           const thumbnailBlob = await this.generateThumbnail(file);
           console.log('Thumbnail generated for:', fileName);
           const thumbnailRef = ref(storage, thumbnailPath);
+          
+          // Utiliser Promise.race pour le thumbnail aussi
+          const thumbnailUploadTask = uploadBytes(thumbnailRef, thumbnailBlob);
+          await Promise.race([thumbnailUploadTask, timeoutPromise]);
+          
           await uploadBytes(thumbnailRef, thumbnailBlob);
           const thumbnailUrl = await getDownloadURL(thumbnailRef);
           console.log('Thumbnail URL obtained:', thumbnailUrl);
@@ -86,12 +86,16 @@ class StorageService {
           // Obtention des dimensions de l'image
           const dimensions = await this.getImageDimensions(file);
 
+          // Obtention de l'URL de l'image originale
+          const imageUrl = await getDownloadURL(imageRef);
+          console.log('Original image URL obtained:', imageUrl);
+
           onProgress?.({ progress: 80, status: 'processing' });
 
           // Sauvegarde des métadonnées en base
           const imageMetadata: Omit<ImageMetadata, 'id'> = {
             ...metadata,
-            url: imageUrl,
+            url: imageUrl, // Maintenant imageUrl est défini
             thumbnail: thumbnailUrl,
             fileName,
             fileSize: file.size,
