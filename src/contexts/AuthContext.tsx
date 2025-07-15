@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User as FirebaseUser, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
@@ -34,10 +34,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Simuler un utilisateur pour le développement
-  React.useEffect(() => {
+  // Mock user for development
+  const mockUser: User = {
+    id: 'mock-user-id',
+    email: 'user@example.com',
+    name: 'Utilisateur Test',
+    role: 'admin',
+    subscription: {
+      id: 'sub_mock',
+      userId: 'mock-user-id',
+      planId: 'standard',
+      plan: {
+        id: 'standard',
+        name: 'Client Accro',
+        price: 10.00,
+        currency: 'USD',
+        interval: 'month',
+        features: ['Accès complet', 'Support prioritaire'],
+        maxProjects: 10,
+        support: 'Email',
+        popular: true
+      },
+      status: 'active',
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      amount: 10.00,
+      currency: 'USD'
+    },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  };
+
+  useEffect(() => {
+    // For development, use mock user immediately to avoid white screen
+    setCurrentUser(mockUser);
+    setLoading(false);
+    
+    // Still try to connect to Firebase in the background
     try {
-      // Écouter les changements d'authentification
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
         setFirebaseUser(user);
         
@@ -46,66 +80,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             if (userDoc.exists()) {
               setCurrentUser({ id: user.uid, ...userDoc.data() } as User);
-            } else {
-              console.log("User document doesn't exist in Firestore");
             }
           } catch (error) {
             console.error('Error fetching user data:', error);
-            // Créer un utilisateur simulé pour le développement
-            createMockUser(user);
           }
-        } else {
-          setCurrentUser(null);
         }
-        
-        setLoading(false);
       });
       
       return unsubscribe;
     } catch (error) {
       console.error("Auth state change error:", error);
-      // Créer un utilisateur simulé pour le développement
-      createMockUser();
-      setLoading(false);
       return () => {};
     }
   }, []);
-
-  // Fonction pour créer un utilisateur simulé
-  const createMockUser = (user?: FirebaseUser) => {
-    console.log("Creating mock user for development");
-    const mockUser: User = {
-      id: user?.uid || 'mock-user-id',
-      email: user?.email || 'user@example.com',
-      name: user?.displayName || 'Utilisateur Test',
-      role: 'user',
-      subscription: {
-        id: 'sub_mock',
-        userId: user?.uid || 'mock-user-id',
-        planId: 'standard',
-        plan: {
-          id: 'standard',
-          name: 'Client Accro',
-          price: 10.00,
-          currency: 'USD',
-          interval: 'month',
-          features: ['Accès complet', 'Support prioritaire'],
-          maxProjects: 10,
-          support: 'Email',
-          popular: true
-        },
-        status: 'active',
-        startDate: new Date(),
-        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        amount: 10.00,
-        currency: 'USD'
-      },
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    
-    setCurrentUser(mockUser);
-  };
 
   const login = async (email: string, password: string) => {
     try {
@@ -158,6 +145,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     try {
       await signOut(auth);
+      // Keep using mock user after logout for development
+      setCurrentUser(mockUser);
     } catch (error) {
       console.error("Logout error:", error);
       throw error;
@@ -191,7 +180,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading ? children : (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement de l'application...</p>
+          </div>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };

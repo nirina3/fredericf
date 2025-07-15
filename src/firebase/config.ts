@@ -4,7 +4,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
-// Configuration par défaut pour le développement
+// Configuration Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDrgrUqD9jDxp_jDTcqO0RkIZUjNFpio2Q",
   authDomain: "friterie-9c7d7.firebaseapp.com",
@@ -16,7 +16,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-console.log("Firebase initialized successfully");
 
 // Initialize Firebase services
 export const auth = getAuth(app);

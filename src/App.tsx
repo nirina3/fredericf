@@ -44,54 +44,93 @@ const LoadingFallback = () => (
   </div>
 );
 
+// Error boundary component
+class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
+  constructor(props: {children: React.ReactNode}) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("Error caught by boundary:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center max-w-md p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Une erreur est survenue</h2>
+            <p className="text-gray-700 mb-6">Nous sommes désolés, une erreur inattendue s'est produite.</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+            >
+              Recharger la page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 function App() {
   return (
-    <AuthProvider>
-      <NotificationProvider>
-        <Router>
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
-                <Route path="about" element={<About />} />
-                <Route path="services" element={<Services />} />
-                <Route path="contact" element={<Contact />} />
-                <Route path="pricing" element={<Pricing />} />
-                <Route path="login" element={<Login />} />
-                <Route path="signup" element={<Signup />} />
-                <Route path="forgot-password" element={<ForgotPassword />} />
-                <Route path="gallery" element={<Gallery />} />
-                <Route path="blog" element={<Blog />} />
-                <Route path="directory" element={<Directory />} />
-                <Route path="reservations" element={<ReservationHistory />} />
-                <Route path="profile" element={<Profile />} />
-                <Route path="subscription" element={<Subscription />} />
-                <Route path="billing" element={<Billing />} />
-              </Route>
+    <ErrorBoundary>
+      <AuthProvider>
+        <NotificationProvider>
+          <Router>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<Home />} />
+                  <Route path="about" element={<About />} />
+                  <Route path="services" element={<Services />} />
+                  <Route path="contact" element={<Contact />} />
+                  <Route path="pricing" element={<Pricing />} />
+                  <Route path="login" element={<Login />} />
+                  <Route path="signup" element={<Signup />} />
+                  <Route path="forgot-password" element={<ForgotPassword />} />
+                  <Route path="gallery" element={<Gallery />} />
+                  <Route path="blog" element={<Blog />} />
+                  <Route path="directory" element={<Directory />} />
+                  <Route path="reservations" element={<ReservationHistory />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="subscription" element={<Subscription />} />
+                  <Route path="billing" element={<Billing />} />
+                </Route>
 
-              {/* Admin routes */}
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<Dashboard />} />
-                <Route path="users" element={<UserManagement />} />
-                <Route path="create-user" element={<CreateUser />} />
-                <Route path="subscriptions" element={<SubscriptionManagement />} />
-                <Route path="content" element={<ContentManagement />} />
-                <Route path="blog" element={<BlogManagement />} />
-                <Route path="gallery" element={<GalleryManagement />} />
-                <Route path="reservations" element={<ReservationManagement />} />
-                <Route path="directory" element={<DirectoryManagement />} />
-                <Route path="analytics" element={<AnalyticsManagement />} />
-                <Route path="moderation" element={<CommentModerationPanel />} />
-              </Route>
+                {/* Admin routes */}
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="users" element={<UserManagement />} />
+                  <Route path="create-user" element={<CreateUser />} />
+                  <Route path="subscriptions" element={<SubscriptionManagement />} />
+                  <Route path="content" element={<ContentManagement />} />
+                  <Route path="blog" element={<BlogManagement />} />
+                  <Route path="gallery" element={<GalleryManagement />} />
+                  <Route path="reservations" element={<ReservationManagement />} />
+                  <Route path="directory" element={<DirectoryManagement />} />
+                  <Route path="analytics" element={<AnalyticsManagement />} />
+                  <Route path="moderation" element={<CommentModerationPanel />} />
+                </Route>
 
-              {/* Initialization route */}
-              <Route path="/initialize-admin" element={<InitializeAdmin />} />
-            </Routes>
-          </Suspense>
-        </Router>
-      </NotificationProvider>
-    </AuthProvider>
+                {/* Initialization route */}
+                <Route path="/initialize-admin" element={<InitializeAdmin />} />
+              </Routes>
+            </Suspense>
+          </Router>
+        </NotificationProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
