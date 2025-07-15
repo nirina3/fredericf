@@ -1,0 +1,14 @@
+// Règles de sécurité Firebase Storage à copier dans la console Firebase
+
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      // Autoriser la lecture à tous les utilisateurs
+      allow read: if true;
+      
+      // Autoriser l'écriture aux utilisateurs authentifiés
+      allow write: if request.auth != null;
+    }
+  }
+}

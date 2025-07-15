@@ -35,7 +35,7 @@ class StorageService {
   // Upload une image avec génération automatique de thumbnail
   async uploadImage(
     file: File,
-    metadata: Omit<ImageMetadata, 'id' | 'url' | 'thumbnail' | 'fileName' | 'fileSize' | 'mimeType' | 'dimensions' | 'uploadedAt' | 'likes' | 'downloads'>,
+    metadata: Omit<ImageMetadata, 'id' | 'url' | 'thumbnail' | 'fileName' | 'fileSize' | 'mimeType' | 'dimensions' | 'uploadedAt' | 'likes' | 'downloads'> & { uploadedBy: string },
     onProgress?: (progress: UploadProgress) => void,
     timeoutMs: number = 30000
   ): Promise<ImageMetadata> {
@@ -43,18 +43,19 @@ class StorageService {
       onProgress?.({ progress: 0, status: 'uploading' });
       console.log('Starting upload process for:', file.name);
       
-      // Validation du fichier
-      this.validateFile(file);
-      console.log('File validation passed:', file.name);
-
       // Vérifier la configuration Firebase
       if (!storage) {
         throw new Error('Firebase Storage n\'est pas initialisé correctement');
       }
 
+      // Validation du fichier
+      this.validateFile(file);
+      console.log('File validation passed:', file.name);
+
       // Génération d'un nom de fichier unique
       const fileName = this.generateFileName(file);
       const imagePath = `gallery/${fileName}`;
+      console.log('Generated file path:', imagePath);
 
       // Upload de l'image originale
       const imageRef = ref(storage, imagePath);
@@ -62,13 +63,14 @@ class StorageService {
       
       // Mettre à jour la progression à 25%
       onProgress?.({ progress: 25, status: 'uploading' });
+      console.log('Uploading original image...');
       
-      await uploadBytes(imageRef, file);
+      const uploadResult = await uploadBytes(imageRef, file);
       console.log('Original image uploaded successfully');
       
       // Mettre à jour la progression à 50%
       onProgress?.({ progress: 50, status: 'processing' });
-      onProgress?.({ progress: 50, status: 'processing' });
+      console.log('Generating thumbnail...');
 
       // Génération du thumbnail
       const thumbnailBlob = await this.generateThumbnail(file);
@@ -77,12 +79,14 @@ class StorageService {
       // Définir le chemin du thumbnail après sa génération
       const thumbnailPath = `gallery/thumbnails/${fileName}`;
       const thumbnailRef = ref(storage, thumbnailPath);
+      console.log('Uploading thumbnail to:', thumbnailPath);
       
       // Upload du thumbnail
       onProgress?.({ progress: 75, status: 'processing' });
       await uploadBytes(thumbnailRef, thumbnailBlob);
       console.log('Thumbnail uploaded successfully');
       
+      console.log('Getting download URLs...');
       // Obtention des URLs
       const imageUrl = await getDownloadURL(imageRef);
       console.log('Original image URL obtained:', imageUrl);
@@ -91,6 +95,7 @@ class StorageService {
       console.log('Thumbnail URL obtained:', thumbnailUrl);
 
       onProgress?.({ progress: 90, status: 'processing' });
+      console.log('Getting image dimensions...');
 
       // Obtention des dimensions de l'image avec gestion d'erreur
       let dimensions;
@@ -102,6 +107,7 @@ class StorageService {
         dimensions = { width: 800, height: 600 }; // Valeurs par défaut
       }
 
+      console.log('Preparing metadata for Firestore...');
       // Préparation des métadonnées
       const metadataToSave: Omit<ImageMetadata, 'id'> = {
         title: metadata.title || file.name.split('.')[0],
@@ -122,12 +128,13 @@ class StorageService {
         downloads: 0
       };
 
-      console.log('Saving metadata to Firestore:', metadataToSave);
+      console.log('Saving metadata to Firestore...');
       const docRef = await addDoc(collection(db, 'gallery'), metadataToSave);
       console.log('Image metadata saved successfully to Firestore with ID:', docRef.id);
 
       // Mettre à jour la progression à 100%
       onProgress?.({ progress: 100, status: 'complete' });
+      console.log('Upload complete!');
 
       // Retourner l'objet complet avec l'ID
       const result: ImageMetadata = {
@@ -141,7 +148,9 @@ class StorageService {
       console.error('Error in uploadImage:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue lors de l\'upload';
       console.error('Upload failed with error:', errorMessage);
-      onProgress?.({ progress: 0, status: 'error', error: errorMessage });
+      if (onProgress) {
+        onProgress({ progress: 0, status: 'error', error: errorMessage });
+      }
       throw new Error(`Erreur lors de l'upload: ${errorMessage}`);
     }
   }
