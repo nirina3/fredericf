@@ -1,105 +1,94 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext'; 
-import LoadingSpinner from './components/ui/LoadingSpinner';
 import Layout from './components/Layout/Layout';
-import AdminLayout from './pages/admin/AdminLayout';
 import Home from './pages/Home';
-import About from './pages/About';
-import Services from './pages/Services';
-import Contact from './pages/Contact';
-import Pricing from './pages/Pricing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import ForgotPassword from './pages/ForgotPassword';
-import Gallery from './pages/Gallery';
-import ReservationHistory from './pages/ReservationHistory';
-import Blog from './pages/Blog';
-import Directory from './pages/Directory';
-import Profile from './pages/Profile';
-import Subscription from './pages/Subscription';
-import Billing from './pages/Billing';
-import Dashboard from './pages/admin/Dashboard';
-import UserManagement from './pages/admin/UserManagement';
-import CreateUser from './pages/admin/CreateUser';
-import SubscriptionManagement from './pages/admin/SubscriptionManagement';
-import SettingsManagement from './pages/admin/SettingsManagement';
-import InitializeAdmin from './pages/admin/InitializeAdmin';
-import ContentManagement from './pages/admin/ContentManagement';
-import GalleryManagement from './pages/admin/GalleryManagement';
-import BlogManagement from './pages/admin/BlogManagement';
-import ReservationManagement from './pages/admin/ReservationManagement';
-import DirectoryManagement from './pages/admin/DirectoryManagement';
-import AnalyticsManagement from './pages/admin/AnalyticsManagement';
-import CommentModerationPanel from './components/comments/CommentModerationPanel';
+
+// Lazy-loaded components
+const About = lazy(() => import('./pages/About'));
+const Services = lazy(() => import('./pages/Services'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Pricing = lazy(() => import('./pages/Pricing'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const Gallery = lazy(() => import('./pages/Gallery'));
+const ReservationHistory = lazy(() => import('./pages/ReservationHistory'));
+const Blog = lazy(() => import('./pages/Blog'));
+const Directory = lazy(() => import('./pages/Directory'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Subscription = lazy(() => import('./pages/Subscription'));
+const Billing = lazy(() => import('./pages/Billing'));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
+const UserManagement = lazy(() => import('./pages/admin/UserManagement'));
+const CreateUser = lazy(() => import('./pages/admin/CreateUser'));
+const SubscriptionManagement = lazy(() => import('./pages/admin/SubscriptionManagement'));
+const ContentManagement = lazy(() => import('./pages/admin/ContentManagement'));
+const BlogManagement = lazy(() => import('./pages/admin/BlogManagement'));
+const GalleryManagement = lazy(() => import('./pages/admin/GalleryManagement'));
+const ReservationManagement = lazy(() => import('./pages/admin/ReservationManagement'));
+const DirectoryManagement = lazy(() => import('./pages/admin/DirectoryManagement'));
+const AnalyticsManagement = lazy(() => import('./pages/admin/AnalyticsManagement'));
+const CommentModerationPanel = lazy(() => import('./components/comments/CommentModerationPanel'));
+const InitializeAdmin = lazy(() => import('./pages/admin/InitializeAdmin'));
+
+// Loading component
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+      <p className="text-gray-600">Chargement...</p>
+    </div>
+  </div>
+);
 
 function App() {
-  const [isLoading, setIsLoading] = React.useState(true);
-  
-  React.useEffect(() => {
-    // Simuler un temps de chargement pour permettre à Firebase de s'initialiser
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-    
-    return () => clearTimeout(timer);
-  }, []);
-  
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <LoadingSpinner size="lg" className="mb-4" />
-          <p className="text-gray-600">Chargement de MonFritkot...</p>
-        </div>
-      </div>
-    );
-  }
-  
   return (
     <AuthProvider>
       <NotificationProvider>
         <Router>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="about" element={<About />} />
-              <Route path="services" element={<Services />} />
-              <Route path="contact" element={<Contact />} />
-              <Route path="pricing" element={<Pricing />} />
-              <Route path="login" element={<Login />} />
-              <Route path="signup" element={<Signup />} />
-              <Route path="forgot-password" element={<ForgotPassword />} />
-              <Route path="gallery" element={<Gallery />} />
-              <Route path="blog" element={<Blog />} />
-              <Route path="directory" element={<Directory />} />
-              <Route path="reservations" element={<ReservationHistory />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="subscription" element={<Subscription />} />
-              <Route path="billing" element={<Billing />} />
-            </Route>
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Home />} />
+                <Route path="about" element={<About />} />
+                <Route path="services" element={<Services />} />
+                <Route path="contact" element={<Contact />} />
+                <Route path="pricing" element={<Pricing />} />
+                <Route path="login" element={<Login />} />
+                <Route path="signup" element={<Signup />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="gallery" element={<Gallery />} />
+                <Route path="blog" element={<Blog />} />
+                <Route path="directory" element={<Directory />} />
+                <Route path="reservations" element={<ReservationHistory />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="subscription" element={<Subscription />} />
+                <Route path="billing" element={<Billing />} />
+              </Route>
 
-            {/* Admin routes */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="users" element={<UserManagement />} />
-              <Route path="create-user" element={<CreateUser />} />
-              <Route path="subscriptions" element={<SubscriptionManagement />} />
-              <Route path="content" element={<ContentManagement />} />
-              <Route path="blog" element={<BlogManagement />} />
-              <Route path="gallery" element={<GalleryManagement />} />
-              <Route path="reservations" element={<ReservationManagement />} />
-              <Route path="directory" element={<DirectoryManagement />} />
-              <Route path="analytics" element={<AnalyticsManagement />} />
-              <Route path="moderation" element={<CommentModerationPanel />} />
-              <Route path="settings" element={<SettingsManagement />} />
-            </Route>
+              {/* Admin routes */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="create-user" element={<CreateUser />} />
+                <Route path="subscriptions" element={<SubscriptionManagement />} />
+                <Route path="content" element={<ContentManagement />} />
+                <Route path="blog" element={<BlogManagement />} />
+                <Route path="gallery" element={<GalleryManagement />} />
+                <Route path="reservations" element={<ReservationManagement />} />
+                <Route path="directory" element={<DirectoryManagement />} />
+                <Route path="analytics" element={<AnalyticsManagement />} />
+                <Route path="moderation" element={<CommentModerationPanel />} />
+              </Route>
 
-            {/* Initialization route */}
-            <Route path="/initialize-admin" element={<InitializeAdmin />} />
-          </Routes>
+              {/* Initialization route */}
+              <Route path="/initialize-admin" element={<InitializeAdmin />} />
+            </Routes>
+          </Suspense>
         </Router>
       </NotificationProvider>
     </AuthProvider>

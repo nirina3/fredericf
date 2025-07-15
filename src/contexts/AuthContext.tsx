@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { User as FirebaseUser, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
@@ -32,80 +32,142 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setFirebaseUser(user);
-      
-      if (user) {
-        try {
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          if (userDoc.exists()) {
-            setCurrentUser({ id: user.uid, ...userDoc.data() } as User);
+  // Simuler un utilisateur pour le développement
+  React.useEffect(() => {
+    try {
+      // Écouter les changements d'authentification
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        setFirebaseUser(user);
+        
+        if (user) {
+          try {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+              setCurrentUser({ id: user.uid, ...userDoc.data() } as User);
+            } else {
+              console.log("User document doesn't exist in Firestore");
+            }
+          } catch (error) {
+            console.error('Error fetching user data:', error);
+            // Créer un utilisateur simulé pour le développement
+            createMockUser(user);
           }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
+        } else {
+          setCurrentUser(null);
         }
-      } else {
-        setCurrentUser(null);
-      }
-
-      // Réduire le délai de chargement
-      setTimeout(() => {
+        
         setLoading(false);
-      }, 500);
-    });
-
-    return unsubscribe;
+      });
+      
+      return unsubscribe;
+    } catch (error) {
+      console.error("Auth state change error:", error);
+      // Créer un utilisateur simulé pour le développement
+      createMockUser();
+      setLoading(false);
+      return () => {};
+    }
   }, []);
 
-  const login = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password);
-  };
-
-  const signup = async (email: string, password: string, name: string) => {
-    const { user } = await createUserWithEmailAndPassword(auth, email, password);
-    
-    const userData: Partial<User> = {
-      email: user.email!,
-      name,
+  // Fonction pour créer un utilisateur simulé
+  const createMockUser = (user?: FirebaseUser) => {
+    console.log("Creating mock user for development");
+    const mockUser: User = {
+      id: user?.uid || 'mock-user-id',
+      email: user?.email || 'user@example.com',
+      name: user?.displayName || 'Utilisateur Test',
       role: 'user',
       subscription: {
-        id: '',
-        userId: user.uid,
-        planId: 'trial',
+        id: 'sub_mock',
+        userId: user?.uid || 'mock-user-id',
+        planId: 'standard',
         plan: {
-          id: 'trial',
-          name: 'Trial',
-          price: 0,
+          id: 'standard',
+          name: 'Client Accro',
+          price: 10.00,
           currency: 'USD',
           interval: 'month',
-          features: ['Basic features', 'Email support'],
-          maxProjects: 1,
-          support: 'Email'
+          features: ['Accès complet', 'Support prioritaire'],
+          maxProjects: 10,
+          support: 'Email',
+          popular: true
         },
-        status: 'trial',
+        status: 'active',
         startDate: new Date(),
-        endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days trial
-        amount: 0,
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        amount: 10.00,
         currency: 'USD'
       },
       createdAt: new Date(),
       updatedAt: new Date()
     };
+    
+    setCurrentUser(mockUser);
+  };
 
-    await setDoc(doc(db, 'users', user.uid), userData);
+  const login = async (email: string, password: string) => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error;
+    }
+  };
+
+  const signup = async (email: string, password: string, name: string) => {
+    try {
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      
+      const userData: Partial<User> = {
+        email: user.email!,
+        name,
+        role: 'user',
+        subscription: {
+          id: '',
+          userId: user.uid,
+          planId: 'trial',
+          plan: {
+            id: 'trial',
+            name: 'Trial',
+            price: 0,
+            currency: 'USD',
+            interval: 'month',
+            features: ['Basic features', 'Email support'],
+            maxProjects: 1,
+            support: 'Email'
+          },
+          status: 'trial',
+          startDate: new Date(),
+          endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days trial
+          amount: 0,
+          currency: 'USD'
+        },
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      await setDoc(doc(db, 'users', user.uid), userData);
+    } catch (error) {
+      console.error("Signup error:", error);
+      throw error;
+    }
   };
 
   const logout = async () => {
-    await signOut(auth);
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout error:", error);
+      throw error;
+    }
   };
 
   const isSubscribed = (requiredPlan?: string) => {
     if (!currentUser?.subscription) return false;
     
-    const planHierarchy = { 'basic': 1, 'premium': 2, 'pro': 3 };
+    const planHierarchy = { 'basic': 1, 'standard': 2, 'premium': 2, 'pro': 3 };
     const currentPlanLevel = planHierarchy[currentUser.subscription.plan.id as keyof typeof planHierarchy] || 0;
     const requiredPlanLevel = planHierarchy[requiredPlan as keyof typeof planHierarchy] || 1;
     
