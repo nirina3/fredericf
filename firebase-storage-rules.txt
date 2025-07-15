@@ -3,6 +3,30 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    // Règle pour les images de friteries
+    match /friteries/images/{friteryId}/{fileName} {
+      // Autoriser la lecture à tous les utilisateurs
+      allow read: if true;
+      
+      // Autoriser l'écriture aux utilisateurs authentifiés
+      allow write: if request.auth != null && 
+        // Vérifier le type de fichier
+        (request.resource.contentType.matches('image/jpeg') || 
+         request.resource.contentType.matches('image/png') || 
+         request.resource.contentType.matches('image/webp')) &&
+        // Vérifier la taille du fichier (max 50MB)
+        request.resource.size <= 50 * 1024 * 1024;
+      
+      // Autoriser la suppression aux administrateurs ou au propriétaire de la friterie
+      allow delete: if request.auth != null && (
+        // Vérifier si l'utilisateur est admin (nécessite une requête Firestore)
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        // Ou si l'utilisateur est le propriétaire de la friterie
+        get(/databases/$(database)/documents/directory/$(friteryId)).data.ownerId == request.auth.uid
+      );
+    }
+    
+    // Règles pour les autres fichiers
     match /{allPaths=**} {
       // Autoriser la lecture à tous les utilisateurs
       allow read: if true;
