@@ -36,7 +36,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Créer un utilisateur simulé pour le développement
   const createMockUser = (): User => {
-    console.log("Création d'un utilisateur simulé");
     return {
       id: 'mock-user-id',
       email: 'user@example.com',
@@ -69,8 +68,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log("AuthContext - useEffect appelé");
-    
     // Utiliser immédiatement un utilisateur simulé pour éviter l'écran blanc
     const mockUser = createMockUser();
     setCurrentUser(mockUser);
@@ -78,9 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     // Essayer de se connecter à Firebase en arrière-plan
     try {
-      console.log("Tentative de connexion à Firebase Auth");
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
-        console.log("Firebase Auth state changed:", user ? "User logged in" : "No user");
         setFirebaseUser(user);
         
         if (user) {
@@ -90,7 +85,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               setCurrentUser({ id: user.uid, ...userDoc.data() } as User);
             }
           } catch (error) {
-            console.error('Error fetching user data:', error);
             // Garder l'utilisateur simulé en cas d'erreur
           }
         }
@@ -98,7 +92,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       return unsubscribe;
     } catch (error) {
-      console.error("Auth state change error:", error);
       // Garder l'utilisateur simulé en cas d'erreur
       return () => {};
     }

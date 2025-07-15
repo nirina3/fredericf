@@ -3,14 +3,11 @@ import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-console.log("main.tsx - Début du chargement");
-
 // Fonction pour masquer le loader initial
 const hideInitialLoader = () => {
   const initialLoader = document.getElementById('initial-loader');
   if (initialLoader) {
     initialLoader.style.display = 'none';
-    console.log("Loader initial masqué");
   }
 };
 
@@ -21,17 +18,13 @@ try {
     throw new Error("Élément root non trouvé dans le DOM");
   }
   
-  console.log("Création du root React");
   const root = ReactDOM.createRoot(rootElement);
   
-  console.log("Rendu de l'application");
   root.render(
     <React.StrictMode>
       <App />
     </React.StrictMode>
   );
-  
-  console.log("Rendu terminé");
   
   // Masquer le loader après un court délai
   setTimeout(hideInitialLoader, 500);

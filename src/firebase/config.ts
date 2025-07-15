@@ -1,4 +1,4 @@
-// Configuration Firebase pour MonFritkot
+// Configuration Firebase simplifiée pour MonFritkot
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
@@ -14,30 +14,11 @@ const firebaseConfig = {
   appId: "1:1050064325788:web:e429112319c873dfa07159"
 };
 
-// Initialisation avec gestion d'erreurs
-let app;
-let auth;
-let db;
-let storage;
-
-try {
-  console.log("Initialisation de Firebase");
-  // Initialize Firebase
-  app = initializeApp(firebaseConfig);
-  
-  // Initialize Firebase services
-  auth = getAuth(app);
-  db = getFirestore(app);
-  storage = getStorage(app);
-  console.log("Firebase initialisé avec succès");
-} catch (error) {
-  console.error("Erreur d'initialisation Firebase:", error);
-  
-  // Créer des objets factices pour éviter les erreurs
-  auth = {} as any;
-  db = {} as any;
-  storage = {} as any;
-}
+// Initialisation Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
 export { auth, db, storage };
 export default app;
