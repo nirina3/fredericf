@@ -1,5 +1,4 @@
 import { ref, uploadBytes, getDownloadURL, deleteObject, listAll } from 'firebase/storage';
-import { uploadBytesResumable } from 'firebase/storage';
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { storage, db } from '../firebase/config';
 
@@ -52,7 +51,7 @@ class StorageService {
       
       // Vérifier la configuration Firebase
       if (!storage) {
-        throw new Error('Firebase Storage n\'est pas initialisé correctement');
+        throw new Error('Firebase Storage n\'est pas initialisé correctement. Vérifiez votre configuration.');
       }
 
       // Validation du fichier
@@ -65,13 +64,13 @@ class StorageService {
       // Upload de l'image originale
       const imageRef = ref(storage, imagePath);
       
-      // Utiliser uploadBytes au lieu de uploadBytesResumable pour simplifier
+      // Upload de l'image
       try {
         await uploadBytes(imageRef, file);
         onProgress?.({ progress: 50, status: 'processing' });
       } catch (error) {
-        console.error('Error uploading original image:', error);
-        onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'upload de l\'image originale' });
+        console.error('Erreur lors de l\'upload de l\'image originale:', error);
+        onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'upload: ' + (error instanceof Error ? error.message : 'Erreur inconnue') });
         throw error;
       }
 
@@ -79,15 +78,18 @@ class StorageService {
       let thumbnailUrl = '';
       try {
         const thumbnailBlob = await this.generateThumbnail(file);
-        
-        // Définir le chemin du thumbnail après sa génération
-        const thumbnailPath = `gallery/thumbnails/${fileName}`;
-        const thumbnailRef = ref(storage, thumbnailPath);
-        await uploadBytes(thumbnailRef, thumbnailBlob);
-        onProgress?.({ progress: 75, status: 'processing' });
-        
-        // Obtenir l'URL du thumbnail
-        thumbnailUrl = await getDownloadURL(thumbnailRef);
+        if (thumbnailBlob) {
+          // Définir le chemin du thumbnail après sa génération
+          const thumbnailPath = `gallery/thumbnails/${fileName}`;
+          const thumbnailRef = ref(storage, thumbnailPath);
+          await uploadBytes(thumbnailRef, thumbnailBlob);
+          onProgress?.({ progress: 75, status: 'processing' });
+          
+          // Obtenir l'URL du thumbnail
+          thumbnailUrl = await getDownloadURL(thumbnailRef);
+        } else {
+          console.warn('Impossible de générer le thumbnail, utilisation de l\'image originale');
+        }
       } catch (error) {
         console.error('Error with thumbnail:', error);
         // En cas d'erreur, on continue sans thumbnail
@@ -97,18 +99,17 @@ class StorageService {
       // Obtention des URLs
       let imageUrl;
       try {
-        imageUrl = await getDownloadURL(imageRef);
+        imageUrl = await getDownloadURL(imageRef); 
+        // Si on n'a pas pu obtenir l'URL du thumbnail, on utilise l'URL de l'image originale
+        if (!thumbnailUrl) {
+          thumbnailUrl = imageUrl;
+        }
       } catch (error) {
         console.error('Error getting image URL:', error);
         onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'obtention de l\'URL de l\'image' });
         throw error;
       }
       
-      // Si on n'a pas pu obtenir l'URL du thumbnail, on utilise l'URL de l'image originale
-      if (!thumbnailUrl) {
-        thumbnailUrl = imageUrl;
-      }
-
       onProgress?.({ progress: 85, status: 'processing' });
 
       // Obtention des dimensions de l'image avec gestion d'erreur
@@ -146,8 +147,8 @@ class StorageService {
       try {
         docRef = await addDoc(collection(db, 'gallery'), metadataToSave);
       } catch (error) {
-        console.error('Error saving metadata to Firestore:', error);
-        onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'enregistrement des métadonnées' });
+        console.error('Erreur lors de l\'enregistrement des métadonnées dans Firestore:', error);
+        onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'enregistrement des métadonnées: ' + (error instanceof Error ? error.message : 'Erreur inconnue') });
         throw error;
       }
 
@@ -225,7 +226,6 @@ class StorageService {
   // Génération d'un thumbnail
   private async generateThumbnail(file: File, maxWidth: number = 400, maxHeight: number = 400): Promise<Blob> {
     return new Promise((resolve, reject) => {
-      console.log('Starting thumbnail generation for:', file.name);
       try {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -237,9 +237,7 @@ class StorageService {
         const img = new Image();
         
         img.onload = () => {
-          try {
             // Calcul des nouvelles dimensions en conservant le ratio
-            console.log('Original dimensions:', img.width, 'x', img.height);
             let width = img.width;
             let height = img.height;
             
@@ -255,8 +253,6 @@ class StorageService {
               height = newHeight;
             }
             
-            console.log('Calculated thumbnail dimensions:', width, 'x', height);
-    
             canvas.width = width;
             canvas.height = height;
     
@@ -266,24 +262,20 @@ class StorageService {
             canvas.toBlob(
               (blob) => {
                 if (blob) {
-                  console.log('Thumbnail blob created successfully');
                   resolve(blob);
                 } else {
-                  console.error('Failed to create thumbnail blob');
-                  reject(new Error('Erreur lors de la génération du thumbnail'));
+                  console.error('Échec de la création du blob thumbnail');
+                  // Au lieu de rejeter, on résout avec null pour continuer le processus
+                  resolve(file);
                 }
               },
               'image/jpeg',
               0.8
             );
-          } catch (err) {
-            console.error('Error during thumbnail processing:', err);
-            reject(new Error(`Erreur lors du traitement de l'image: ${err}`));
-          }
         };
     
         img.onerror = (e) => {
-          console.error('Error loading image for thumbnail:', e);
+          console.error('Erreur lors du chargement de l\'image pour le thumbnail:', e);
           // Essayer la méthode de secours si l'image ne peut pas être chargée
           this.generateSimpleThumbnail(file)
             .then(resolve)
@@ -291,7 +283,7 @@ class StorageService {
         };
         img.src = URL.createObjectURL(file);
       } catch (err) {
-        console.error('Error in thumbnail generation:', err);
+        console.error('Erreur dans la génération du thumbnail:', err);
         reject(new Error(`Erreur lors de la génération du thumbnail: ${err}`));
       }
     });
@@ -300,29 +292,10 @@ class StorageService {
   // Méthode de secours pour générer un thumbnail simple si la méthode principale échoue
   private async generateSimpleThumbnail(file: File): Promise<Blob> {
     // Retourne simplement une copie du fichier original comme thumbnail
-    console.log('Using fallback thumbnail generation for:', file.name);
+    console.log('Utilisation de la méthode de secours pour la génération du thumbnail:', file.name);
     return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        file.arrayBuffer().then(buffer => {
-          const blob = new Blob([buffer], { type: file.type });
-          resolve(blob);
-        }).catch(err => {
-          console.error('Error in fallback thumbnail generation:', err);
-          // Dernier recours: retourner le fichier original
-          resolve(file);
-        });
-      };
-      img.onerror = (e) => {
-        console.error('Error loading image in fallback method:', e);
-        // Dernier recours: retourner le fichier original
-        file.arrayBuffer().then(buffer => {
-          resolve(new Blob([buffer], { type: file.type }));
-        }).catch(err => {
-          reject(new Error('Impossible de générer un thumbnail: ' + err.message));
-        });
-      };
-      img.src = URL.createObjectURL(file);
+      // Simplement retourner le fichier original comme blob
+      resolve(file);
     });
   }
 
@@ -359,15 +332,14 @@ class StorageService {
   // Obtention des dimensions de l'image
   private async getImageDimensions(file: File): Promise<{ width: number; height: number }> {
     return new Promise((resolve, reject) => {
-      console.log('Getting image dimensions');
       const img = new Image();
       img.onload = () => {
-        console.log('Image dimensions obtained:', img.width, 'x', img.height);
         resolve({ width: img.width, height: img.height });
       };
       img.onerror = (e) => {
-        console.error('Error reading image dimensions:', e);
-        reject(new Error('Impossible de lire les dimensions de l\'image'));
+        console.error('Erreur de lecture des dimensions de l\'image:', e);
+        // Utiliser des dimensions par défaut au lieu de rejeter
+        resolve({ width: 800, height: 600 });
       };
       img.src = URL.createObjectURL(file);
     });

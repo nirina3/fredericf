@@ -153,10 +153,10 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   const handleUpload = async () => {
     if (!currentUser || files.length === 0) return;
 
-    setIsUploading(true);
-    const uploadedImages: ImageMetadata[] = [];
-
     try {
+      setIsUploading(true);
+      const uploadedImages: ImageMetadata[] = [];
+
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
@@ -164,7 +164,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
           // Préparer les métadonnées (s'assurer qu'elles sont correctement formatées)
           const uploadMetadata = {
             title: file.metadata?.title || file.name.split('.')[0],
-            description: file.metadata?.description || '',
+            description: file.metadata?.description || 'Image uploadée via MonFritkot',
             category: file.metadata?.category || 'friteries',
             tags: file.metadata?.tags || [],
             requiredPlan: file.metadata?.requiredPlan || 'basic',
@@ -172,7 +172,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
             uploadedBy: currentUser.id
           };
           
-          // Upload l'image
+          // Upload de l'image avec gestion de progression
           const uploadedImage = await storageService.uploadImage(
             file,
             uploadMetadata,
@@ -186,7 +186,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
               });
             }
           );
-          
+
           // Vérifier que l'image uploadée est valide et a un ID
           if (uploadedImage && uploadedImage.id) {
             uploadedImages.push(uploadedImage);
@@ -194,7 +194,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
             console.error('Uploaded image is missing ID or is invalid:', uploadedImage);
             
             // Mettre à jour le statut d'erreur pour cette image
-            setFiles(prev => {
+            setFiles((prev) => {
               const newFiles = [...prev];
               if (newFiles[i]) {
                 newFiles[i].progress = { 
@@ -208,46 +208,54 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
           }
         } catch (error) {
           console.error(`Error uploading ${file.name}:`, error);
-          setFiles(prev => {
+          setFiles((prev) => {
             const newFiles = [...prev];
-            newFiles[i].progress = {
-              progress: 0,
-              status: 'error',
-              error: (error as Error).message
-            };
+            if (newFiles[i]) {
+              newFiles[i].progress = {
+                progress: 0,
+                status: 'error',
+                error: (error as Error).message
+              };
+            }
             return newFiles;
           });
         }
       }
 
       if (uploadedImages.length > 0) {
-        // Appeler onSuccess et fermer le modal
+        // Appeler onSuccess avec les images uploadées
         onSuccess(uploadedImages);
+        // Réinitialiser l'état
         setFiles([]);
-        setIsUploading(false);
-        onClose();
-        return;
+        // Fermer le modal
+        setTimeout(() => {
+          onClose();
+        }, 500);
       } else {
         console.error('No images were successfully uploaded');
         alert('Erreur lors de l\'upload des images. Veuillez réessayer.');
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Erreur lors de l\'upload des images. Veuillez réessayer.');
+      alert('Erreur générale lors de l\'upload: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
     } finally {
       setIsUploading(false);
     }
   };
 
   const handleClose = () => {
-    if (!isUploading) {
+    if (isUploading) {
+      if (!confirm('Un upload est en cours. Êtes-vous sûr de vouloir annuler?')) {
+        return;
+      }
+    }
+    
       // Nettoyer les URLs d'aperçu
       files.forEach(file => {
         if (file.preview) URL.revokeObjectURL(file.preview);
       });
       setFiles([]);
       onClose();
-    }
   };
 
   if (!isOpen) return null;
