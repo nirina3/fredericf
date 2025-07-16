@@ -136,10 +136,12 @@ const About: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
               <div key={index} className="text-center group">
-                <div className="bg-gradient-to-br from-orange-500 to-red-600 text-white p-6 rounded-2xl mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  {value.icon}
+                <div className="bg-gradient-to-br from-orange-500 to-red-600 text-white p-6 rounded-2xl mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg relative">
+                  <div className="flex flex-col items-center">
+                    {value.icon}
+                    <span className="text-white font-bold mt-2 text-lg">{value.title}</span>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{value.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{value.description}</p>
               </div>
             ))}
