@@ -1,6 +1,14 @@
 import { ref, uploadBytes, getDownloadURL, deleteObject, listAll } from 'firebase/storage';
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, orderBy } from 'firebase/firestore';
-import { storage, db } from '../firebase/config';
+import { storage, db, auth } from '../firebase/config';
+
+// Mode debug
+const DEBUG = true;
+const debugLog = (...args: any[]) => {
+  if (DEBUG) {
+    console.log('[STORAGE DEBUG]', ...args);
+  }
+};
 
 export interface UploadProgress {
   progress: number;
@@ -47,65 +55,58 @@ class StorageService {
     onProgress?: (progress: UploadProgress) => void,
   ): Promise<ImageMetadata> {
     try {
+      debugLog('Starting upload process for file:', file.name, 'size:', this.formatFileSize(file.size));
+      debugLog('Firebase config check:', storage ? 'Storage initialized' : 'Storage NOT initialized');
+      debugLog('Current user:', auth.currentUser?.uid);
+      
       onProgress?.({ progress: 0, status: 'uploading' });
       
       // Vérifier la configuration Firebase
       if (!storage) {
+        debugLog('Firebase Storage not initialized!');
         throw new Error('Firebase Storage n\'est pas initialisé correctement. Vérifiez votre configuration.');
       }
 
       // Validation du fichier
+      debugLog('Validating file...');
       this.validateFile(file);
+      debugLog('File validation passed');
 
       // Génération d'un nom de fichier unique
       const fileName = this.generateFileName(file);
-      const imagePath = `gallery/${fileName}`;
+      const imagePath = `friterie/test-${fileName}`;
+      debugLog('Generated file path:', imagePath);
 
       // Upload de l'image originale
       const imageRef = ref(storage, imagePath);
+      debugLog('Created storage reference:', imageRef.fullPath);
       
       // Upload de l'image
       try {
+        debugLog('Starting uploadBytes...');
         await uploadBytes(imageRef, file);
+        debugLog('uploadBytes completed successfully');
         onProgress?.({ progress: 50, status: 'processing' });
       } catch (error) {
-        console.error('Erreur lors de l\'upload de l\'image originale:', error);
+        debugLog('ERROR during uploadBytes:', error);
         onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'upload: ' + (error instanceof Error ? error.message : 'Erreur inconnue') });
         throw error;
       }
 
-      // Génération du thumbnail
+      // Bypass thumbnail generation for debugging
+      debugLog('Bypassing thumbnail generation for debug');
       let thumbnailUrl = '';
-      try {
-        const thumbnailBlob = await this.generateThumbnail(file);
-        if (thumbnailBlob) {
-          // Définir le chemin du thumbnail après sa génération
-          const thumbnailPath = `gallery/thumbnails/${fileName}`;
-          const thumbnailRef = ref(storage, thumbnailPath);
-          await uploadBytes(thumbnailRef, thumbnailBlob);
-          onProgress?.({ progress: 75, status: 'processing' });
-          
-          // Obtenir l'URL du thumbnail
-          thumbnailUrl = await getDownloadURL(thumbnailRef);
-        } else {
-          console.warn('Impossible de générer le thumbnail, utilisation de l\'image originale');
-        }
-      } catch (error) {
-        console.error('Error with thumbnail:', error);
-        // En cas d'erreur, on continue sans thumbnail
-        onProgress?.({ progress: 75, status: 'processing', error: 'Erreur avec le thumbnail, utilisation de l\'image originale' });
-      }
+      onProgress?.({ progress: 75, status: 'processing' });
 
       // Obtention des URLs
       let imageUrl;
       try {
+        debugLog('Getting download URL...');
         imageUrl = await getDownloadURL(imageRef); 
-        // Si on n'a pas pu obtenir l'URL du thumbnail, on utilise l'URL de l'image originale
-        if (!thumbnailUrl) {
-          thumbnailUrl = imageUrl;
-        }
+        debugLog('Download URL obtained:', imageUrl);
+        thumbnailUrl = imageUrl; // Use same URL for thumbnail in debug mode
       } catch (error) {
-        console.error('Error getting image URL:', error);
+        debugLog('ERROR getting download URL:', error);
         onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'obtention de l\'URL de l\'image' });
         throw error;
       }
@@ -113,15 +114,18 @@ class StorageService {
       onProgress?.({ progress: 85, status: 'processing' });
 
       // Obtention des dimensions de l'image avec gestion d'erreur
+      debugLog('Getting image dimensions...');
       let dimensions;
       try {
         dimensions = await this.getImageDimensions(file);
+        debugLog('Image dimensions:', dimensions);
       } catch (error) {
-        console.error('Error getting image dimensions, using defaults:', error);
+        debugLog('ERROR getting dimensions, using defaults:', error);
         dimensions = { width: 800, height: 600 }; // Valeurs par défaut
       }
 
       // Préparation des métadonnées
+      debugLog('Preparing metadata...');
       const metadataToSave: Omit<ImageMetadata, 'id'> = {
         title: metadata.title || file.name.split('.')[0],
         description: metadata.description || '',
@@ -143,16 +147,19 @@ class StorageService {
       
       onProgress?.({ progress: 90, status: 'processing' });
 
+      debugLog('Saving metadata to Firestore...');
       let docRef;
       try {
         docRef = await addDoc(collection(db, 'gallery'), metadataToSave);
+        debugLog('Metadata saved successfully, doc ID:', docRef.id);
       } catch (error) {
-        console.error('Erreur lors de l\'enregistrement des métadonnées dans Firestore:', error);
+        debugLog('ERROR saving metadata to Firestore:', error);
         onProgress?.({ progress: 0, status: 'error', error: 'Erreur lors de l\'enregistrement des métadonnées: ' + (error instanceof Error ? error.message : 'Erreur inconnue') });
         throw error;
       }
 
       // Mettre à jour la progression à 100%
+      debugLog('Upload process completed successfully');
       onProgress?.({ progress: 100, status: 'complete' });
 
       // Retourner l'objet complet avec l'ID
@@ -161,9 +168,10 @@ class StorageService {
         ...metadataToSave
       };
 
+      debugLog('Returning final result:', result);
       return result;
     } catch (error: any) {
-      console.error('Error in uploadImage:', error);
+      debugLog('CRITICAL ERROR in uploadImage:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue lors de l\'upload';
       if (onProgress) {
         onProgress({ progress: 0, status: 'error', error: errorMessage });
@@ -204,15 +212,21 @@ class StorageService {
   // Validation du fichier
   private validateFile(file: File): void {
     const maxSize = 10 * 1024 * 1024; // 10MB
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/jpg'];
+    
+    debugLog('Validating file:', file.name, 'type:', file.type, 'size:', file.size);
 
     if (!allowedTypes.includes(file.type)) {
+      debugLog('File type not allowed:', file.type);
       throw new Error('Type de fichier non supporté. Utilisez JPG, PNG, WebP ou GIF.');
     }
 
     if (file.size > maxSize) {
+      debugLog('File too large:', this.formatFileSize(file.size));
       throw new Error('Le fichier est trop volumineux. Taille maximum : 10MB.');
     }
+    
+    debugLog('File validation passed');
   }
 
   // Génération d'un nom de fichier unique
@@ -226,10 +240,12 @@ class StorageService {
   // Génération d'un thumbnail
   private async generateThumbnail(file: File, maxWidth: number = 400, maxHeight: number = 400): Promise<Blob> {
     return new Promise((resolve, reject) => {
+      debugLog('Generating thumbnail for:', file.name);
       try {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         if (!ctx) {
+          debugLog('Failed to create canvas context');
           reject(new Error('Impossible de créer le contexte canvas'));
           return;
         }
@@ -332,12 +348,14 @@ class StorageService {
   // Obtention des dimensions de l'image
   private async getImageDimensions(file: File): Promise<{ width: number; height: number }> {
     return new Promise((resolve, reject) => {
+      debugLog('Getting dimensions for:', file.name);
       const img = new Image();
       img.onload = () => {
+        debugLog('Image loaded, dimensions:', img.width, 'x', img.height);
         resolve({ width: img.width, height: img.height });
       };
       img.onerror = (e) => {
-        console.error('Erreur de lecture des dimensions de l\'image:', e);
+        debugLog('Error reading image dimensions:', e);
         // Utiliser des dimensions par défaut au lieu de rejeter
         resolve({ width: 800, height: 600 });
       };
@@ -410,25 +428,30 @@ class StorageService {
   // Suppression d'une image
   async deleteImage(imageId: string): Promise<void> {
     try {
+      debugLog('Deleting image with ID:', imageId);
       // Récupération des métadonnées pour obtenir les URLs
       const images = await this.getGalleryImages();
       const image = images.find(img => img.id === imageId);
       
       if (!image) {
+        debugLog('Image not found for deletion');
         throw new Error('Image non trouvée');
       }
 
+      debugLog('Found image to delete:', image.fileName);
       // Suppression des fichiers du storage
       const imageRef = ref(storage, `gallery/${image.fileName}`);
       const thumbnailRef = ref(storage, `gallery/thumbnails/${image.fileName}`);
 
+      debugLog('Deleting files from storage...');
       await Promise.all([
         deleteObject(imageRef),
         deleteObject(thumbnailRef),
         deleteDoc(doc(db, 'gallery', imageId))
       ]);
+      debugLog('Image deleted successfully');
     } catch (error) {
-      console.error('Error deleting image:', error);
+      debugLog('ERROR deleting image:', error);
       throw error;
     }
   }
@@ -486,6 +509,32 @@ class StorageService {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  // Test simple d'upload pour debug
+  async testUpload(file: File): Promise<string> {
+    debugLog('SIMPLE TEST UPLOAD for file:', file.name);
+    
+    try {
+      // Créer une référence simple
+      const testRef = ref(storage, `friterie/test-${Date.now()}.jpg`);
+      debugLog('Test reference created:', testRef.fullPath);
+      
+      // Upload simple
+      debugLog('Starting simple upload...');
+      await uploadBytes(testRef, file);
+      debugLog('Simple upload completed');
+      
+      // Obtenir l'URL
+      debugLog('Getting download URL...');
+      const url = await getDownloadURL(testRef);
+      debugLog('Got download URL:', url);
+      
+      return url;
+    } catch (error) {
+      debugLog('CRITICAL ERROR in test upload:', error);
+      throw error;
+    }
   }
 
   // Obtention des catégories disponibles
