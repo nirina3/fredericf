@@ -1,9 +1,17 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { X, Upload, Image as ImageIcon, Plus, Trash2, Eye, AlertCircle, Check, Crown } from 'lucide-react';
 import Button from '../ui/Button';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext'; 
 import { useNotifications } from '../../contexts/NotificationContext';
 import storageService, { UploadProgress, ImageMetadata } from '../../services/storage';
+
+// Mode debug
+const DEBUG = true;
+const debugLog = (...args: any[]) => {
+  if (DEBUG) {
+    console.log('[UPLOAD MODAL DEBUG]', ...args);
+  }
+};
 
 interface ImageUploadModalProps {
   isOpen: boolean;
@@ -35,7 +43,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [globalSettings, setGlobalSettings] = useState({
-    category: 'friteries',
+    category: 'friteries', 
     requiredPlan: 'basic' as 'basic' | 'premium' | 'pro',
     featured: false
   });
@@ -153,13 +161,44 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   const handleUpload = async () => {
     if (!currentUser || files.length === 0) return;
 
+    debugLog('Starting upload process with', files.length, 'files');
     try {
       setIsUploading(true);
-      const uploadedImages: ImageMetadata[] = [];
+      debugLog('isUploading set to true');
 
+      // Test simple d'upload pour debug
+      if (files.length > 0) {
+        debugLog('Attempting simple test upload first...');
+        try {
+          const testUrl = await storageService.testUpload(files[0]);
+          debugLog('Simple test upload succeeded:', testUrl);
+          addNotification({
+            type: 'success',
+            title: 'Test d\'upload réussi',
+            message: 'Le test d\'upload a fonctionné correctement.',
+            category: 'system',
+            priority: 'low'
+          });
+        } catch (testError) {
+          debugLog('Simple test upload FAILED:', testError);
+          addNotification({
+            type: 'error',
+            title: 'Erreur de test d\'upload',
+            message: 'Le test d\'upload a échoué: ' + (testError instanceof Error ? testError.message : 'Erreur inconnue'),
+            category: 'system',
+            priority: 'high'
+          });
+          setIsUploading(false);
+          return;
+        }
+      }
+
+      // Procéder avec l'upload normal
+      const uploadedImages: ImageMetadata[] = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-
+        debugLog('Processing file', i+1, 'of', files.length, ':', file.name);
+        
         try {
           // Préparer les métadonnées (s'assurer qu'elles sont correctement formatées)
           const uploadMetadata = {
@@ -171,7 +210,8 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
             featured: file.metadata?.featured || false,
             uploadedBy: currentUser.id
           };
-          
+          debugLog('Prepared metadata for file:', uploadMetadata);
+
           // Upload de l'image avec gestion de progression
           const uploadedImage = await storageService.uploadImage(
             file,
@@ -179,6 +219,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
             (progress: UploadProgress) => {
               setFiles(prev => {
                 const newFiles = [...prev];
+                debugLog(`Progress update for ${file.name}:`, progress);
                 if (newFiles[i]) {
                   newFiles[i].progress = progress;
                 }
@@ -186,13 +227,15 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
               });
             }
           );
+          debugLog('Upload completed for file:', file.name);
 
           // Vérifier que l'image uploadée est valide et a un ID
           if (uploadedImage && uploadedImage.id) {
+            debugLog('Valid uploaded image with ID:', uploadedImage.id);
             uploadedImages.push(uploadedImage);
           } else {
-            console.error('Uploaded image is missing ID or is invalid:', uploadedImage);
-            
+            debugLog('ERROR: Uploaded image is missing ID or is invalid:', uploadedImage);
+
             // Mettre à jour le statut d'erreur pour cette image
             setFiles((prev) => {
               const newFiles = [...prev];
@@ -207,7 +250,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
             });
           }
         } catch (error) {
-          console.error(`Error uploading ${file.name}:`, error);
+          debugLog(`ERROR uploading ${file.name}:`, error);
           setFiles((prev) => {
             const newFiles = [...prev];
             if (newFiles[i]) {
@@ -223,21 +266,29 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       }
 
       if (uploadedImages.length > 0) {
-        // Appeler onSuccess avec les images uploadées
+        debugLog('Upload process completed successfully with', uploadedImages.length, 'images');
+        
+        // Notification de succès
+        addNotification({
+          type: 'success',
+          title: 'Upload réussi',
+          message: `${uploadedImages.length} image(s) ont été uploadées avec succès.`,
+          category: 'system',
+          priority: 'medium'
+        });
+        
+        // Appeler onSuccess et fermer le modal
         onSuccess(uploadedImages);
-        // Réinitialiser l'état
-        setFiles([]);
-        // Fermer le modal
-        setTimeout(() => {
-          onClose();
-        }, 500);
+        debugLog('onSuccess called with uploaded images');
+        
+        // Fermer le modal après un court délai
+        setTimeout(() => onClose(), 1000);
       } else {
-        console.error('No images were successfully uploaded');
-        alert('Erreur lors de l\'upload des images. Veuillez réessayer.');
+        debugLog('ERROR: No images were successfully uploaded');
+        throw new Error('Aucune image n\'a été uploadée avec succès');
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      alert('Erreur générale lors de l\'upload: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
+      debugLog('CRITICAL ERROR during upload process:', error);
     } finally {
       setIsUploading(false);
     }
@@ -246,16 +297,18 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   const handleClose = () => {
     if (isUploading) {
       if (!confirm('Un upload est en cours. Êtes-vous sûr de vouloir annuler?')) {
+        debugLog('Close cancelled by user - upload in progress');
         return;
       }
     }
     
-      // Nettoyer les URLs d'aperçu
-      files.forEach(file => {
-        if (file.preview) URL.revokeObjectURL(file.preview);
-      });
-      setFiles([]);
-      onClose();
+    debugLog('Closing modal and cleaning up');
+    // Nettoyer les URLs d'aperçu
+    files.forEach(file => {
+      if (file.preview) URL.revokeObjectURL(file.preview);
+    });
+    setFiles([]);
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -586,7 +639,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                   <div className="text-center">
                     <Button
                       onClick={() => fileInputRef.current?.click()}
-                      type="button"
+                      type="button" 
                       variant="outline"
                       disabled={isUploading}
                       icon={<Plus className="h-4 w-4" />}
@@ -595,7 +648,6 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                     </Button>
                   </div>
                 </div>
-              )}
             </div>
 
             {/* Footer */}
@@ -618,7 +670,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                     <Button
                       onClick={handleUpload}
                       type="button"
-                      isLoading={isUploading}
+                      isLoading={isUploading} 
                       disabled={files.length === 0 || files.some(f => !f.metadata.title?.trim()) || isUploading}
                       className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
                       icon={<Upload className="h-4 w-4" />}
@@ -637,7 +689,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       </div>
     );
   } catch (error) {
-    console.error('Error in ImageUploadModal:', error);
+    debugLog('CRITICAL RENDERING ERROR in ImageUploadModal:', error);
     
     // Rendu de secours en cas d'erreur
     return (
@@ -648,7 +700,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Erreur</h2>
             <p className="text-gray-600 mb-6">
               Une erreur s'est produite lors du chargement du modal d'upload.
-            </p>
+            </p> 
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-left">
               <p className="text-red-700 font-medium">Message d'erreur :</p>
               <p className="text-red-600 text-sm mt-1">

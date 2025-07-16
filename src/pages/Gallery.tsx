@@ -4,9 +4,10 @@ import { Search, Filter, Grid, List, Eye, Heart, Download, Star, Crown, Image as
 import { useAuth } from '../contexts/AuthContext';
 import ImageUploadModal from '../components/gallery/ImageUploadModal';
 import ImageCard from '../components/gallery/ImageCard';
-import Button from '../components/ui/Button'; 
+import Button from '../components/ui/Button';
 import CommentSystem from '../components/comments/CommentSystem';
 import storageService, { ImageMetadata } from '../services/storage';
+import DebugUploader from '../components/gallery/DebugUploader';
 
 const Gallery: React.FC = () => {
   const [items, setItems] = useState<ImageMetadata[]>([]);
@@ -346,8 +347,13 @@ const Gallery: React.FC = () => {
       </section>
 
       {/* Gallery Content */}
-      <section className="py-12">
+      <section className="py-12"> 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Debug Uploader - Uniquement visible pour les admins */}
+          {currentUser?.role === 'admin' && (
+            <DebugUploader />
+          )}
+          
           {filteredItems.length === 0 ? (
             <div className="text-center py-16">
               <ImageIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -404,7 +410,7 @@ const Gallery: React.FC = () => {
       </section>
 
       {/* Upload Modal */}
-      <ImageUploadModal
+      <ImageUploadModal 
         isOpen={showUploadModal}
         onClose={() => setShowUploadModal(false)}
         onSuccess={handleUploadSuccess}
