@@ -648,6 +648,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                     </Button>
                   </div>
                 </div>
+              )}
             </div>
 
             {/* Footer */}
