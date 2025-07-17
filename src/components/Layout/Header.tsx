@@ -36,6 +36,11 @@ const Header: React.FC = () => {
     }
   };
 
+  const handleAdminClick = () => {
+    setIsProfileMenuOpen(false);
+    navigate('/admin');
+  };
+
   const navigation = [
     { name: 'Accueil', href: '/' },
     { name: 'Annuaire', href: '/directory' },
@@ -84,7 +89,7 @@ const Header: React.FC = () => {
             {currentUser && <NotificationBell />}
             
             {currentUser ? (
-              <div className="relative" style={{ zIndex: 50 }}>
+              <div className="relative">
                 <button
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                   className="flex items-center space-x-1 text-gray-700 hover:text-orange-600 transition-colors duration-200 bg-gray-50 hover:bg-orange-50 px-2 py-2 rounded-lg cursor-pointer"
@@ -96,66 +101,55 @@ const Header: React.FC = () => {
 
                 {isProfileMenuOpen && (
                   <div 
-                    className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-[100]"
+                    className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
                   >
                     <Link
-                      onClick={() => setIsProfileMenuOpen(false)}
                       to="/profile"
                       className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                      onClick={() => setIsProfileMenuOpen(false)}
                     >
                       <User className="h-4 w-4 mr-3" />
                       Mon Profil
                     </Link>
                     <Link
-                      onClick={() => setIsProfileMenuOpen(false)}
                       to="/subscription"
                       className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                      onClick={() => setIsProfileMenuOpen(false)}
                     >
                       <Crown className="h-4 w-4 mr-3" />
                       Mon Abonnement
                     </Link>
                     <Link
-                      onClick={() => setIsProfileMenuOpen(false)}
                       to="/reservations"
                       className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                      onClick={() => setIsProfileMenuOpen(false)}
                     >
                       <Calendar className="h-4 w-4 mr-3" />
                       Mes Réservations
                     </Link>
                     <Link
-                      onClick={() => setIsProfileMenuOpen(false)}
                       to="/billing"
                       className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                      onClick={() => setIsProfileMenuOpen(false)}
                     >
                       <Settings className="h-4 w-4 mr-3" />
                       Facturation
                     </Link>
                     {currentUser.role === 'admin' && (
-                      <Link
-                        to="/admin"
-                        onClick={() => {
-                          setIsProfileMenuOpen(false);
-                          navigate('/admin');
-                        }}
-                        className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                      <button
+                        onClick={handleAdminClick}
+                        className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors cursor-pointer"
                       >
                         <Settings className="h-4 w-4 mr-3" />
                         Administration
-                      </Link>
+                      </button>
                     )}
-                    {/* Removed initialization link that was causing confusion */}
-                    {/* {!currentUser && (
-                      <Link
-                        to="initialize-admin"
-                        className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
-                      >
-                        <Crown className="h-4 w-4 mr-3" />
-                        Initialiser Admin
-                      </Link>
-                    )} */}
                     <hr className="my-2 border-gray-200" />
                     <button
-                      onClick={handleLogout}
+                      onClick={() => {
+                        handleLogout();
+                        setIsProfileMenuOpen(false);
+                      }}
                       className="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
                     >
                       <LogOut className="h-4 w-4 mr-3" />
@@ -235,17 +229,37 @@ const Header: React.FC = () => {
                 >
                   Mon Profil
                 </Link>
+                <Link
+                  to="/subscription"
+                  className="block px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Mon Abonnement
+                </Link>
+                <Link
+                  to="/reservations"
+                  className="block px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Mes Réservations
+                </Link>
+                <Link
+                  to="/billing"
+                  className="block px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Facturation
+                </Link>
                 {currentUser.role === 'admin' && (
-                  <Link
-                    to="/admin"
-                    className="block px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200"
+                  <button
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       navigate('/admin');
                     }}
+                    className="block w-full text-left px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200 cursor-pointer"
                   >
                     Administration
-                  </Link>
+                  </button>
                 )}
                 <button
                   onClick={() => {
