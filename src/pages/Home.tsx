@@ -13,7 +13,7 @@ const Home: React.FC = () => {
     satisfaction: 98
   });
 
-  const [friteryImage, setFriteryImage] = useState('https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800');
+  const [friteryImage, setFriteryImage] = useState('');
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -46,19 +46,9 @@ const Home: React.FC = () => {
     fetchStats();
   }, []);
 
+  // Charger l'image WhatsApp depuis le dossier public
   useEffect(() => {
-    // Try to get the WhatsApp image from Firebase Storage
-    const getImage = async () => {
-      try {
-        // First try to get it from public folder
-        setFriteryImage('/WhatsApp Image 2025-07-17 at 3.08.26 PM.jpeg');
-      } catch (error) {
-        console.error('Error loading image:', error);
-        // Fallback to the default image
-      }
-    };
-    
-    getImage();
+    setFriteryImage('/WhatsApp Image 2025-07-17 at 3.08.26 PM.jpeg');
   }, []);
 
   const mainServices = [
@@ -144,56 +134,64 @@ const Home: React.FC = () => {
       {/* Hero Banner */}
       <section className="bg-gradient-to-br from-red-700 to-red-600 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-8">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8">
             Bienvenue chez <span className="text-yellow-300">MonFritkot</span>
           </h1>
           
-          <p className="text-xl text-white max-w-3xl mx-auto mb-8">
+          <p className="text-lg sm:text-xl text-white max-w-3xl mx-auto mb-8">
             Votre plateforme de référence pour tout ce qui concerne la friterie belge.
           </p>
           
           <div className="mb-8">
-            <h2 className="text-4xl font-bold text-white mb-2">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">
               Trouvez vos meilleures friteries
             </h2>
-            <p className="text-xl text-white mb-6">
+            <p className="text-lg sm:text-xl text-white mb-6">
               Flamande, Wallonne et Bruxelloise
             </p>
             
             <div className="max-w-4xl mx-auto">
-              <div className="flex flex-col md:flex-row gap-4">
+              <form action="/directory" method="get" className="flex flex-col md:flex-row gap-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="search"
+                    placeholder="Entrez un mot clé"
+                    className="w-full pl-10 px-6 py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  />
+                </div>
                 <input
                   type="text"
-                  placeholder="entrez un mot clé"
-                  className="flex-1 px-6 py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                />
-                <input
-                  type="text"
+                  name="location"
                   placeholder="Adresse, proximité..."
                   className="flex-1 px-6 py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 />
-                <button className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg font-bold transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                <button 
+                  type="submit"
+                  className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg font-bold transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
                   Rechercher
                 </button>
-              </div>
+              </form>
             </div>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.users}+</div>
+              <div className="text-3xl sm:text-4xl font-bold text-yellow-300 mb-2">{stats.users}+</div>
               <div className="text-orange-100">Membres actifs</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.friteries}+</div>
+              <div className="text-3xl sm:text-4xl font-bold text-yellow-300 mb-2">{stats.friteries}+</div>
               <div className="text-orange-100">Friteries partenaires</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.recipes}+</div>
+              <div className="text-3xl sm:text-4xl font-bold text-yellow-300 mb-2">{stats.recipes}+</div>
               <div className="text-orange-100">Recettes partagées</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.satisfaction}%</div>
+              <div className="text-3xl sm:text-4xl font-bold text-yellow-300 mb-2">{stats.satisfaction}%</div>
               <div className="text-orange-100">Satisfaction client</div>
             </div>
           </div>
@@ -203,25 +201,28 @@ const Home: React.FC = () => {
       {/* About Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="order-2 md:order-1">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 md:mb-6">
                 La référence pour les friteries belges
               </h2>
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+              <p className="text-base sm:text-lg text-gray-600 mb-4 md:mb-6 leading-relaxed">
                 MonFritkot.be est né de la passion pour la friterie belge authentique. Notre mission est de créer un pont entre la tradition séculaire de nos friteries et les outils modernes du digital.
               </p>
-              <p className="text-lg text-gray-600 leading-relaxed">
+              <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
                 Que vous soyez propriétaire d'une friterie ou simplement amateur de bonnes frites, notre plateforme vous offre des services adaptés à vos besoins.
               </p>
             </div>
             <div className="order-1 md:order-2">
-              <div className="rounded-2xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
+              <div className="rounded-2xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300 mx-auto max-w-md md:max-w-full">
                 <img 
                   src={friteryImage} 
                   alt="Friterie belge authentique" 
-                  className="w-full h-auto object-cover rounded-2xl"
-                  style={{ maxHeight: '400px' }}
+                  className="w-full h-auto object-cover rounded-2xl max-h-[400px]"
+                  onError={(e) => {
+                    // Fallback to a default image if the WhatsApp image fails to load
+                    e.currentTarget.src = 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800';
+                  }}
                 />
               </div>
             </div>

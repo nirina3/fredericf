@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, MapPin, Phone, Mail, Globe, Star, Filter, Grid, List, Clock, Award, Verified } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ReservationButton from '../components/reservation/ReservationButton';
@@ -44,7 +44,24 @@ const Directory: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('name');
   const [loading, setLoading] = useState(true);
+  
+  // Parse search params from URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchParam = params.get('search');
+    const locationParam = params.get('location');
+    
+    if (searchParam) {
+      setSearchTerm(searchParam);
+    }
+    
+    if (locationParam) {
+      setSelectedRegion(locationParam);
+    }
+  }, [location.search]);
   const { currentUser, isSubscribed } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // Mock data - Friteries représentatives
   const mockEntries: DirectoryEntry[] = [
@@ -293,11 +310,7 @@ const Directory: React.FC = () => {
     { id: 'Luxembourg', name: 'Luxembourg' }
   ];
 
-  useEffect(() => {
-    loadEntries();
-  }, []);
-
-  const loadEntries = async () => {
+  const loadEntries = useCallback(async () => {
     try {
       setLoading(true);
       const fetchedEntries = await directoryService.getAllEntries();
@@ -318,7 +331,11 @@ const Directory: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [mockEntries]);
+
+  useEffect(() => {
+    loadEntries();
+  }, [loadEntries]);
 
   useEffect(() => {
     let filtered = entries;
@@ -367,6 +384,20 @@ const Directory: React.FC = () => {
       return false;
     }
     return true;
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Update URL with search parameters
+    const params = new URLSearchParams();
+    if (searchTerm) params.set('search', searchTerm);
+    if (selectedRegion !== 'all') params.set('location', selectedRegion);
+    
+    navigate(`/directory?${params.toString()}`);
+    
+    // Filter entries based on search term and region
+    filterEntries();
   };
 
   const renderStars = (rating: number) => {
@@ -420,14 +451,24 @@ const Directory: React.FC = () => {
           <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Rechercher une friterie..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
-              />
+              <form onSubmit={handleSearch} className="flex">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Rechercher une friterie..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                  />
+                </div>
+                <button 
+                  type="submit"
+                  className="ml-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg transition-colors"
+                >
+                  <Search className="h-5 w-5" />
+                </button>
+              </form>
             </div>
 
             {/* Filters */}

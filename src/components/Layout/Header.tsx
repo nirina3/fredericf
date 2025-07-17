@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut, Settings, Crown, Calendar } from 'lucide-react';
+import { Menu, X, User, LogOut, Settings, Crown, Calendar, Search } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import logoService from '../../services/logoService';
 import NotificationBell from '../notifications/NotificationBell';
@@ -9,6 +9,8 @@ const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchLocation, setSearchLocation] = useState('');
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -36,6 +38,13 @@ const Header: React.FC = () => {
     }
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim() || searchLocation.trim()) {
+      navigate(`/directory?search=${encodeURIComponent(searchTerm)}&location=${encodeURIComponent(searchLocation)}`);
+    }
+  };
+
   const navigation = [
     { name: 'Accueil', href: '/' },
     { name: 'Annuaire', href: '/directory' },
@@ -51,12 +60,12 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 mr-4">
             <Link to="/" className="flex items-center">
               {logoUrl ? (
                 <img 
                   src={logoUrl} 
-                  alt="MonFritkot" 
+                  alt="" 
                   className="h-10 w-auto mr-3 object-contain"
                 />
               ) : (
@@ -64,15 +73,40 @@ const Header: React.FC = () => {
                   <Crown className="h-8 w-8 text-white" />
                 </div>
               )}
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold text-gray-900">MonFritkot</span>
-                <span className="text-xs text-orange-600 font-medium">.be</span>
-              </div>
             </Link>
           </div>
 
+          {/* Search Bar - Desktop */}
+          <div className="hidden md:flex flex-1 max-w-xl mx-4">
+            <form onSubmit={handleSearch} className="w-full flex">
+              <div className="relative flex-1 mr-2">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Rechercher une friterie..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                />
+              </div>
+              <input
+                type="text"
+                placeholder="Lieu, adresse..."
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 mr-2"
+              />
+              <button 
+                type="submit"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+            </form>
+          </div>
+
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex space-x-1">
+          <nav className="hidden lg:flex space-x-1 ml-auto">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -193,9 +227,40 @@ const Header: React.FC = () => {
           </div>
         </div>
 
+        {/* Search Bar - Mobile */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden py-4 border-t border-orange-200">
+            <form onSubmit={handleSearch} className="flex flex-col space-y-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Rechercher une friterie..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                />
+              </div>
+              <input
+                type="text"
+                placeholder="Lieu, adresse..."
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              />
+              <button 
+                type="submit"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg transition-colors font-medium"
+              >
+                Rechercher
+              </button>
+            </form>
+          </div>
+        )}
+
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden border-t border-orange-200 bg-white">
+          <div className="lg:hidden border-t border-orange-200 bg-white mt-2">
             <div className="px-2 pt-4 pb-6 space-y-2">
               {navigation.map((item) => (
                 <Link
