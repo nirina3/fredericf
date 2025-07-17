@@ -2,13 +2,31 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, User, LogOut, Settings, Crown, Calendar } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useEffect, useState } from 'react';
+import logoService from '../../services/logoService';
 import NotificationBell from '../notifications/NotificationBell';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string>('');
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadLogo = async () => {
+      try {
+        const url = await logoService.getLogoUrl('main-logo');
+        if (url) {
+          setLogoUrl(url);
+        }
+      } catch (error) {
+        console.error('Error loading logo:', error);
+      }
+    };
+    
+    loadLogo();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -36,9 +54,17 @@ const Header: React.FC = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
-              <div className="bg-gradient-to-r from-orange-500 to-red-600 p-2 rounded-lg mr-3">
-                <Crown className="h-8 w-8 text-white" />
-              </div>
+              {logoUrl ? (
+                <img 
+                  src={logoUrl} 
+                  alt="MonFritkot" 
+                  className="h-10 w-auto mr-3 object-contain"
+                />
+              ) : (
+                <div className="bg-gradient-to-r from-orange-500 to-red-600 p-2 rounded-lg mr-3">
+                  <Crown className="h-8 w-8 text-white" />
+                </div>
+              )}
               <div className="flex flex-col">
                 <span className="text-2xl font-bold text-gray-900">MonFritkot</span>
                 <span className="text-xs text-orange-600 font-medium">.be</span>

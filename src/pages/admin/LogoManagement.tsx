@@ -342,8 +342,8 @@ const LogoManagement: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-white rounded-2xl shadow-lg p-6">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center">
             <h1 className="text-2xl font-bold text-gray-900 flex items-center">
               <ImageIcon className="h-6 w-6 mr-2" />
               Gestion des Logos & Branding
@@ -366,12 +366,12 @@ const LogoManagement: React.FC = () => {
       </div>
 
       {/* Logos Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {logos.map((logo) => (
-          <div key={logo.id} className="bg-white rounded-2xl shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">{logo.name}</h2>
-              <div className="text-sm text-gray-500">
+          <div key={logo.id} className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900">{logo.name}</h2>
+              <div className="text-xs sm:text-sm text-gray-500">
                 {logo.lastUpdated && (
                   <span>Mis à jour le {logo.lastUpdated.toLocaleDateString('fr-FR')}</span>
                 )}
@@ -380,7 +380,7 @@ const LogoManagement: React.FC = () => {
             
             <p className="text-gray-600 mb-4">{logo.description}</p>
             
-            <div className="bg-gray-50 rounded-lg p-6 mb-4">
+            <div className="bg-gray-50 rounded-lg p-3 sm:p-6 mb-4">
               {logo.url ? (
                 <div className="flex flex-col items-center">
                   <img 
@@ -391,7 +391,8 @@ const LogoManagement: React.FC = () => {
                   <div className="flex space-x-2">
                     <Button
                       size="sm"
-                      variant="outline"
+                      variant="outline" 
+                      className="text-xs sm:text-sm px-2 sm:px-3"
                       onClick={() => downloadLogo(logo.url, logo.fileName)}
                       icon={<Download className="h-4 w-4" />}
                     >
@@ -400,7 +401,7 @@ const LogoManagement: React.FC = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="text-red-600 border-red-300 hover:bg-red-50"
+                      className="text-red-600 border-red-300 hover:bg-red-50 text-xs sm:text-sm px-2 sm:px-3"
                       onClick={() => deleteLogo(logo.id)}
                       icon={<Trash2 className="h-4 w-4" />}
                     >
@@ -419,11 +420,11 @@ const LogoManagement: React.FC = () => {
             </div>
             
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div className="text-xs sm:text-sm text-gray-600">
                   <span className="font-medium">Taille recommandée:</span> {logo.recommendedSize}
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-xs sm:text-sm text-gray-600">
                   <span className="font-medium">Formats:</span> PNG, JPG, SVG{logo.id === 'favicon' ? ', ICO' : ''}
                 </div>
               </div>
@@ -462,7 +463,7 @@ const LogoManagement: React.FC = () => {
               <Button
                 onClick={() => handleFileSelect(logo.id)}
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-                icon={<Upload className="h-4 w-4" />}
+                icon={<Upload className="h-3 w-3 sm:h-4 sm:w-4" />}
                 disabled={selectedLogo === logo.id && uploadProgress.status === 'uploading'}
               >
                 {logo.url ? 'Changer le logo' : 'Télécharger un logo'}
@@ -482,13 +483,13 @@ const LogoManagement: React.FC = () => {
       />
 
       {/* Instructions */}
-      <div className="bg-white rounded-2xl shadow-lg p-6">
+      <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Instructions</h2>
         
-        <div className="space-y-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
             <h3 className="font-medium text-blue-900 mb-2">Recommandations générales</h3>
-            <ul className="space-y-2 text-sm text-blue-800">
+            <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-blue-800">
               <li className="flex items-start">
                 <span className="text-blue-500 mr-2">•</span>
                 <span>Utilisez des images avec un fond transparent (PNG ou SVG) pour une meilleure intégration</span>
@@ -508,9 +509,9 @@ const LogoManagement: React.FC = () => {
             </ul>
           </div>
           
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4">
             <h3 className="font-medium text-yellow-900 mb-2">Remarque importante</h3>
-            <p className="text-sm text-yellow-800">
+            <p className="text-xs sm:text-sm text-yellow-800">
               Après avoir changé le favicon, il peut être nécessaire de vider le cache du navigateur pour voir les changements.
             </p>
           </div>

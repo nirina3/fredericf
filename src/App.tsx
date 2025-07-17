@@ -28,6 +28,7 @@ import InitializeAdmin from './pages/admin/InitializeAdmin';
 import ContentManagement from './pages/admin/ContentManagement';
 import GalleryManagement from './pages/admin/GalleryManagement';
 import BlogManagement from './pages/admin/BlogManagement';
+import LogoManagement from './pages/admin/LogoManagement';
 import ReservationManagement from './pages/admin/ReservationManagement';
 import DirectoryManagement from './pages/admin/DirectoryManagement';
 import AnalyticsManagement from './pages/admin/AnalyticsManagement';
@@ -68,6 +69,7 @@ function App() {
               <Route path="content" element={<ContentManagement />} />
               <Route path="blog" element={<BlogManagement />} />
               <Route path="gallery" element={<GalleryManagement />} />
+              <Route path="logos" element={<LogoManagement />} />
               <Route path="reservations" element={<ReservationManagement />} />
               <Route path="directory" element={<DirectoryManagement />} />
               <Route path="analytics" element={<AnalyticsManagement />} />

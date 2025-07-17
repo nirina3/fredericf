@@ -1,8 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Crown, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import logoService from '../../services/logoService';
 
 const Footer: React.FC = () => {
+  const [logoUrl, setLogoUrl] = useState<string>('');
+
+  useEffect(() => {
+    const loadLogo = async () => {
+      try {
+        const url = await logoService.getLogoUrl('footer-logo');
+        if (url) {
+          setLogoUrl(url);
+        }
+      } catch (error) {
+        console.error('Error loading footer logo:', error);
+      }
+    };
+    
+    loadLogo();
+  }, []);
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -10,9 +29,17 @@ const Footer: React.FC = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center">
-              <div className="bg-gradient-to-r from-orange-500 to-red-600 p-2 rounded-lg mr-3">
-                <Crown className="h-8 w-8 text-white" />
-              </div>
+              {logoUrl ? (
+                <img 
+                  src={logoUrl} 
+                  alt="MonFritkot" 
+                  className="h-10 w-auto mr-3 object-contain"
+                />
+              ) : (
+                <div className="bg-gradient-to-r from-orange-500 to-red-600 p-2 rounded-lg mr-3">
+                  <Crown className="h-8 w-8 text-white" />
+                </div>
+              )}
               <div className="flex flex-col">
                 <span className="text-xl font-bold">MonFritkot</span>
                 <span className="text-sm text-orange-400">.be</span>
