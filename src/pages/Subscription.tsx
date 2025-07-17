@@ -290,13 +290,15 @@ const Subscription: React.FC = () => {
 
                   <ul className="space-y-4 mb-8">
                     {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center">
-                        {feature.included ? (
-                          <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                        ) : (
-                          <X className="h-5 w-5 text-gray-400 mr-3 flex-shrink-0" />
-                        )}
-                        <span className={feature.included ? 'text-gray-900' : 'text-gray-500'}>
+                      <li key={index} className="flex items-start">
+                        <div className="flex-shrink-0 mt-1">
+                          {feature.included ? (
+                            <Check className="h-5 w-5 text-orange-500" />
+                          ) : (
+                            <X className="h-5 w-5 text-gray-400" />
+                          )}
+                        </div>
+                        <span className={`ml-3 ${feature.included ? 'text-gray-900' : 'text-gray-500'}`}>
                           {feature.name}
                         </span>
                       </li>
@@ -306,6 +308,7 @@ const Subscription: React.FC = () => {
                   <Button
                     className={`w-full ${plan.buttonColor}`}
                     disabled={isCurrentPlan}
+                    size="lg"
                   >
                     <span className={plan.id === 'gratuit' ? 'text-white' : plan.id === 'standard' ? 'text-orange-600' : 'text-white'}>
                       {isCurrentPlan ? 'Plan actuel' : plan.id === 'gratuit' ? 'Commencer gratuitement' : `Choisir ${plan.name}`}
@@ -315,7 +318,7 @@ const Subscription: React.FC = () => {
 
                   {!isCurrentPlan && plan.id !== 'gratuit' && (
                     <p className="text-xs text-gray-500 text-center mt-3">
-                      Changement immédiat • Annulation à tout moment
+                      Aucun engagement • Annulation à tout moment
                     </p>
                   )}
                   {!isCurrentPlan && plan.id === 'gratuit' && (

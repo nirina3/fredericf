@@ -338,9 +338,11 @@ const Home: React.FC = () => {
                   </div>
                   <ul className="space-y-4 mb-8">
                     {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                        <span>{feature}</span>
+                      <li key={featureIndex} className="flex items-start">
+                        <div className="flex-shrink-0 mt-1.5">
+                          <Check className="h-5 w-5 text-orange-500" />
+                        </div>
+                        <span className="ml-3">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -351,9 +353,13 @@ const Home: React.FC = () => {
                         ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white hover:from-orange-600 hover:to-red-700' 
                         : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                     }`}
+                    style={{ padding: '0.875rem 1rem' }}
                   >
                     Choisir {plan.name}
                   </Link>
+                </div>
+                <div className="text-xs text-gray-500 text-center mt-3">
+                  {plan.name === "Gratuit" ? "Sans carte de crédit" : "Aucun engagement • Annulation à tout moment"}
                 </div>
               </div>
             ))}

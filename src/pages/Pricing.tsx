@@ -149,15 +149,17 @@ const Pricing: React.FC = () => {
                     <div className="text-gray-600">/{plan.interval}</div>
                   </div>
 
-                  <ul className="space-y-3 mb-8">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center">
-                        {feature.included ? (
-                          <Check className="h-5 w-5 text-orange-500 mx-auto" />
-                        ) : (
-                          <X className="h-5 w-5 text-gray-400 mr-3 flex-shrink-0" />
-                        )}
-                        <span className={feature.included ? 'text-gray-900' : 'text-gray-500'}>
+                  <ul className="space-y-4 mb-8">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-start">
+                        <div className="flex-shrink-0 mt-1">
+                          {feature.included ? (
+                            <Check className="h-5 w-5 text-orange-500" />
+                          ) : (
+                            <X className="h-5 w-5 text-gray-400" />
+                          )}
+                        </div>
+                        <span className={`ml-3 ${feature.included ? 'text-gray-900' : 'text-gray-500'}`}>
                           {feature.name}
                         </span>
                       </li>
@@ -170,6 +172,7 @@ const Pricing: React.FC = () => {
                         className="w-full"
                         className={`w-full ${plan.popular ? 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700' : plan.id === 'gratuit' ? 'bg-gray-600 hover:bg-gray-700' : 'bg-purple-600 hover:bg-purple-700'}`}
                         disabled={currentUser.subscription?.plan?.id === plan.id}
+                        size="lg"
                       >
                         <span className={plan.popular ? 'text-white' : plan.id === 'gratuit' ? 'text-gray-700' : 'text-white'}>
                           {currentUser.subscription?.plan?.id === plan.id ? 'Plan actuel' : `Choisir ${plan.name}`}
