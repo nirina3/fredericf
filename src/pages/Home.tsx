@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Crown, Users, BookOpen, Image as ImageIcon, BarChart3, Headphones, Zap, Shield, Award, ArrowRight, Search } from 'lucide-react';
+import { Crown, Users, BookOpen, Image as ImageIcon, BarChart3, Headphones, Zap, Shield, Award, ArrowRight, Search, Check } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db, storage } from '../firebase/config';
 import { ref, getDownloadURL } from 'firebase/storage';
