@@ -340,17 +340,6 @@ const Blog: React.FC = () => {
                   </div>
                   
                   <div className="p-6">
-                    <div className="flex items-center space-x-4 mb-4 text-sm text-gray-500">
-                      <span className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        {format(post.publishedAt, 'dd MMMM yyyy', { locale: fr })}
-                      </span>
-                      <span className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {post.readTime} min
-                      </span>
-                    </div>
-
                     <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
                       {post.title}
                     </h3>
@@ -358,15 +347,6 @@ const Blog: React.FC = () => {
                     <p className="text-gray-600 mb-4 line-clamp-3">{post.excerpt}</p>
 
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <img
-                          src={post.authorAvatar}
-                          alt={post.author}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                        <span className="text-sm font-medium text-gray-900">{post.author}</span>
-                      </div>
-                      
                       <Link
                         to={`/blog/${post.slug}`}
                         onClick={(e) => {
@@ -423,21 +403,6 @@ const Blog: React.FC = () => {
                   </div>
                   
                   <div className="p-6">
-                    <div className="flex items-center space-x-4 mb-3 text-xs text-gray-500">
-                      <span className="flex items-center">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        {format(post.publishedAt, 'dd MMM', { locale: fr })}
-                      </span>
-                      <span className="flex items-center">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {post.readTime} min
-                      </span>
-                      <span className="flex items-center">
-                        <Eye className="h-3 w-3 mr-1" />
-                        {post.views}
-                      </span>
-                    </div>
-
                     <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2">
                       {post.title}
                     </h3>
@@ -445,15 +410,6 @@ const Blog: React.FC = () => {
                     <p className="text-gray-600 mb-4 line-clamp-2 text-sm">{post.excerpt}</p>
 
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <img
-                          src={post.authorAvatar}
-                          alt={post.author}
-                          className="w-6 h-6 rounded-full object-cover"
-                        />
-                        <span className="text-xs text-gray-600">{post.author}</span>
-                      </div>
-                      
                       <div className="flex items-center space-x-3 text-xs text-gray-500">
                         <span className="flex items-center">
                           <MessageCircle className="h-3 w-3 mr-1" />
@@ -522,21 +478,6 @@ const Blog: React.FC = () => {
                   >
                     <X className="h-6 w-6" />
                   </button>
-                </div>
-                
-                <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-                  <span className="flex items-center">
-                    <User className="h-4 w-4 mr-1" />
-                    {selectedPost.author}
-                  </span>
-                  <span className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    {format(selectedPost.publishedAt, 'dd MMMM yyyy', { locale: fr })}
-                  </span>
-                  <span className="flex items-center">
-                    <Clock className="h-4 w-4 mr-1" />
-                    {selectedPost.readTime} min
-                  </span>
                 </div>
                 
                 <p className="text-gray-600">{selectedPost.excerpt}</p>

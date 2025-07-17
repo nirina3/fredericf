@@ -59,21 +59,21 @@ const Services: React.FC = () => {
 
   const plans = [
     {
-      name: "Basic",
+      name: "Abonné",
       price: "19.99",
       description: "Parfait pour débuter",
       features: ["5 projets", "Support email", "Galerie de base", "Documentation"],
       popular: false
     },
     {
-      name: "Premium",
+      name: "Client accro",
       price: "49.99",
       description: "Le plus populaire",
       features: ["20 projets", "Support prioritaire", "Galerie premium", "Formations"],
       popular: true
     },
     {
-      name: "Pro",
+      name: "Friterie Premium",
       price: "99.99",
       description: "Pour les professionnels",
       features: ["Projets illimités", "Support téléphonique", "Accès complet", "Consulting"],
@@ -81,28 +81,6 @@ const Services: React.FC = () => {
     }
   ];
 
-  const process = [
-    {
-      step: "1",
-      title: "Inscription",
-      description: "Créez votre compte en quelques minutes"
-    },
-    {
-      step: "2",
-      title: "Choix du plan",
-      description: "Sélectionnez le plan qui vous convient"
-    },
-    {
-      step: "3",
-      title: "Configuration",
-      description: "Personnalisez votre espace selon vos besoins"
-    },
-    {
-      step: "4",
-      title: "Lancement",
-      description: "Commencez à utiliser tous nos services"
-    }
-  ];
 
   return (
     <div className="bg-white">
@@ -196,36 +174,6 @@ const Services: React.FC = () => {
       </section>
 
       {/* Process Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center bg-orange-100 rounded-full px-6 py-3 mb-8">
-              <Zap className="h-5 w-5 text-orange-600 mr-2" />
-              <span className="text-orange-800 font-medium">Comment ça marche</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Commencer en <span className="text-orange-600">4 étapes</span>
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {process.map((step, index) => (
-              <div key={index} className="text-center relative">
-                <div className="bg-gradient-to-br from-orange-500 to-red-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg">
-                  {step.step}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{step.title}</h3>
-                <p className="text-gray-600">{step.description}</p>
-                {index < process.length - 1 && (
-                  <div className="hidden md:block absolute top-8 left-full w-full">
-                    <ArrowRight className="h-6 w-6 text-orange-400 mx-auto" />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Pricing Section */}
       <section className="py-20 bg-white">

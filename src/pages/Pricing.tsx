@@ -145,7 +145,7 @@ const Pricing: React.FC = () => {
                       </div>
                     ) : (
                       <div className="text-5xl font-bold text-orange-600 mb-2">
-                        ${plan.price}
+                        €{plan.price}
                       </div>
                     )}
                     <div className="text-gray-600">/{plan.interval}</div>

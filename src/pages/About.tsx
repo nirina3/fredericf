@@ -104,7 +104,7 @@ const About: React.FC = () => {
             </div>
             <div className="relative">
               <img 
-                src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop"
+                src="https://img.freepik.com/photos-premium/table-pleine-hamburgers-frites_901003-9610.jpg"
                 alt="Friterie traditionnelle belge"
                 className="rounded-2xl shadow-2xl"
               />
