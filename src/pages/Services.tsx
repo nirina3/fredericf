@@ -59,21 +59,21 @@ const Services: React.FC = () => {
 
   const plans = [
     {
-      name: "Basic",
+      name: "Abonné",
       price: "19.99",
       description: "Parfait pour débuter",
       features: ["5 projets", "Support email", "Galerie de base", "Documentation"],
       popular: false
     },
     {
-      name: "Premium",
+      name: "Client Accro",
       price: "49.99",
       description: "Le plus populaire",
       features: ["20 projets", "Support prioritaire", "Galerie premium", "Formations"],
       popular: true
     },
     {
-      name: "Pro",
+      name: "Friterie Premium",
       price: "99.99",
       description: "Pour les professionnels",
       features: ["Projets illimités", "Support téléphonique", "Accès complet", "Consulting"],
