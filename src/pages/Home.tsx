@@ -108,23 +108,23 @@ const Home: React.FC = () => {
   const plans = [
     {
       name: "Abonné",
-      price: "19.99",
+      price: "0",
       description: "Parfait pour débuter",
-      features: ["5 projets", "Support email", "Galerie de base", "Documentation"],
+      features: ["Consultation de l'annuaire des Friterie", "Ajout d'1 Friterie pour 1 mois", "Désabonnement possible à tous moment"],
       popular: false
     },
     {
       name: "Client Accro",
-      price: "49.99",
+      price: "10.00",
       description: "Le plus populaire",
-      features: ["20 projets", "Support prioritaire", "Galerie premium", "Formations"],
+      features: ["Consultation de l'annuaire des Friterie", "Passer commande ou réserver une table", "Bénéficier des code promo", "Désabonnement possible à tous moment"],
       popular: true
     },
     {
       name: "Friterie Premium",
-      price: "99.99",
+      price: "30.00",
       description: "Pour les professionnels",
-      features: ["Projets illimités", "Support téléphonique", "Accès complet", "Consulting"],
+      features: ["Consultation de l'annuaire des Friterie", "Ajout de 3 friteries pour un an", "Tableau de bord pour gérer ses friteries", "Accès à la galerie photo premium", "Désabonnement possible à tout moment"],
       popular: false
     }
   ];
@@ -132,26 +132,26 @@ const Home: React.FC = () => {
   return (
     <div className="bg-white">
       {/* Hero Banner */}
-      <section className="bg-gradient-to-br from-red-700 to-red-600 text-white py-16">
+      <section className="bg-gradient-to-br from-red-700 to-red-600 text-white py-12 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-8">
             Bienvenue chez <span className="text-yellow-300">MonFritkot</span>
           </h1>
           
-          <p className="text-lg sm:text-xl text-white max-w-3xl mx-auto mb-8">
+          <p className="text-base sm:text-lg md:text-xl text-white max-w-3xl mx-auto mb-4 sm:mb-8">
             Votre plateforme de référence pour tout ce qui concerne la friterie belge.
           </p>
           
-          <div className="mb-8">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">
+          <div className="mb-4 sm:mb-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">
               Trouvez vos meilleures friteries
             </h2>
-            <p className="text-lg sm:text-xl text-white mb-4 md:mb-6">
+            <p className="text-base sm:text-lg md:text-xl text-white mb-2 sm:mb-4 md:mb-6">
               Flamande, Wallonne et Bruxelloise
             </p>
             
             <div className="max-w-4xl mx-auto px-4">
-              <form action="/directory" method="get" className="flex flex-col sm:flex-row gap-3">
+              <form action="/directory" method="get" className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <div className="relative flex-1 w-full">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <input
@@ -166,6 +166,7 @@ const Home: React.FC = () => {
                   name="location"
                   placeholder="Adresse, proximité..."
                   className="flex-1 px-4 py-3 md:py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  defaultValue=""
                 />
                 <button 
                   type="submit"
@@ -177,22 +178,22 @@ const Home: React.FC = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 md:gap-8 text-center">
             <div>
-              <div className="text-3xl sm:text-4xl font-bold text-yellow-300 mb-2">{stats.users}+</div>
-              <div className="text-orange-100">Membres actifs</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-300 mb-1 sm:mb-2">{stats.users}+</div>
+              <div className="text-orange-100 text-sm sm:text-base">Membres actifs</div>
             </div>
             <div>
-              <div className="text-3xl sm:text-4xl font-bold text-yellow-300 mb-2">{stats.friteries}+</div>
-              <div className="text-orange-100">Friteries partenaires</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-300 mb-1 sm:mb-2">{stats.friteries}+</div>
+              <div className="text-orange-100 text-sm sm:text-base">Friteries partenaires</div>
             </div>
             <div>
-              <div className="text-3xl sm:text-4xl font-bold text-yellow-300 mb-2">{stats.recipes}+</div>
-              <div className="text-orange-100">Recettes partagées</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-300 mb-1 sm:mb-2">{stats.recipes}+</div>
+              <div className="text-orange-100 text-sm sm:text-base">Recettes partagées</div>
             </div>
             <div>
-              <div className="text-3xl sm:text-4xl font-bold text-yellow-300 mb-2">{stats.satisfaction}%</div>
-              <div className="text-orange-100">Satisfaction client</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-300 mb-1 sm:mb-2">{stats.satisfaction}%</div>
+              <div className="text-orange-100 text-sm sm:text-base">Satisfaction client</div>
             </div>
           </div>
         </div>
@@ -326,8 +327,14 @@ const Home: React.FC = () => {
                   <div className="text-center mb-8">
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                     <p className="text-gray-600 mb-4">{plan.description}</p>
-                    <div className="text-4xl font-bold text-orange-600 mb-2">€{plan.price}</div>
-                    <div className="text-gray-600">/mois</div>
+                    {plan.price === "0" ? (
+                      <div className="text-4xl font-bold text-orange-600 mb-2">Gratuit</div>
+                    ) : (
+                      <>
+                        <div className="text-4xl font-bold text-orange-600 mb-2">€{plan.price}</div>
+                        <div className="text-gray-600">/mois</div>
+                      </>
+                    )}
                   </div>
                   <ul className="space-y-4 mb-8">
                     {plan.features.map((feature, featureIndex) => (

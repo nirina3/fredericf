@@ -10,7 +10,7 @@ const Pricing: React.FC = () => {
   // Updated plans to match the design style
   const plans = [
     {
-      id: 'gratuit',
+      id: 'abonne',
       name: 'Gratuit', 
       price: 0, 
       currency: 'USD',
@@ -25,7 +25,7 @@ const Pricing: React.FC = () => {
       color: 'border-gray-200'
     },
     {
-      id: 'standard',
+      id: 'client-accro',
       name: 'Client Accro',
       price: 10.00,
       currency: 'USD',
@@ -41,7 +41,7 @@ const Pricing: React.FC = () => {
       color: 'border-blue-500'
     },
     {
-      id: 'pro',
+      id: 'friterie-premium',
       name: 'Friterie Premium',
       price: 30.00,
       currency: 'USD',

@@ -10,7 +10,7 @@ const Subscription: React.FC = () => {
 
   const plans = [
     {
-      id: 'gratuit',
+      id: 'abonne',
       name: 'Gratuit', 
       description: 'Devenez parmi nos abonnés',
       monthlyPrice: 0,
@@ -25,7 +25,7 @@ const Subscription: React.FC = () => {
       buttonColor: 'bg-gray-600 hover:bg-gray-700'
     },
     {
-      id: 'standard',
+      id: 'client-accro',
       name: 'Client Accro',
       description: 'Profitez pleinement vos privilèges en tant que client accro',
       monthlyPrice: 10.00,
@@ -41,7 +41,7 @@ const Subscription: React.FC = () => {
       buttonColor: 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700'
     },
     {
-      id: 'pro',
+      id: 'friterie-premium',
       name: 'Friterie Premium',
       description: 'Développez vos activités avec monfritkot.be',
       monthlyPrice: 30.00,
