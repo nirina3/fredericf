@@ -45,6 +45,10 @@ const Directory: React.FC = () => {
   const [sortBy, setSortBy] = useState('name');
   const [loading, setLoading] = useState(true);
   
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { currentUser, isSubscribed } = useAuth();
+
   // Parse search params from URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -59,9 +63,6 @@ const Directory: React.FC = () => {
       setSelectedRegion(locationParam);
     }
   }, [location.search]);
-  const { currentUser, isSubscribed } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
 
   // Mock data - Friteries représentatives
   const mockEntries: DirectoryEntry[] = [
