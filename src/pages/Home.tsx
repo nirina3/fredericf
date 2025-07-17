@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Crown, Users, BookOpen, Image as ImageIcon, BarChart3, Headphones, Zap, Shield, Award, ArrowRight, Search } from 'lucide-react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db, storage } from '../firebase/config';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, getDocs } from 'firebase/firestore'; 
+import { db } from '../firebase/config';
 
 const Home: React.FC = () => {
   const [stats, setStats] = useState({
@@ -13,7 +12,7 @@ const Home: React.FC = () => {
     satisfaction: 98
   });
 
-  const [friteryImage, setFriteryImage] = useState('');
+  const friteryImage = 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800';
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -46,22 +45,6 @@ const Home: React.FC = () => {
     fetchStats();
   }, []);
 
-  useEffect(() => {
-    // Récupérer l'image depuis Firebase Storage
-    const fetchImage = async () => {
-      try {
-        const imageRef = ref(storage, 'images/friterie-reference.jpg');
-        const url = await getDownloadURL(imageRef);
-        setFriteryImage(url);
-      } catch (error) {
-        console.error('Error fetching image:', error);
-        // Image de secours si l'image n'est pas trouvée dans Firebase Storage
-        setFriteryImage('https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800');
-      }
-    };
-    
-    fetchImage();
-  }, []);
 
   const mainServices = [
     {
