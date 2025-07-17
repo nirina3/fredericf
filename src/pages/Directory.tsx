@@ -4,7 +4,6 @@ import { Search, MapPin, Phone, Mail, Globe, Star, Filter, Grid, List, Clock, Aw
 import { useAuth } from '../contexts/AuthContext';
 import ReservationButton from '../components/reservation/ReservationButton';
 import directoryService from '../services/directoryService';
-import FriteryDetail from '../components/directory/FriteryDetail';
 
 interface DirectoryEntry {
   id: string;
@@ -37,10 +36,6 @@ interface DirectoryEntry {
 }
 
 const Directory: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { currentUser, isSubscribed } = useAuth();
-  
   const [entries, setEntries] = useState<DirectoryEntry[]>([]);
   const [filteredEntries, setFilteredEntries] = useState<DirectoryEntry[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -49,8 +44,10 @@ const Directory: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('name');
   const [loading, setLoading] = useState(true);
-  const [selectedEntry, setSelectedEntry] = useState<DirectoryEntry | null>(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { currentUser, isSubscribed } = useAuth();
 
   // Parse search params from URL
   useEffect(() => {
@@ -67,7 +64,36 @@ const Directory: React.FC = () => {
     }
   }, [location.search]);
   
-  // Mock data - Friteries représentatives
+  // Fonction pour charger les entrées
+  const loadEntries = async () => {
+    try {
+      setLoading(true);
+      const fetchedEntries = await directoryService.getAllEntries();
+      
+      if (fetchedEntries.length === 0) {
+        // Si aucune entrée n'est trouvée, utiliser les données de démonstration
+        setEntries(mockEntries);
+        setFilteredEntries(mockEntries);
+      } else {
+        setEntries(fetchedEntries);
+        setFilteredEntries(fetchedEntries);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des entrées:', error);
+      // En cas d'erreur, utiliser les données de démonstration
+      setEntries(mockEntries);
+      setFilteredEntries(mockEntries);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Chargement initial des données
+  useEffect(() => {
+    loadEntries();
+  }, []);
+  
+  // Mock data pour les friteries
   const mockEntries: DirectoryEntry[] = [
     {
       id: '1',
@@ -314,33 +340,6 @@ const Directory: React.FC = () => {
     { id: 'Luxembourg', name: 'Luxembourg' }
   ];
 
-  const loadEntries = async () => {
-    try {
-      setLoading(true);
-      const fetchedEntries = await directoryService.getAllEntries();
-      
-      if (fetchedEntries.length === 0) {
-        // Si aucune entrée n'est trouvée, utiliser les données de démonstration
-        setEntries(mockEntries);
-        setFilteredEntries(mockEntries);
-      } else {
-        setEntries(fetchedEntries);
-        setFilteredEntries(fetchedEntries);
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement des entrées:', error);
-      // En cas d'erreur, utiliser les données de démonstration
-      setEntries(mockEntries);
-      setFilteredEntries(mockEntries);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadEntries();
-  }, []);
-
   useEffect(() => {
     let filtered = entries;
 
@@ -390,15 +389,17 @@ const Directory: React.FC = () => {
     return true;
   };
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     
     // Update URL with search parameters
     const params = new URLSearchParams();
     if (searchTerm) params.set('search', searchTerm);
     if (selectedRegion !== 'all') params.set('location', selectedRegion);
-    
-    navigate(`/directory?${params.toString()}`, { replace: true });
+
+    // Utiliser replace: true pour éviter d'ajouter à l'historique
+    const url = `/directory?${params.toString()}`;
+    navigate(url, { replace: true });
   };
 
   const renderStars = (rating: number) => {
@@ -435,10 +436,10 @@ const Directory: React.FC = () => {
               <MapPin className="h-5 w-5 text-yellow-300 mr-2" />
               <span className="text-yellow-100 font-medium">Annuaire MonFritkot</span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-8">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8">
               Annuaire des <span className="text-yellow-300">Friteries</span>
             </h1>
-            <p className="text-xl md:text-2xl text-orange-100 leading-relaxed">
+            <p className="text-lg md:text-xl lg:text-2xl text-orange-100 leading-relaxed">
               Découvrez les meilleures friteries de Belgique, 
               leurs spécialités et toutes les informations pratiques
             </p>
@@ -447,25 +448,25 @@ const Directory: React.FC = () => {
       </section>
 
       {/* Search and Filters */}
-      <section className="py-8 bg-gray-50 border-b">
+      <section className="py-6 md:py-8 bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-center justify-between">
             {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <form onSubmit={handleSearch} className="flex">
-                <div className="relative flex-1">
+            <div className="relative flex-1 max-w-md w-full">
+              <form onSubmit={handleSearch} className="flex w-full">
+                <div className="relative flex-1 w-full">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <input
                     type="text"
                     placeholder="Rechercher une friterie..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                   />
                 </div>
                 <button 
                   type="submit"
-                  className="ml-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg transition-colors"
+                  className="ml-2 bg-orange-500 hover:bg-orange-600 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg transition-colors"
                 >
                   <Search className="h-5 w-5" />
                 </button>
@@ -473,11 +474,11 @@ const Directory: React.FC = () => {
             </div>
 
             {/* Filters */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4 mt-4 md:mt-0 w-full md:w-auto">
               <select
                 value={selectedRegion}
                 onChange={(e) => setSelectedRegion(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                className="px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors flex-1 md:flex-none"
               >
                 {regions.map((region) => (
                   <option key={region.id} value={region.id}>
@@ -489,7 +490,7 @@ const Directory: React.FC = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                className="px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors flex-1 md:flex-none"
               >
                 <option value="name">Nom A-Z</option>
                 <option value="rating">Mieux notées</option>
@@ -498,7 +499,7 @@ const Directory: React.FC = () => {
               </select>
 
               {/* View Mode Toggle */}
-              <div className="flex items-center space-x-2 bg-white rounded-lg p-1 shadow-sm">
+              <div className="hidden md:flex items-center space-x-2 bg-white rounded-lg p-1 shadow-sm">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`p-2 rounded-md transition-colors ${
@@ -520,12 +521,12 @@ const Directory: React.FC = () => {
           </div>
 
           {/* Categories */}
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-4 md:mt-6 flex flex-wrap gap-2 md:gap-3">
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                className={`px-3 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-200 ${
                   selectedCategory === category.id
                     ? 'bg-orange-500 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:bg-orange-50 hover:text-orange-600 shadow-sm'
@@ -537,14 +538,14 @@ const Directory: React.FC = () => {
           </div>
 
           {/* Results count */}
-          <div className="mt-4 text-sm text-gray-600">
+          <div className="mt-3 md:mt-4 text-xs md:text-sm text-gray-600">
             {filteredEntries.length} friterie{filteredEntries.length > 1 ? 's' : ''} trouvée{filteredEntries.length > 1 ? 's' : ''}
           </div>
         </div>
       </section>
 
       {/* Directory Listings */}
-      <section className="py-12">
+      <section className="py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {filteredEntries.length === 0 ? (
             <div className="text-center py-16">
@@ -554,15 +555,15 @@ const Directory: React.FC = () => {
             </div>
           ) : (
             <div className={viewMode === 'grid' 
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8' 
-              : 'space-y-6'
+              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8' 
+              : 'space-y-4 md:space-y-6'
             }>
               {filteredEntries.map((entry) => (
                 <div key={entry.id} className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden ${
                   viewMode === 'list' ? 'flex' : ''
                 }`}>
                   {/* Image */}
-                  <div className={`relative ${viewMode === 'list' ? 'w-64 flex-shrink-0' : 'h-48'}`}>
+                  <div className={`relative ${viewMode === 'list' ? 'w-32 md:w-64 flex-shrink-0' : 'h-40 md:h-48'}`}>
                     <img
                       src={entry.images[0]}
                       alt={entry.name}
@@ -570,69 +571,69 @@ const Directory: React.FC = () => {
                     />
                     
                     {/* Badges */}
-                    <div className="absolute top-4 left-4 flex flex-col space-y-2">
+                    <div className="absolute top-2 md:top-4 left-2 md:left-4 flex flex-col space-y-1 md:space-y-2">
                       {entry.verified && (
-                        <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center">
-                          <Verified className="h-3 w-3 mr-1" />
+                        <span className="bg-green-500 text-white px-2 md:px-3 py-0.5 md:py-1 rounded-full text-xs font-medium flex items-center">
+                          <Verified className="h-2 w-2 md:h-3 md:w-3 mr-1" />
                           Vérifié
                         </span>
                       )}
                       {entry.premium && (
-                        <span className="bg-purple-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center">
-                          <Award className="h-3 w-3 mr-1" />
+                        <span className="bg-purple-500 text-white px-2 md:px-3 py-0.5 md:py-1 rounded-full text-xs font-medium flex items-center">
+                          <Award className="h-2 w-2 md:h-3 md:w-3 mr-1" />
                           Premium
                         </span>
                       )}
                     </div>
 
                     {/* Price Range */}
-                    <div className="absolute top-4 right-4">
-                      <span className="bg-black/70 text-white px-3 py-1 rounded-full text-xs font-medium">
+                    <div className="absolute top-2 md:top-4 right-2 md:right-4">
+                      <span className="bg-black/70 text-white px-2 md:px-3 py-0.5 md:py-1 rounded-full text-xs font-medium">
                         {entry.priceRange}
                       </span>
                     </div>
                   </div>
 
                   {/* Content */}
-                  <div className="p-6 flex-1">
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-xl font-bold text-gray-900 line-clamp-1">{entry.name}</h3>
-                      <div className="flex items-center space-x-1 ml-2">
+                  <div className="p-4 md:p-6 flex-1">
+                    <div className="flex items-start justify-between mb-2 md:mb-3">
+                      <h3 className="text-lg md:text-xl font-bold text-gray-900 line-clamp-1">{entry.name}</h3>
+                      <div className="flex items-center space-x-1 ml-1 md:ml-2">
                         {renderStars(entry.rating)}
-                        <span className="text-sm text-gray-600 ml-1">({entry.reviewCount})</span>
+                        <span className="text-xs md:text-sm text-gray-600 ml-1">({entry.reviewCount})</span>
                       </div>
                     </div>
                     
-                    <p className="text-gray-600 mb-4 line-clamp-2">{entry.description}</p>
+                    <p className="text-gray-600 mb-3 md:mb-4 line-clamp-2 text-sm md:text-base">{entry.description}</p>
                     
                     {/* Location */}
-                    <div className="flex items-center text-sm text-gray-500 mb-3">
-                      <MapPin className="h-4 w-4 mr-1" />
+                    <div className="flex items-center text-xs md:text-sm text-gray-500 mb-2 md:mb-3">
+                      <MapPin className="h-3 w-3 md:h-4 md:w-4 mr-1" />
                       <span>{entry.contact.city}, {entry.contact.region}</span>
                     </div>
 
                     {/* Specialties */}
-                    <div className="flex flex-wrap gap-2 mb-4">
+                    <div className="flex flex-wrap gap-1 md:gap-2 mb-3 md:mb-4">
                       {entry.specialties.slice(0, 3).map((specialty, index) => (
-                        <span key={index} className="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-xs font-medium">
+                        <span key={index} className="bg-orange-100 text-orange-800 px-1.5 md:px-2 py-0.5 md:py-1 rounded-md text-xs font-medium">
                           {specialty}
                         </span>
                       ))}
                       {entry.specialties.length > 3 && (
-                        <span className="text-xs text-gray-500">+{entry.specialties.length - 3} autres</span>
+                        <span className="text-xs text-gray-500">+{entry.specialties.length - 3}</span>
                       )}
                     </div>
 
                     {/* Contact Info */}
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Phone className="h-4 w-4 mr-2" />
+                    <div className="space-y-1 md:space-y-2 mb-3 md:mb-4">
+                      <div className="flex items-center text-xs md:text-sm text-gray-600">
+                        <Phone className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                         <span>{entry.contact.phone}</span>
                       </div>
                       {entry.contact.website && (
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Globe className="h-4 w-4 mr-2" />
-                          <a href={entry.contact.website} target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-700">
+                        <div className="flex items-center text-xs md:text-sm text-gray-600">
+                          <Globe className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                          <a href={entry.contact.website} target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-700 truncate">
                             Site web
                           </a>
                         </div>
@@ -640,15 +641,15 @@ const Directory: React.FC = () => {
                     </div>
 
                     {/* Opening Hours Today */}
-                    <div className="flex items-center text-sm text-gray-600 mb-4">
-                      <Clock className="h-4 w-4 mr-2" />
-                      <span>Aujourd'hui: {entry.openingHours[Object.keys(entry.openingHours)[0]]}</span>
+                    <div className="flex items-center text-xs md:text-sm text-gray-600 mb-3 md:mb-4">
+                      <Clock className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                      <span className="truncate">Aujourd'hui: {entry.openingHours[Object.keys(entry.openingHours)[0]]}</span>
                     </div>
 
                     {/* Actions */}
                     <div className="flex items-center justify-between">
                       <div className="flex space-x-2">
-                        <button className="text-orange-600 hover:text-orange-700 text-sm font-medium">
+                        <button className="text-orange-600 hover:text-orange-700 text-xs md:text-sm font-medium">
                           Voir détails
                         </button>
                         {canAccessDetails(entry) && (
@@ -663,7 +664,7 @@ const Directory: React.FC = () => {
                       </div>
                       
                       {!canAccessDetails(entry) && (
-                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        <span className="text-xs text-gray-500 bg-gray-100 px-1.5 md:px-2 py-0.5 md:py-1 rounded">
                           Premium requis
                         </span>
                       )}
@@ -677,19 +678,19 @@ const Directory: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-orange-600 to-red-600 text-white">
+      <section className="py-12 md:py-20 bg-gradient-to-r from-orange-600 to-red-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
             Votre friterie n'est pas <span className="text-yellow-300">listée</span> ?
           </h2>
-          <p className="text-xl mb-10 text-orange-100 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl mb-6 md:mb-10 text-orange-100 max-w-2xl mx-auto">
             Rejoignez notre annuaire et augmentez votre visibilité auprès de milliers de clients potentiels
           </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link to="/signup" className="bg-white text-orange-600 px-8 py-4 rounded-lg font-bold hover:bg-orange-50 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
+            <Link to="/signup" className="bg-white text-orange-600 px-6 md:px-8 py-3 md:py-4 rounded-lg font-bold hover:bg-orange-50 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
               Ajouter ma friterie
             </Link>
-            <Link to="/contact" className="border-2 border-white text-white px-8 py-4 rounded-lg font-bold hover:bg-white hover:text-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <Link to="/contact" className="border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-lg font-bold hover:bg-white hover:text-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
               En savoir plus
             </Link>
           </div>

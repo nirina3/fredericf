@@ -6,7 +6,6 @@ import Layout from './components/Layout/Layout';
 import AdminLayout from './pages/admin/AdminLayout';
 import Home from './pages/Home';
 import About from './pages/About';
-import Services from './pages/Services';
 import Contact from './pages/Contact';
 import Pricing from './pages/Pricing';
 import Login from './pages/Login';
@@ -45,7 +44,6 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="about" element={<About />} />
-              <Route path="services" element={<Services />} />
               <Route path="contact" element={<Contact />} />
               <Route path="pricing" element={<Pricing />} />
               <Route path="login" element={<Login />} />

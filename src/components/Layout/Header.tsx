@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut, Settings, Crown, Calendar, Search } from 'lucide-react';
+import { Menu, X, User, LogOut, Settings, Crown, Calendar } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import logoService from '../../services/logoService';
 import NotificationBell from '../notifications/NotificationBell';
@@ -9,8 +9,6 @@ const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string>('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchLocation, setSearchLocation] = useState('');
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -38,46 +36,38 @@ const Header: React.FC = () => {
     }
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchTerm.trim() || searchLocation.trim()) {
-      navigate(`/directory?search=${encodeURIComponent(searchTerm)}&location=${encodeURIComponent(searchLocation)}`);
-    }
-  };
-
   const navigation = [
     { name: 'Accueil', href: '/' },
     { name: 'Annuaire', href: '/directory' },
     { name: 'À propos', href: '/about' },
-    { name: 'Services', href: '/services' },
     { name: 'Galerie', href: '/gallery' },
     { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' },
   ];
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50 border-b border-orange-200">
+    <header className="bg-white shadow-md sticky top-0 z-50 border-b border-orange-200 w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center h-16 md:h-20">
           {/* Logo */}
-          <div className="flex-shrink-0 mr-4">
+          <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
               {logoUrl ? (
                 <img 
                   src={logoUrl} 
                   alt="" 
-                  className="h-10 w-auto mr-3 object-contain"
+                  className="h-8 md:h-10 w-auto object-contain"
                 />
               ) : (
-                <div className="bg-gradient-to-r from-orange-500 to-red-600 p-2 rounded-lg mr-3">
-                  <Crown className="h-8 w-8 text-white" />
+                <div className="bg-gradient-to-r from-orange-500 to-red-600 p-2 rounded-lg">
+                  <Crown className="h-6 w-6 md:h-8 md:w-8 text-white" />
                 </div>
               )}
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex space-x-1">
+          <nav className="hidden lg:flex space-x-1 ml-4">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -97,7 +87,7 @@ const Header: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                  className="flex items-center space-x-2 text-gray-700 hover:text-orange-600 transition-colors duration-200 bg-gray-50 hover:bg-orange-50 px-3 py-2 rounded-lg"
+                  className="flex items-center space-x-1 md:space-x-2 text-gray-700 hover:text-orange-600 transition-colors duration-200 bg-gray-50 hover:bg-orange-50 px-2 md:px-3 py-2 rounded-lg"
                 >
                   <User className="h-5 w-5" />
                   <span className="hidden sm:block font-medium">{currentUser.name}</span>
@@ -174,14 +164,14 @@ const Header: React.FC = () => {
             ) : (
               <div className="flex items-center space-x-3">
                 <Link
-                  to="/login"
-                  className="text-gray-700 hover:text-orange-600 px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-md hover:bg-orange-50"
+                  to="/login" 
+                  className="text-gray-700 hover:text-orange-600 px-2 md:px-4 py-2 text-xs md:text-sm font-medium transition-colors duration-200 rounded-md hover:bg-orange-50"
                 >
                   Connexion
                 </Link>
                 <Link
                   to="/pricing"
-                  className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:from-orange-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-3 md:px-6 py-2 rounded-lg text-xs md:text-sm font-medium hover:from-orange-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
                   S'abonner
                 </Link>
@@ -191,7 +181,7 @@ const Header: React.FC = () => {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 rounded-md text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition-colors duration-200"
+              className="lg:hidden p-1 md:p-2 rounded-md text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition-colors duration-200"
             >
               {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -200,7 +190,7 @@ const Header: React.FC = () => {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden border-t border-orange-200 bg-white mt-2">
+          <div className="lg:hidden border-t border-orange-200 bg-white mt-2 absolute left-0 right-0 z-50 shadow-lg">
             <div className="px-2 pt-4 pb-6 space-y-2">
               {navigation.map((item) => (
                 <Link

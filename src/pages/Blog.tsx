@@ -439,26 +439,40 @@ const Blog: React.FC = () => {
       {/* Newsletter CTA */}
       <section className="py-20 bg-gradient-to-r from-orange-600 to-red-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <div className="max-w-3xl mx-auto" id="newsletter-section">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
               Restez <span className="text-yellow-300">informé</span>
             </h2>
-            <p className="text-xl mb-10 text-orange-100 leading-relaxed">
+            <p className="text-lg md:text-xl mb-6 md:mb-10 text-orange-100 leading-relaxed">
               Recevez nos derniers articles et conseils d'experts directement dans votre boîte mail
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Votre adresse email"
-                className="flex-1 px-6 py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              />
-              <button className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg font-bold transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                S'abonner
-              </button>
-            </div>
-            <p className="text-sm text-orange-200 mt-4">
-              Pas de spam, désabonnement en un clic
-            </p>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const email = (e.target as HTMLFormElement).email.value;
+              if (email) {
+                alert(`Merci de vous être abonné avec l'adresse: ${email}`);
+                (e.target as HTMLFormElement).reset();
+              }
+            }} className="max-w-md mx-auto">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Votre adresse email"
+                  required
+                  className="flex-1 px-4 md:px-6 py-3 md:py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                />
+                <button 
+                  type="submit"
+                  className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-6 md:px-8 py-3 md:py-4 rounded-lg font-bold transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  S'abonner
+                </button>
+              </div>
+              <p className="text-sm text-orange-200 mt-4">
+                Pas de spam, désabonnement en un clic
+              </p>
+            </form>
           </div>
         </div>
       </section>

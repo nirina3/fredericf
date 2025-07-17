@@ -146,30 +146,30 @@ const Home: React.FC = () => {
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">
               Trouvez vos meilleures friteries
             </h2>
-            <p className="text-lg sm:text-xl text-white mb-6">
+            <p className="text-lg sm:text-xl text-white mb-4 md:mb-6">
               Flamande, Wallonne et Bruxelloise
             </p>
             
-            <div className="max-w-4xl mx-auto">
-              <form action="/directory" method="get" className="flex flex-col md:flex-row gap-4">
-                <div className="relative flex-1">
+            <div className="max-w-4xl mx-auto px-4">
+              <form action="/directory" method="get" className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1 w-full">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <input
                     type="text"
                     name="search"
                     placeholder="Entrez un mot clé"
-                    className="w-full pl-10 px-6 py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    className="w-full pl-10 px-4 py-3 md:py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
                   />
                 </div>
                 <input
                   type="text"
                   name="location"
                   placeholder="Adresse, proximité..."
-                  className="flex-1 px-6 py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  className="flex-1 px-4 py-3 md:py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 />
                 <button 
                   type="submit"
-                  className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg font-bold transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-4 sm:px-6 md:px-8 py-3 md:py-4 rounded-lg font-bold transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                 >
                   Rechercher
                 </button>
