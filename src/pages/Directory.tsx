@@ -4,6 +4,7 @@ import { Search, MapPin, Phone, Mail, Globe, Star, Filter, Grid, List, Clock, Aw
 import { useAuth } from '../contexts/AuthContext';
 import ReservationButton from '../components/reservation/ReservationButton';
 import directoryService from '../services/directoryService';
+import FriteryDetail from '../components/directory/FriteryDetail';
 
 interface DirectoryEntry {
   id: string;
@@ -36,6 +37,10 @@ interface DirectoryEntry {
 }
 
 const Directory: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { currentUser, isSubscribed } = useAuth();
+  
   const [entries, setEntries] = useState<DirectoryEntry[]>([]);
   const [filteredEntries, setFilteredEntries] = useState<DirectoryEntry[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -44,10 +49,8 @@ const Directory: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('name');
   const [loading, setLoading] = useState(true);
-  
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { currentUser, isSubscribed } = useAuth();
+  const [selectedEntry, setSelectedEntry] = useState<DirectoryEntry | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // Parse search params from URL
   useEffect(() => {
@@ -63,7 +66,7 @@ const Directory: React.FC = () => {
       setSelectedRegion(locationParam);
     }
   }, [location.search]);
-
+  
   // Mock data - Friteries représentatives
   const mockEntries: DirectoryEntry[] = [
     {
@@ -311,7 +314,7 @@ const Directory: React.FC = () => {
     { id: 'Luxembourg', name: 'Luxembourg' }
   ];
 
-  const loadEntries = useCallback(async () => {
+  const loadEntries = async () => {
     try {
       setLoading(true);
       const fetchedEntries = await directoryService.getAllEntries();
@@ -332,11 +335,11 @@ const Directory: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [mockEntries]);
+  };
 
   useEffect(() => {
     loadEntries();
-  }, [loadEntries]);
+  }, []);
 
   useEffect(() => {
     let filtered = entries;
@@ -387,7 +390,7 @@ const Directory: React.FC = () => {
     return true;
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     // Update URL with search parameters
@@ -395,10 +398,7 @@ const Directory: React.FC = () => {
     if (searchTerm) params.set('search', searchTerm);
     if (selectedRegion !== 'all') params.set('location', selectedRegion);
     
-    navigate(`/directory?${params.toString()}`);
-    
-    // Filter entries based on search term and region
-    filterEntries();
+    navigate(`/directory?${params.toString()}`, { replace: true });
   };
 
   const renderStars = (rating: number) => {

@@ -76,37 +76,8 @@ const Header: React.FC = () => {
             </Link>
           </div>
 
-          {/* Search Bar - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-xl mx-4">
-            <form onSubmit={handleSearch} className="w-full flex">
-              <div className="relative flex-1 mr-2">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Rechercher une friterie..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                />
-              </div>
-              <input
-                type="text"
-                placeholder="Lieu, adresse..."
-                value={searchLocation}
-                onChange={(e) => setSearchLocation(e.target.value)}
-                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 mr-2"
-              />
-              <button 
-                type="submit"
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                <Search className="h-5 w-5" />
-              </button>
-            </form>
-          </div>
-
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex space-x-1 ml-auto">
+          <nav className="hidden lg:flex space-x-1">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -226,37 +197,6 @@ const Header: React.FC = () => {
             </button>
           </div>
         </div>
-
-        {/* Search Bar - Mobile */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-orange-200">
-            <form onSubmit={handleSearch} className="flex flex-col space-y-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Rechercher une friterie..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                />
-              </div>
-              <input
-                type="text"
-                placeholder="Lieu, adresse..."
-                value={searchLocation}
-                onChange={(e) => setSearchLocation(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              />
-              <button 
-                type="submit"
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg transition-colors font-medium"
-              >
-                Rechercher
-              </button>
-            </form>
-          </div>
-        )}
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
