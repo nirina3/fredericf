@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, User, LogOut, Settings, Crown, Calendar, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import Button from '../ui/Button';
 import logoService from '../../services/logoService';
 import NotificationBell from '../notifications/NotificationBell';
 
@@ -11,7 +10,7 @@ const Header: React.FC = () => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string>('');
   const { currentUser, logout } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const loadLogo = async () => {
@@ -85,7 +84,7 @@ const Header: React.FC = () => {
             {currentUser && <NotificationBell />}
             
             {currentUser ? (
-              <div className="relative z-50">
+              <div className="relative" style={{ zIndex: 50 }}>
                 <button
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                   className="flex items-center space-x-1 text-gray-700 hover:text-orange-600 transition-colors duration-200 bg-gray-50 hover:bg-orange-50 px-2 py-2 rounded-lg cursor-pointer"
@@ -97,8 +96,7 @@ const Header: React.FC = () => {
 
                 {isProfileMenuOpen && (
                   <div 
-                    className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2"
-                    style={{ zIndex: 100 }}
+                    className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-[100]"
                   >
                     <Link
                       onClick={() => setIsProfileMenuOpen(false)}
@@ -135,7 +133,10 @@ const Header: React.FC = () => {
                     {currentUser.role === 'admin' && (
                       <Link
                         to="/admin"
-                        onClick={() => setIsProfileMenuOpen(false)}
+                        onClick={() => {
+                          setIsProfileMenuOpen(false);
+                          navigate('/admin');
+                        }}
                         className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
                       >
                         <Settings className="h-4 w-4 mr-3" />
@@ -145,7 +146,7 @@ const Header: React.FC = () => {
                     {/* Removed initialization link that was causing confusion */}
                     {/* {!currentUser && (
                       <Link
-                        to="/initialize-admin"
+                        to="initialize-admin"
                         className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
                       >
                         <Crown className="h-4 w-4 mr-3" />
@@ -237,9 +238,10 @@ const Header: React.FC = () => {
                 {currentUser.role === 'admin' && (
                   <Link
                     to="/admin"
-                    className="block px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200 cursor-pointer"
+                    className="block px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200"
                     onClick={() => {
                       setIsMobileMenuOpen(false);
+                      navigate('/admin');
                     }}
                   >
                     Administration
