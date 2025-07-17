@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Crown, Users, BookOpen, Image as ImageIcon, BarChart3, Headphones, Zap, Shield, Award, ArrowRight, Search } from 'lucide-react';
-import { collection, getDocs } from 'firebase/firestore'; 
-import { db } from '../firebase/config';
+import { collection, getDocs } from 'firebase/firestore';
+import { db, storage } from '../firebase/config';
+import { ref, getDownloadURL } from 'firebase/storage';
 
 const Home: React.FC = () => {
   const [stats, setStats] = useState({
@@ -12,7 +13,7 @@ const Home: React.FC = () => {
     satisfaction: 98
   });
 
-  const friteryImage = 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800';
+  const [friteryImage, setFriteryImage] = useState('https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800');
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -45,6 +46,20 @@ const Home: React.FC = () => {
     fetchStats();
   }, []);
 
+  useEffect(() => {
+    // Try to get the WhatsApp image from Firebase Storage
+    const getImage = async () => {
+      try {
+        // First try to get it from public folder
+        setFriteryImage('/WhatsApp Image 2025-07-17 at 3.08.26 PM.jpeg');
+      } catch (error) {
+        console.error('Error loading image:', error);
+        // Fallback to the default image
+      }
+    };
+    
+    getImage();
+  }, []);
 
   const mainServices = [
     {
