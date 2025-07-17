@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Crown, Users, BookOpen, Image, BarChart3, Headphones, Zap, Shield, Award, ArrowRight, Search } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
