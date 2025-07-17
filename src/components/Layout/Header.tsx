@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, User, LogOut, Settings, Crown, Calendar, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import Button from '../ui/Button';
 import logoService from '../../services/logoService';
 import NotificationBell from '../notifications/NotificationBell';
 
@@ -42,7 +43,7 @@ const Header: React.FC = () => {
     { name: 'Galerie', href: '/gallery' },
     { name: 'À propos', href: '/about' },
     { name: 'Blog', href: '/blog' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Contact', href: '/contact' }
   ];
 
   return (
@@ -84,10 +85,10 @@ const Header: React.FC = () => {
             {currentUser && <NotificationBell />}
             
             {currentUser ? (
-              <div className="relative">
+              <div className="relative z-50">
                 <button
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                  className="flex items-center space-x-1 text-gray-700 hover:text-orange-600 transition-colors duration-200 bg-gray-50 hover:bg-orange-50 px-2 py-2 rounded-lg"
+                  className="flex items-center space-x-1 text-gray-700 hover:text-orange-600 transition-colors duration-200 bg-gray-50 hover:bg-orange-50 px-2 py-2 rounded-lg cursor-pointer"
                 >
                   <User className="h-5 w-5" />
                   <span className="hidden sm:block font-medium truncate max-w-[80px]">{currentUser.name}</span>
@@ -97,6 +98,7 @@ const Header: React.FC = () => {
                 {isProfileMenuOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                     <Link
+                      onClick={() => setIsProfileMenuOpen(false)}
                       to="/profile"
                       className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
                     >
@@ -104,6 +106,7 @@ const Header: React.FC = () => {
                       Mon Profil
                     </Link>
                     <Link
+                      onClick={() => setIsProfileMenuOpen(false)}
                       to="/subscription"
                       className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
                     >
@@ -111,6 +114,7 @@ const Header: React.FC = () => {
                       Mon Abonnement
                     </Link>
                     <Link
+                      onClick={() => setIsProfileMenuOpen(false)}
                       to="/reservations"
                       className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
                     >
@@ -118,6 +122,7 @@ const Header: React.FC = () => {
                       Mes Réservations
                     </Link>
                     <Link
+                      onClick={() => setIsProfileMenuOpen(false)}
                       to="/billing"
                       className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
                     >
@@ -127,8 +132,8 @@ const Header: React.FC = () => {
                     {currentUser.role === 'admin' && (
                       <Link
                         to="/admin"
+                        onClick={() => setIsProfileMenuOpen(false)}
                         className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
-                       onClick={() => setIsProfileMenuOpen(false)}
                       >
                         <Settings className="h-4 w-4 mr-3" />
                         Administration
@@ -147,7 +152,7 @@ const Header: React.FC = () => {
                     <hr className="my-2 border-gray-200" />
                     <button
                       onClick={handleLogout}
-                      className="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+                      className="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
                     >
                       <LogOut className="h-4 w-4 mr-3" />
                       Déconnexion
@@ -175,7 +180,7 @@ const Header: React.FC = () => {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 rounded-md text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition-colors duration-200"
+              className="lg:hidden p-2 rounded-md text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition-colors duration-200 cursor-pointer"
             >
               {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -183,10 +188,10 @@ const Header: React.FC = () => {
         </div>
 
         {/* Mobile Navigation */}
-        <div className={`lg:hidden border-t border-orange-200 bg-white absolute left-0 right-0 z-50 shadow-lg transition-all duration-300 ${
+        <div className={`lg:hidden border-t border-orange-200 bg-white fixed left-0 right-0 z-40 shadow-lg transition-all duration-300 ${
           isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
         }`}>
-          <div className="px-2 pt-2 pb-4 space-y-1">
+          <div className="px-2 pt-2 pb-4 space-y-1 max-h-[80vh] overflow-y-auto">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -199,20 +204,51 @@ const Header: React.FC = () => {
             ))}
             {!currentUser && (
               <div className="pt-2 space-y-1">
+                <div className="px-4 py-2">
+                  <Link
+                    to="/login"
+                    className="block w-full px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200 text-center mb-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Connexion
+                  </Link>
+                  <Link
+                    to="/pricing"
+                    className="block w-full px-4 py-2 text-base font-medium bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition-all duration-200 text-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    S'abonner
+                  </Link>
+                </div>
+              </div>
+            )}
+            {currentUser && (
+              <div className="pt-2 border-t border-gray-200 mt-2">
                 <Link
-                  to="/login"
+                  to="/profile"
                   className="block px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Connexion
+                  Mon Profil
                 </Link>
-                <Link
-                  to="/pricing"
-                  className="block px-4 py-2 text-base font-medium bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition-all duration-200"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                {currentUser.role === 'admin' && (
+                  <Link
+                    to="/admin"
+                    className="block px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Administration
+                  </Link>
+                )}
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
                 >
-                  S'abonner
-                </Link>
+                  Déconnexion
+                </button>
               </div>
             )}
           </div>
