@@ -18,7 +18,6 @@ const Subscription: React.FC = () => {
       features: [
         { name: 'Consultation de l\'annuaire des Friterie', included: true },
         { name: 'Ajout d\'1 Friterie pour 1 mois', included: true },
-        { name: 'Alerté sur tous les évènement et nouveauté', included: true },
         { name: 'Désabonnement possible à tous moment', included: true }
       ],
       popular: false,
@@ -34,7 +33,6 @@ const Subscription: React.FC = () => {
       features: [
         { name: 'Consultation de l\'annuaire des Friterie', included: true },
         { name: 'Passer commande ou réserver une table', included: true },
-        { name: 'Alerté sur tous les évènement et nouveauté', included: true },
         { name: 'Bénéficier des code promo', included: true },
         { name: 'Désabonnement possible à tous moment', included: true }
       ],
@@ -53,7 +51,6 @@ const Subscription: React.FC = () => {
         { name: 'Ajout de 3 friteries pour un an', included: true },
         { name: 'Tableau de bord pour gérer ses friteries', included: true },
         { name: 'Accès à la galerie photo premium', included: true },
-        { name: 'Alerté sur tous les évènement et nouveauté', included: true },
         { name: 'Désabonnement possible à tout moment', included: true }
       ],
       popular: false,

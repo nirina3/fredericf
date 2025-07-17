@@ -141,18 +141,12 @@ const Home: React.FC = () => {
             Découvrez nos services premium, rejoignez notre communauté et développez votre passion.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+          <div className="mb-16">
             <Link 
               to="/pricing" 
               className="bg-white text-orange-600 px-8 py-4 rounded-lg font-bold hover:bg-orange-50 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               Découvrir nos offres
-            </Link>
-            <Link 
-              to="/initialize-admin" 
-              className="border-2 border-white text-white px-8 py-4 rounded-lg font-bold hover:bg-white hover:text-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              Initialiser Admin
             </Link>
           </div>
           
