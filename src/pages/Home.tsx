@@ -111,6 +111,8 @@ const Home: React.FC = () => {
       description: "Parfait pour débuter",
       features: ["Consultation de l'annuaire des Friterie", "Ajout d'1 Friterie pour 1 mois", "Désabonnement possible à tous moment"],
       popular: false
+    },
+    {
     {
       name: "Client Accro",
       price: "10.00",
@@ -118,6 +120,7 @@ const Home: React.FC = () => {
       features: ["Consultation de l'annuaire des Friterie", "Passer commande ou réserver une table", "Bénéficier des code promo", "Désabonnement possible à tous moment"],
       popular: true
     },
+    {
       name: "Friterie Premium",
       price: "30.00",
       description: "Pour les professionnels",
