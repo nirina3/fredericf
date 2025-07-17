@@ -111,7 +111,7 @@ const Header: React.FC = () => {
             
             {currentUser ? (
               <div className="flex items-center space-x-2">
-                {currentUser.role === 'admin' && (
+                {currentUser && currentUser.role === 'admin' && (
                   <a 
                     href="/admin" 
                     className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
@@ -228,8 +228,7 @@ const Header: React.FC = () => {
                 {currentUser.role === 'admin' && (
                   <button
                     onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      window.location.href = '/admin';
+                      window.location.href = '/admin'; // Navigation directe
                     }}
                     className="block w-full text-left px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200 cursor-pointer"
                   >
