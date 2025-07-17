@@ -174,7 +174,10 @@ const Profile: React.FC = () => {
                   </span>
                   <span className="flex items-center">
                     <Crown className="h-4 w-4 mr-1" />
-                    {currentUser.subscription.plan.name}
+                    {currentUser.subscription.plan.name === 'Basic' ? 'Abonné' : 
+                     currentUser.subscription.plan.name === 'Premium' ? 'Client Accro' :
+                     currentUser.subscription.plan.name === 'Pro' ? 'Friterie Premium' :
+                     currentUser.subscription.plan.name}
                   </span>
                 </div>
               </div>

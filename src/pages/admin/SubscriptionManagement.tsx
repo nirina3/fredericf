@@ -180,9 +180,9 @@ const SubscriptionManagement: React.FC = () => {
   const handleChangePlan = (subscriptionId: string, newPlan: string) => {
     // Simuler le changement de plan
     const planNames: {[key: string]: string} = {
-      'gratuit': 'Gratuit',
-      'standard': 'Standard',
-      'pro': 'Pro'
+      'gratuit': 'Gratuit', 
+      'standard': 'Client Accro',
+      'pro': 'Friterie Premium'
     };
     
     const planPrices: {[key: string]: number} = {
