@@ -88,7 +88,7 @@ const Header: React.FC = () => {
               <div className="relative z-50">
                 <button
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                  className="flex items-center space-x-1 text-gray-700 hover:text-orange-600 transition-colors duration-200 bg-gray-50 hover:bg-orange-50 px-2 py-2 rounded-lg cursor-pointer relative z-10"
+                  className="flex items-center space-x-1 text-gray-700 hover:text-orange-600 transition-colors duration-200 bg-gray-50 hover:bg-orange-50 px-2 py-2 rounded-lg cursor-pointer"
                 >
                   <User className="h-5 w-5" />
                   <span className="hidden sm:block font-medium truncate max-w-[80px]">{currentUser.name}</span>
@@ -97,8 +97,8 @@ const Header: React.FC = () => {
 
                 {isProfileMenuOpen && (
                   <div 
-                    className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
-                    style={{ zIndex: 9999 }}
+                    className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2"
+                    style={{ zIndex: 100 }}
                   >
                     <Link
                       onClick={() => setIsProfileMenuOpen(false)}
@@ -135,11 +135,7 @@ const Header: React.FC = () => {
                     {currentUser.role === 'admin' && (
                       <Link
                         to="/admin"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setIsProfileMenuOpen(false);
-                          navigate('/admin');
-                        }}
+                        onClick={() => setIsProfileMenuOpen(false)}
                         className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
                       >
                         <Settings className="h-4 w-4 mr-3" />
@@ -241,8 +237,10 @@ const Header: React.FC = () => {
                 {currentUser.role === 'admin' && (
                   <Link
                     to="/admin"
-                    className="block px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block px-4 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors duration-200 cursor-pointer"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                    }}
                   >
                     Administration
                   </Link>
