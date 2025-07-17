@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Users, 
@@ -13,14 +13,25 @@ import {
   BarChart3,
   Crown,
   ShieldCheck as Shield,
-  Calendar
+  Calendar,
+  LogOut
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const AdminLayout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   const navigation = [
     { name: 'Tableau de bord', href: '/admin', icon: LayoutDashboard },
@@ -120,6 +131,16 @@ const AdminLayout: React.FC = () => {
                 </Link>
               ))}
             </nav>
+            
+            <div className="mt-auto border-t border-gray-200 pt-4 px-2">
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center px-2 py-2 text-sm font-medium rounded-md text-red-600 hover:bg-red-50 hover:text-red-700"
+              >
+                <LogOut className="mr-3 h-5 w-5" />
+                Déconnexion
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -137,6 +158,15 @@ const AdminLayout: React.FC = () => {
         <main className="flex-1 p-4 md:p-6">
           <Outlet />
         </main>
+        <div className="p-4 md:hidden">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
+          >
+            <LogOut className="mr-2 h-5 w-5" />
+            Déconnexion
+          </button>
+        </div>
       </div>
     </div>
   );

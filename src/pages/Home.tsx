@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Crown, Users, BookOpen, Image, BarChart3, Headphones, Zap, Shield, Award, ArrowRight, Search } from 'lucide-react';
+import { Crown, Users, BookOpen, Image as ImageIcon, BarChart3, Headphones, Zap, Shield, Award, ArrowRight, Search } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { db, storage } from '../firebase/config';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const Home: React.FC = () => {
   const [stats, setStats] = useState({
@@ -11,6 +12,8 @@ const Home: React.FC = () => {
     recipes: 1000,
     satisfaction: 98
   });
+
+  const [friteryImage, setFriteryImage] = useState('');
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -43,6 +46,23 @@ const Home: React.FC = () => {
     fetchStats();
   }, []);
 
+  useEffect(() => {
+    // Récupérer l'image depuis Firebase Storage
+    const fetchImage = async () => {
+      try {
+        const imageRef = ref(storage, 'images/friterie-reference.jpg');
+        const url = await getDownloadURL(imageRef);
+        setFriteryImage(url);
+      } catch (error) {
+        console.error('Error fetching image:', error);
+        // Image de secours si l'image n'est pas trouvée dans Firebase Storage
+        setFriteryImage('https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800');
+      }
+    };
+    
+    fetchImage();
+  }, []);
+
   const mainServices = [
     {
       icon: <Crown className="h-12 w-12" />,
@@ -61,12 +81,12 @@ const Home: React.FC = () => {
     {
       icon: <BookOpen className="h-12 w-12" />,
       title: "Formation & Conseils",
-      description: "Bénéficiez de formations spécialisées et de conseils d'experts pour développer votre activité.",
+      description: "Bénéficiez de formations spécialisées et de conseils d'experts pour votre activité.",
       features: ["Formations en ligne", "Conseils d'experts", "Guides pratiques", "Webinaires"],
       color: "from-green-500 to-teal-600"
     },
     {
-      icon: <Image className="h-12 w-12" />,
+      icon: <ImageIcon className="h-12 w-12" />,
       title: "Galerie Premium",
       description: "Showcasez vos réalisations dans notre galerie premium et inspirez la communauté.",
       features: ["Galerie haute qualité", "Mise en avant", "Portfolio professionnel", "Visibilité accrue"],
@@ -182,6 +202,35 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* About Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div className="order-2 md:order-1">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                La référence pour les friteries belges
+              </h2>
+              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                MonFritkot.be est né de la passion pour la friterie belge authentique. Notre mission est de créer un pont entre la tradition séculaire de nos friteries et les outils modernes du digital.
+              </p>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                Que vous soyez propriétaire d'une friterie ou simplement amateur de bonnes frites, notre plateforme vous offre des services adaptés à vos besoins.
+              </p>
+            </div>
+            <div className="order-1 md:order-2">
+              <div className="rounded-2xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
+                <img 
+                  src={friteryImage} 
+                  alt="Friterie belge authentique" 
+                  className="w-full h-auto object-cover rounded-2xl"
+                  style={{ maxHeight: '400px' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Main Services */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -237,7 +286,7 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {additionalServices.map((service, index) => (
               <div key={index} className="text-center group">
-                <div className="bg-gradient-to-br from-orange-500 to-red-600 text-white p-6 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg mx-auto w-fit">
+                <div className="bg-gradient-to-br from-orange-500 to-red-600 text-white p-4 sm:p-6 rounded-2xl mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg mx-auto w-fit">
                   {service.icon}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
@@ -267,7 +316,7 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {plans.map((plan, index) => (
               <div key={index} className={`bg-white rounded-2xl shadow-lg border-2 transition-all duration-300 transform hover:-translate-y-1 ${
-                plan.popular ? 'border-orange-500 scale-105' : 'border-gray-200 hover:border-orange-300'
+                plan.popular ? 'border-orange-500 md:scale-105' : 'border-gray-200 hover:border-orange-300'
               }`}>
                 {plan.popular && (
                   <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white text-center py-3 rounded-t-2xl">
@@ -292,7 +341,7 @@ const Home: React.FC = () => {
                   <Link 
                     to="/pricing"
                     className={`block w-full text-center py-3 rounded-lg font-bold transition-colors duration-200 ${
-                      plan.popular 
+                      plan.popular
                         ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white hover:from-orange-600 hover:to-red-700' 
                         : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                     }`}
@@ -315,7 +364,7 @@ const Home: React.FC = () => {
           <p className="text-xl mb-10 text-orange-100 max-w-2xl mx-auto">
             Rejoignez des centaines de professionnels qui font confiance à MonFritkot
           </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+          <div className="flex justify-center">
             <Link
               to="/pricing" 
               className="bg-white text-orange-600 px-8 py-4 rounded-lg font-bold hover:bg-orange-50 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"

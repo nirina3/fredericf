@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle, Headphones, Users } from 'lucide-react';
 import Button from '../components/ui/Button';
+import { doc, getDoc, collection, addDoc } from 'firebase/firestore';
+import { db } from '../firebase/config';
+import { useNotifications } from '../contexts/NotificationContext';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -10,18 +13,72 @@ const Contact: React.FC = () => {
     message: '',
     type: 'general'
   });
+  const [contactInfo, setContactInfo] = useState({
+    email: 'contact@monfritkot.be',
+    phone: '+32 2 123 45 67',
+    address: 'Rue de la Friterie 123, 1000 Bruxelles',
+    hours: 'Lun-Ven: 9h-18h, Sam: 10h-16h, Dim: Fermé'
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addNotification } = useNotifications();
+
+  // Récupérer les informations de contact depuis Firestore
+  React.useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        const settingsDoc = await getDoc(doc(db, 'settings', 'contact'));
+        if (settingsDoc.exists()) {
+          const data = settingsDoc.data();
+          setContactInfo({
+            email: data.email || contactInfo.email,
+            phone: data.phone || contactInfo.phone,
+            address: data.address || contactInfo.address,
+            hours: data.hours || contactInfo.hours
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching contact info:', error);
+      }
+    };
+    
+    fetchContactInfo();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    alert('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
-    setFormData({ name: '', email: '', subject: '', message: '', type: 'general' });
-    setIsSubmitting(false);
+    try {
+      // Enregistrer le message dans Firestore
+      await addDoc(collection(db, 'contact_messages'), {
+        ...formData,
+        createdAt: new Date(),
+        status: 'new'
+      });
+      
+      // Notification de succès
+      addNotification({
+        type: 'success',
+        title: 'Message envoyé',
+        message: 'Nous vous répondrons dans les plus brefs délais.',
+        category: 'system',
+        priority: 'medium'
+      });
+      
+      // Réinitialiser le formulaire
+      setFormData({ name: '', email: '', subject: '', message: '', type: 'general' });
+    } catch (error) {
+      console.error('Error sending message:', error);
+      addNotification({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Une erreur est survenue lors de l\'envoi du message.',
+        category: 'system',
+        priority: 'high'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -31,30 +88,30 @@ const Contact: React.FC = () => {
     });
   };
 
-  const contactInfo = [
+  const contactInfoDisplay = [
     {
       icon: <Mail className="h-6 w-6" />,
       title: "Email",
-      details: "contact@monfritkot.be",
+      details: contactInfo.email,
       description: "Écrivez-nous pour toute question"
     },
     {
       icon: <Phone className="h-6 w-6" />,
       title: "Téléphone",
-      details: "+32 2 123 45 67",
+      details: contactInfo.phone,
       description: "Du lundi au vendredi, 9h-18h"
     },
     {
       icon: <MapPin className="h-6 w-6" />,
       title: "Adresse",
-      details: "Rue de la Friterie 123, 1000 Bruxelles",
+      details: contactInfo.address,
       description: "Belgique"
     },
     {
       icon: <Clock className="h-6 w-6" />,
       title: "Horaires",
-      details: "Lun-Ven: 9h-18h",
-      description: "Sam: 10h-16h, Dim: Fermé"
+      details: contactInfo.hours.split(',')[0],
+      description: contactInfo.hours.split(',').slice(1).join(',')
     }
   ];
 
@@ -128,10 +185,10 @@ const Contact: React.FC = () => {
 
       {/* Contact Info */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {contactInfo.map((info, index) => (
-              <div key={index} className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+            {contactInfoDisplay.map((info, index) => (
+              <div key={index} className="bg-white p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
                 <div className="bg-gradient-to-br from-orange-500 to-red-600 text-white p-4 rounded-2xl mb-4 mx-auto w-fit">
                   {info.icon}
                 </div>
@@ -146,8 +203,8 @@ const Contact: React.FC = () => {
 
       {/* Contact Form & Support Options */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
             {/* Contact Form */}
             <div>
               <div className="mb-8">
@@ -167,7 +224,7 @@ const Contact: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                      Nom complet *
+                      Nom complet <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -182,7 +239,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                      Email *
+                      Email <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
@@ -217,7 +274,7 @@ const Contact: React.FC = () => {
 
                 <div>
                   <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                    Sujet *
+                    Sujet <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -233,7 +290,7 @@ const Contact: React.FC = () => {
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                    Message *
+                    Message <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     id="message"
@@ -251,7 +308,7 @@ const Contact: React.FC = () => {
                   type="submit"
                   isLoading={isSubmitting}
                   className="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white py-4 text-lg font-semibold"
-                  icon={<Send className="h-5 w-5" />}
+                  icon={isSubmitting ? undefined : <Send className="h-5 w-5" />}
                 >
                   {isSubmitting ? 'Envoi en cours...' : 'Envoyer le message'}
                 </Button>
@@ -261,7 +318,7 @@ const Contact: React.FC = () => {
             {/* Support Options */}
             <div>
               <div className="mb-8">
-                <div className="inline-flex items-center bg-orange-100 rounded-full px-6 py-3 mb-6">
+                <div className="inline-flex items-center bg-orange-100 rounded-full px-4 sm:px-6 py-2 sm:py-3 mb-4 sm:mb-6">
                   <Headphones className="h-5 w-5 text-orange-600 mr-2" />
                   <span className="text-orange-800 font-medium">Autres options</span>
                 </div>
@@ -274,10 +331,73 @@ const Contact: React.FC = () => {
               </div>
 
               <div className="space-y-6 mb-12">
-                {supportOptions.map((option, index) => (
-                  <div key={index} className="bg-white border-2 border-gray-200 rounded-2xl p-6 hover:border-orange-300 transition-all duration-300 hover:shadow-lg">
-                    <div className="flex items-start space-x-4">
-                      <div className={`bg-gradient-to-r ${option.color} text-white p-3 rounded-xl`}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-4">
+                  {supportOptions.map((option, index) => (
+                    <div key={index} className="bg-white border-2 border-gray-200 rounded-2xl p-4 sm:p-6 hover:border-orange-300 transition-all duration-300 hover:shadow-lg">
+                      <div className="flex items-start space-x-3 sm:space-x-4">
+                        <div className={`bg-gradient-to-r ${option.color} text-white p-2 sm:p-3 rounded-xl flex-shrink-0`}>
+                          {option.icon}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{option.title}</h3>
+                          <p className="text-gray-600 mb-4 text-sm sm:text-base">{option.description}</p>
+                          <button className="text-orange-600 font-semibold hover:text-orange-700 transition-colors text-sm sm:text-base">
+                            {option.action} →
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* FAQ Section */}
+              <div>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Questions fréquentes</h3>
+                <div className="space-y-3 sm:space-y-4">
+                  {faq.map((item, index) => (
+                    <details key={index} className="bg-gray-50 rounded-lg p-3 sm:p-4 hover:bg-gray-100 transition-colors">
+                      <summary className="font-semibold text-gray-900 cursor-pointer hover:text-orange-600 transition-colors text-sm sm:text-base">
+                        {item.question}
+                      </summary>
+                      <p className="mt-3 text-gray-600 leading-relaxed text-sm sm:text-base">{item.answer}</p>
+                    </details>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Map Section */}
+      <section className="py-16 sm:py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Venez nous <span className="text-orange-600">rencontrer</span>
+            </h2>
+            <p className="text-base sm:text-lg text-gray-600">
+              Notre bureau est situé au cœur de Bruxelles
+            </p>
+          </div>
+          
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="aspect-w-16 aspect-h-9 bg-gray-200 flex items-center justify-center h-64 sm:h-80">
+              <div className="text-center">
+                <MapPin className="h-12 w-12 sm:h-16 sm:w-16 text-orange-600 mx-auto mb-4" />
+                <p className="text-gray-600">Carte interactive disponible prochainement</p>
+                <p className="text-sm text-gray-500 mt-2">{contactInfo.address}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default Contact;
                         {option.icon}
                       </div>
                       <div className="flex-1">
