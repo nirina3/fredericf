@@ -1,9 +1,8 @@
 import React from 'react';
-import { Crown, Users, BookOpen, Image, BarChart3, Headphones, Zap, Shield, Award, ArrowRight, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Crown, Users, BookOpen, Image, BarChart3, Headphones, Zap, Shield, Award, ArrowRight, Search } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import { useState, useEffect } from 'react';
 
 const Home: React.FC = () => {
   const [stats, setStats] = useState({
@@ -125,61 +124,21 @@ const Home: React.FC = () => {
   return (
     <div className="bg-white">
       {/* Hero Banner */}
-      <section className="bg-gradient-to-br from-red-700 to-red-600 text-white py-20">
+      <section className="bg-gradient-to-br from-red-700 to-red-600 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
-            <Crown className="h-5 w-5 text-yellow-300 mr-2" />
-            <span className="text-yellow-100 font-medium">Plateforme Premium</span>
-          </div>
-          
           <h1 className="text-5xl md:text-6xl font-bold mb-8">
             Bienvenue chez <span className="text-yellow-300">MonFritkot</span>
           </h1>
           
-          <p className="text-xl text-white max-w-3xl mx-auto mb-10">
-            Votre plateforme de référence pour tout ce qui concerne la friterie belge. 
-            Découvrez nos services premium, rejoignez notre communauté et développez votre passion.
+          <p className="text-xl text-white max-w-3xl mx-auto mb-8">
+            Votre plateforme de référence pour tout ce qui concerne la friterie belge.
           </p>
           
-          <div className="mb-16">
-            <Link 
-              to="/pricing" 
-              className="bg-white text-orange-600 px-8 py-4 rounded-lg font-bold hover:bg-orange-50 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              Découvrir nos offres
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.users}+</div>
-              <div className="text-orange-100">Membres actifs</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.friteries}+</div>
-              <div className="text-orange-100">Friteries partenaires</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.recipes}+</div>
-              <div className="text-orange-100">Recettes partagées</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.satisfaction}%</div>
-              <div className="text-orange-100">Satisfaction client</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Search Section */}
-      <section className="relative">
-        <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative bg-cover bg-center py-20" style={{ backgroundImage: 'url("https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1600")' }}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <div className="mb-8">
+            <h2 className="text-4xl font-bold text-white mb-2">
               Trouvez vos meilleures friteries
             </h2>
-            <p className="text-xl text-white mb-10">
+            <p className="text-xl text-white mb-6">
               Flamande, Wallonne et Bruxelloise
             </p>
             
@@ -199,6 +158,25 @@ const Home: React.FC = () => {
                   Rechercher
                 </button>
               </div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.users}+</div>
+              <div className="text-orange-100">Membres actifs</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.friteries}+</div>
+              <div className="text-orange-100">Friteries partenaires</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.recipes}+</div>
+              <div className="text-orange-100">Recettes partagées</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.satisfaction}%</div>
+              <div className="text-orange-100">Satisfaction client</div>
             </div>
           </div>
         </div>
