@@ -1,8 +1,49 @@
 import React from 'react';
-import { Crown, Users, BookOpen, Image, BarChart3, Headphones, Zap, Shield, Award, ArrowRight } from 'lucide-react';
+import { Crown, Users, BookOpen, Image, BarChart3, Headphones, Zap, Shield, Award, ArrowRight, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase/config';
+import { useState, useEffect } from 'react';
 
-const Services: React.FC = () => {
+const Home: React.FC = () => {
+  const [stats, setStats] = useState({
+    users: 500,
+    friteries: 50,
+    recipes: 1000,
+    satisfaction: 98
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Fetch users count
+        const usersSnapshot = await getDocs(collection(db, 'users'));
+        const usersCount = usersSnapshot.size;
+        
+        // Fetch friteries count
+        const friteriesSnapshot = await getDocs(collection(db, 'directory'));
+        const friteriesCount = friteriesSnapshot.size;
+        
+        // Fetch recipes/articles count
+        const articlesSnapshot = await getDocs(collection(db, 'blog'));
+        const articlesCount = articlesSnapshot.size;
+        
+        // Update stats with real data, fallback to default values if count is 0
+        setStats({
+          users: usersCount || 500,
+          friteries: friteriesCount || 50,
+          recipes: articlesCount || 1000,
+          satisfaction: 98 // Hardcoded as this would typically come from a different source
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        // Keep default values in case of error
+      }
+    };
+    
+    fetchStats();
+  }, []);
+
   const mainServices = [
     {
       icon: <Crown className="h-12 w-12" />,
@@ -83,25 +124,55 @@ const Services: React.FC = () => {
 
   return (
     <div className="bg-white">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-orange-600 to-red-600 text-white py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="absolute top-20 right-20 w-32 h-32 bg-yellow-300 rounded-full blur-3xl opacity-30"></div>
-        <div className="absolute bottom-20 left-20 w-48 h-48 bg-orange-300 rounded-full blur-3xl opacity-20"></div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
-              <Award className="h-5 w-5 text-yellow-300 mr-2" />
-              <span className="text-yellow-100 font-medium">Nos Services</span>
+      {/* Hero Banner */}
+      <section className="bg-gradient-to-br from-red-700 to-red-600 text-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
+            <Crown className="h-5 w-5 text-yellow-300 mr-2" />
+            <span className="text-yellow-100 font-medium">Plateforme Premium</span>
+          </div>
+          
+          <h1 className="text-5xl md:text-6xl font-bold mb-8">
+            Bienvenue chez <span className="text-yellow-300">MonFritkot</span>
+          </h1>
+          
+          <p className="text-xl text-white max-w-3xl mx-auto mb-10">
+            Votre plateforme de référence pour tout ce qui concerne la friterie belge. 
+            Découvrez nos services premium, rejoignez notre communauté et développez votre passion.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+            <Link 
+              to="/pricing" 
+              className="bg-white text-orange-600 px-8 py-4 rounded-lg font-bold hover:bg-orange-50 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
+              Découvrir nos offres
+            </Link>
+            <Link 
+              to="/initialize-admin" 
+              className="border-2 border-white text-white px-8 py-4 rounded-lg font-bold hover:bg-white hover:text-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
+              Initialiser Admin
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.users}+</div>
+              <div className="text-orange-100">Membres actifs</div>
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-8">
-              Services <span className="text-yellow-300">Premium</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-orange-100 leading-relaxed">
-              Découvrez notre gamme complète de services conçus pour 
-              développer votre passion et votre activité dans la friterie
-            </p>
+            <div>
+              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.friteries}+</div>
+              <div className="text-orange-100">Friteries partenaires</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.recipes}+</div>
+              <div className="text-orange-100">Recettes partagées</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-yellow-300 mb-2">{stats.satisfaction}%</div>
+              <div className="text-orange-100">Satisfaction client</div>
+            </div>
           </div>
         </div>
       </section>
@@ -286,4 +357,4 @@ const Services: React.FC = () => {
   );
 };
 
-export default Services;
+export default Home;
