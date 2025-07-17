@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, User, LogOut, Settings, Crown, Calendar } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useEffect, useState } from 'react';
 import logoService from '../../services/logoService';
 import NotificationBell from '../notifications/NotificationBell';
 
