@@ -49,11 +49,11 @@ const Subscription: React.FC = () => {
       monthlyPrice: 30.00,
       yearlyPrice: 300.00,
       features: [
-        { name: 'Consultation de l\'annuaire des friteries', included: true },
-        { name: 'Ajout de 3 friteries pour un an', included: true },
-        { name: 'Tableau de bord pour gérer ses friteries', included: true },
-        { name: 'Accès à la galerie photo premium', included: true },
-        { name: 'Désabonnement possible à tout moment', included: true }
+        { name: 'Consultation de l\'annuaire des Friterie', included: true },
+        { name: 'Ajout d\'1 Friterie pour 1 mois', included: true },
+        { name: 'Accès à nos galléries photo premium', included: true },
+        { name: 'Alerté sur tous les évènement et nouveauté', included: true },
+        { name: 'Désabonnement possible à tous moment', included: true }
       ],
       popular: false,
       color: 'border-purple-500',
@@ -276,14 +276,14 @@ const Subscription: React.FC = () => {
                     ) : (
                       <div className="mb-4">
                         <div className="text-5xl font-bold text-gray-900 mb-2">
-                          ${getPrice(plan)}
+                          €{getPrice(plan)}
                         </div>
                         <div className="text-gray-600">
                           /{billingCycle === 'monthly' ? 'mois' : 'an'}
                         </div>
                         {billingCycle === 'yearly' && plan.monthlyPrice > 0 && (
                           <div className="text-sm text-green-600 font-medium mt-2">
-                            Économisez ${savings.amount} ({savings.percentage}%)
+                            Économisez €{savings.amount} ({savings.percentage}%)
                           </div>
                         )}
                       </div>
