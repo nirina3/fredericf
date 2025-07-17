@@ -113,7 +113,6 @@ const Home: React.FC = () => {
       popular: false
     },
     {
-    {
       name: "Client Accro",
       price: "10.00",
       description: "Le plus populaire",
