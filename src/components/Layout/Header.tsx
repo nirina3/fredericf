@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, User, LogOut, Settings, Crown, Calendar, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -11,6 +11,8 @@ const Header: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string>('');
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate(); 
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+  const profileButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const loadLogo = async () => {
@@ -25,6 +27,25 @@ const Header: React.FC = () => {
     };
     
     loadLogo();
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        profileMenuRef.current && 
+        !profileMenuRef.current.contains(event.target as Node) &&
+        profileButtonRef.current && 
+        !profileButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileMenuOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -91,6 +112,7 @@ const Header: React.FC = () => {
             {currentUser ? (
               <div className="relative">
                 <button
+                  ref={profileButtonRef}
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                   className="flex items-center space-x-1 text-gray-700 hover:text-orange-600 transition-colors duration-200 bg-gray-50 hover:bg-orange-50 px-2 py-2 rounded-lg cursor-pointer"
                 >
@@ -101,7 +123,8 @@ const Header: React.FC = () => {
 
                 {isProfileMenuOpen && (
                   <div 
-                    className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+                    ref={profileMenuRef}
+                    className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-[100]"
                   >
                     <Link
                       to="/profile"
