@@ -128,12 +128,14 @@ const Header: React.FC = () => {
                       <Link
                         to="/admin"
                         className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                       onClick={() => setIsProfileMenuOpen(false)}
                       >
                         <Settings className="h-4 w-4 mr-3" />
                         Administration
                       </Link>
                     )}
-                    {!currentUser && (
+                    {/* Removed initialization link that was causing confusion */}
+                    {/* {!currentUser && (
                       <Link
                         to="/initialize-admin"
                         className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
@@ -141,7 +143,7 @@ const Header: React.FC = () => {
                         <Crown className="h-4 w-4 mr-3" />
                         Initialiser Admin
                       </Link>
-                    )}
+                    )} */}
                     <hr className="my-2 border-gray-200" />
                     <button
                       onClick={handleLogout}

@@ -76,7 +76,7 @@ function App() {
             </Route>
 
             {/* Initialization route */}
-            <Route path="/initialize-admin" element={<InitializeAdmin />} />
+            <Route path="initialize-admin" element={<InitializeAdmin />} />
           </Routes>
         </Router>
       </NotificationProvider>
