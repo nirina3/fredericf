@@ -22,16 +22,16 @@ const Footer: React.FC = () => {
               Votre plateforme de référence pour la friterie belge. Découvrez nos services premium et rejoignez notre communauté passionnée.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-orange-400 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-orange-400 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-orange-400 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800">
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-orange-400 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800">
                 <Linkedin className="h-5 w-5" />
               </a>
             </div>
@@ -55,11 +55,11 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-semibold text-orange-400">Services</h3>
             <ul className="space-y-3 text-sm">
               <li><Link to="/pricing" className="text-gray-400 hover:text-white transition-colors duration-200 hover:pl-2">Abonnements</Link></li>
-              <li><Link to="/support" className="text-gray-400 hover:text-white transition-colors duration-200 hover:pl-2">Support</Link></li>
-              <li><Link to="/documentation" className="text-gray-400 hover:text-white transition-colors duration-200 hover:pl-2">Documentation</Link></li>
-              <li><Link to="/api" className="text-gray-400 hover:text-white transition-colors duration-200 hover:pl-2">API</Link></li>
-              <li><Link to="/privacy" className="text-gray-400 hover:text-white transition-colors duration-200 hover:pl-2">Confidentialité</Link></li>
-              <li><Link to="/terms" className="text-gray-400 hover:text-white transition-colors duration-200 hover:pl-2">Conditions</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors duration-200 hover:pl-2">Support</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors duration-200 hover:pl-2">Documentation</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors duration-200 hover:pl-2">API</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors duration-200 hover:pl-2">Confidentialité</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors duration-200 hover:pl-2">Conditions</Link></li>
             </ul>
           </div>
 
@@ -95,9 +95,9 @@ const Footer: React.FC = () => {
               &copy; {new Date().getFullYear()} MonFritkot.be. Tous droits réservés.
             </p>
             <div className="flex items-center space-x-6 text-sm text-gray-400">
-              <Link to="/privacy" className="hover:text-orange-400 transition-colors">Politique de confidentialité</Link>
-              <Link to="/terms" className="hover:text-orange-400 transition-colors">Conditions d'utilisation</Link>
-              <Link to="/cookies" className="hover:text-orange-400 transition-colors">Cookies</Link>
+              <Link to="/contact" className="hover:text-orange-400 transition-colors">Politique de confidentialité</Link>
+              <Link to="/contact" className="hover:text-orange-400 transition-colors">Conditions d'utilisation</Link>
+              <Link to="/contact" className="hover:text-orange-400 transition-colors">Cookies</Link>
             </div>
           </div>
         </div>

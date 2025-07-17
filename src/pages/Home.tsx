@@ -106,6 +106,39 @@ const Services: React.FC = () => {
         </div>
       </section>
 
+      {/* Search Section */}
+      <section className="relative">
+        <div className="absolute inset-0 bg-black opacity-50"></div>
+        <div className="relative bg-cover bg-center py-20" style={{ backgroundImage: 'url("https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1600")' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Trouvez vos meilleures friteries
+            </h2>
+            <p className="text-xl text-white mb-10">
+              Flamande, Wallonne et Bruxelloise
+            </p>
+            
+            <div className="max-w-4xl mx-auto">
+              <div className="flex flex-col md:flex-row gap-4">
+                <input
+                  type="text"
+                  placeholder="entrez un mot clé"
+                  className="flex-1 px-6 py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                />
+                <input
+                  type="text"
+                  placeholder="Adresse, proximité..."
+                  className="flex-1 px-6 py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                />
+                <button className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg font-bold transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                  Rechercher
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Main Services */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -240,17 +273,11 @@ const Services: React.FC = () => {
             Rejoignez des centaines de professionnels qui font confiance à MonFritkot
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link 
-              to="/pricing"
+            <Link
+              to="/pricing" 
               className="bg-white text-orange-600 px-8 py-4 rounded-lg font-bold hover:bg-orange-50 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
-              Voir tous les plans
-            </Link>
-            <Link 
-              to="/contact"
-              className="border-2 border-white text-white px-8 py-4 rounded-lg font-bold hover:bg-white hover:text-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              Nous contacter
+              Découvrir nos offres
             </Link>
           </div>
         </div>
