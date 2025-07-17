@@ -336,7 +336,9 @@ const Contact: React.FC = () => {
                     <div key={index} className="bg-white border-2 border-gray-200 rounded-2xl p-4 sm:p-6 hover:border-orange-300 transition-all duration-300 hover:shadow-lg">
                       <div className="flex items-start space-x-3 sm:space-x-4">
                         <div className={`bg-gradient-to-r ${option.color} text-white p-2 sm:p-3 rounded-xl flex-shrink-0`}>
+                        <div className={`bg-gradient-to-r ${option.color} text-white p-2 sm:p-3 rounded-xl flex-shrink-0`}>
                           {option.icon}
+                        </div>
                         </div>
                         <div className="flex-1">
                           <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{option.title}</h3>
